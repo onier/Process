@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<Process xmlns="">
+
+    <TaskManager>
+        <tasks>
+            <TestTask1 NextTaskID="07673c72-f698-4741-b98f-f2ff6ae59f47" id="07673c72-f698-4741-b98f-f2ff6ae59f48" name="startTask"/>
+            <SubProcessTask NextTaskID="647da05a-9cfd-40b5-b483-22f2b14e4a9c" PreTaskID="07673c72-f698-4741-b98f-f2ff6ae59f47" id="07673c72-f698-4741-b98f-f2ff6ae59f47" name="subProcessTask">
+                <SubTaskManager>
+                    <tasks>
+                        <TestTask1 NextTaskID="a92c2f45-dd70-4440-85c7-58068ae460bc" id="bc3045c9-2a63-4b82-8977-1e620519ed6b" name="startTask"/>
+                        <ParallelTask PreTaskID="bc3045c9-2a63-4b82-8977-1e620519ed6b" id="a92c2f45-dd70-4440-85c7-58068ae460bc" name="startParallelTask">
+                            <list name="OutTasks" type="std::string">
+                                <std::string value="57eccfb9-472a-4151-a3e1-56b235b11185"/>
+                                <std::string value="b325ceed-441d-4fc8-ab95-7015c501aca5"/>
+                                <std::string value="46b2a86a-8b64-4cbe-8c63-1b9d9ad8a3a1"/>
+                            </list>
+                        </ParallelTask>
+                        <ParallelTask NextTaskID="3d12eb05-ec40-4b40-983d-e08bea75e455" PreTaskID="a92c2f45-dd70-4440-85c7-58068ae460bc" id="5aa80f88-244c-4541-9856-2fdaf1c80942" name="endParallelTask">
+                            <list name="InTasks" type="std::string">
+                                <std::string value="57eccfb9-472a-4151-a3e1-56b235b11185"/>
+                                <std::string value="b325ceed-441d-4fc8-ab95-7015c501aca5"/>
+                                <std::string value="46b2a86a-8b64-4cbe-8c63-1b9d9ad8a3a1"/>
+                            </list>
+                        </ParallelTask>
+                        <TestTask1 NextTaskID="5aa80f88-244c-4541-9856-2fdaf1c80942" PreTaskID="a92c2f45-dd70-4440-85c7-58068ae460bc" id="57eccfb9-472a-4151-a3e1-56b235b11185" name="task1"/>
+                        <TestTask2 NextTaskID="5aa80f88-244c-4541-9856-2fdaf1c80942" PreTaskID="a92c2f45-dd70-4440-85c7-58068ae460bc" id="b325ceed-441d-4fc8-ab95-7015c501aca5" name="task2"/>
+                        <TestTask3 NextTaskID="5aa80f88-244c-4541-9856-2fdaf1c80942" PreTaskID="a92c2f45-dd70-4440-85c7-58068ae460bc" id="46b2a86a-8b64-4cbe-8c63-1b9d9ad8a3a1" name="task3"/>
+                        <TestTask3 PreTaskID="5aa80f88-244c-4541-9856-2fdaf1c80942" id="3d12eb05-ec40-4b40-983d-e08bea75e455" name="task after endParallelTask "/>
+                    </tasks>
+                </SubTaskManager>
+            </SubProcessTask>
+            <TestTask1 PreTaskID="07673c72-f698-4741-b98f-f2ff6ae59f47" id="647da05a-9cfd-40b5-b483-22f2b14e4a9c" name="endTask"/>
+        </tasks>
+    </TaskManager>
+
+</Process>

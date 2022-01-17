@@ -1,0 +1,7 @@
+{
+  "Tasks": [
+    "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>\n<TestTask1 NextTaskID=\"c3cc4569-ae3c-4318-898d-bfa54ef0143f\" id=\"e201883b-64ff-46bc-a831-11f2d4aa9544\" name=\"task1\" xmlns=\"\"/>\n",
+    "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>\n<TestTask2 NextTaskID=\"e2f41aa8-4c58-44eb-99bc-87573288b2b1\" PreTaskID=\"e201883b-64ff-46bc-a831-11f2d4aa9544\" id=\"c3cc4569-ae3c-4318-898d-bfa54ef0143f\" name=\"task2\" xmlns=\"\"/>\n",
+    "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>\n<TestTask3 PreTaskID=\"c3cc4569-ae3c-4318-898d-bfa54ef0143f\" id=\"e2f41aa8-4c58-44eb-99bc-87573288b2b1\" name=\"task2\" xmlns=\"\"/>\n"
+  ]
+}

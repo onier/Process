@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<Process xmlns="">
+
+    <TaskManager>
+        <tasks>
+            <TestTask1 NextTaskID="0c8858ec-df51-4fca-8d09-85b2bf27f0d7" id="9b823fca-56e9-4808-b8f8-4be2a10ceacf" name="startTask"/>
+            <ParallelTask PreTaskID="9b823fca-56e9-4808-b8f8-4be2a10ceacf" id="0c8858ec-df51-4fca-8d09-85b2bf27f0d7" name="startParallelTask">
+                <list name="OutTasks" type="std::string">
+                    <std::string value="f8fa1ff1-3d8d-42ee-a8f9-d00424a98ac1"/>
+                    <std::string value="f31eea0c-9d59-47b5-8c4f-8317de76453e"/>
+                    <std::string value="f627851e-5e78-4788-af0b-4f1b5eab9b40"/>
+                </list>
+            </ParallelTask>
+            <ParallelTask NextTaskID="d954d497-643a-4389-9f56-543732f473dc" PreTaskID="0c8858ec-df51-4fca-8d09-85b2bf27f0d7" id="496addbb-8d82-4ce1-b829-4c0e0b2b680f" name="endParallelTask">
+                <list name="InTasks" type="std::string">
+                    <std::string value="f8fa1ff1-3d8d-42ee-a8f9-d00424a98ac1"/>
+                    <std::string value="f31eea0c-9d59-47b5-8c4f-8317de76453e"/>
+                    <std::string value="f627851e-5e78-4788-af0b-4f1b5eab9b40"/>
+                </list>
+            </ParallelTask>
+            <TestTask1 NextTaskID="496addbb-8d82-4ce1-b829-4c0e0b2b680f" PreTaskID="0c8858ec-df51-4fca-8d09-85b2bf27f0d7" id="f8fa1ff1-3d8d-42ee-a8f9-d00424a98ac1" name="task1"/>
+            <TestTask2 NextTaskID="496addbb-8d82-4ce1-b829-4c0e0b2b680f" PreTaskID="0c8858ec-df51-4fca-8d09-85b2bf27f0d7" id="f31eea0c-9d59-47b5-8c4f-8317de76453e" name="task2"/>
+            <TestTask3 NextTaskID="496addbb-8d82-4ce1-b829-4c0e0b2b680f" PreTaskID="0c8858ec-df51-4fca-8d09-85b2bf27f0d7" id="f627851e-5e78-4788-af0b-4f1b5eab9b40" name="task3"/>
+            <TestTask3 PreTaskID="496addbb-8d82-4ce1-b829-4c0e0b2b680f" id="d954d497-643a-4389-9f56-543732f473dc" name="task after endParallelTask "/>
+        </tasks>
+    </TaskManager>
+
+</Process>
