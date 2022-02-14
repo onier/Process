@@ -2,6 +2,7 @@
 #include "TestTask1.h"
 #include "TestTask2.h"
 #include "TestTask3.h"
+#include "ExceptionTask.h"
 
 using namespace Process;
 
@@ -24,4 +25,11 @@ RTTR_REGISTRATION {
                     constructor<>()(
                     rttr::policy::ctor::as_std_shared_ptr
             );
+    rttr::registration::class_<ExceptionTask>("ExceptionTask")
+            .
+
+                    constructor<>()(
+                    rttr::policy::ctor::as_std_shared_ptr
+            )
+            .property("ValueName", &ExceptionTask::_exceptionCounter);
 }
