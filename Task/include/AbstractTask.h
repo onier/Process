@@ -39,6 +39,7 @@ namespace Process {
         std::string _name;
         std::string _nextTaskID;
         std::string _preTaskID;
+        std::string _taskName;
     };
 }
 

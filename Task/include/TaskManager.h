@@ -42,6 +42,9 @@ namespace Process {
     private:
         void createElement(rttr::instance obj2, xercesc::DOMElement *domElement, xercesc::DOMDocument *document,
                            std::shared_ptr<AbstractTask> task = nullptr);
+
+    public:
+        std::string _taskName;
     };
 }
 

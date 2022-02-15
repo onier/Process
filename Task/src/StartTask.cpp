@@ -10,5 +10,5 @@ bool StartTask::initTask(std::shared_ptr<Process::TaskManager> manager) {
 }
 
 void StartTask::run(folly::Synchronized <std::map<std::string, boost::any>> &values) {
-    LOG(INFO) << "the process is finish";
+    LOG(INFO) <<  _taskName << " process is start";
 }

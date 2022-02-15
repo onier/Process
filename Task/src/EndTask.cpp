@@ -9,5 +9,5 @@ bool EndTask::initTask(std::shared_ptr <Process::TaskManager> manager) {
 }
 
 void EndTask::run(folly::Synchronized <std::map<std::string, boost::any>> &values) {
-    LOG(INFO) << "the process is start";
+    LOG(INFO) << _taskName << " process is end";
 }

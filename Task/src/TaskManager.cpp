@@ -31,7 +31,7 @@ using namespace Process;
 std::shared_ptr<Process::AbstractTask> TaskManager::getStartTask() {
     std::vector<std::shared_ptr<Process::AbstractTask>> temps;
     for (auto &task: _tasks) {
-        if (task->get_type().get_name()=="StartTask") {
+        if (task->get_type().get_name() == "StartTask") {
             temps.push_back(task);
         }
     }
@@ -167,6 +167,7 @@ bool TaskManager::saveDomElement(xercesc::DOMElement *domElement, std::shared_pt
 
 bool TaskManager::loadDomElement(xercesc::DOMNode *domElement) {
     auto taskManagerNode = domElement->getChildNodes();
+    _taskName = puppy::common::XML::toStr(domElement->getAttributes()->getNamedItem(XStr("taskName"))->getNodeValue());
     for (int i = 0; i < taskManagerNode->getLength(); ++i) {
         auto name = puppy::common::XML::toStr(taskManagerNode->item(i)->getNodeName());
         if (name == "tasks") {
@@ -204,6 +205,7 @@ std::string TaskManager::saveXML() {
             domImplementation->createDocument(0, XStr("Process"), 0));
     auto rootElement = document->getDocumentElement();
     auto taskManager = document->createElement(XStr("TaskManager"));
+    taskManager->setAttribute(XStr("taskName"), XStr(_taskName.data()));
     rootElement->appendChild(taskManager);
     saveDomElement(taskManager, document);
     document->normalizeDocument();
@@ -228,12 +230,14 @@ bool TaskManager::loadXML(std::string value) {
     }
     for (auto &item:_tasks) {
         item->initTask(shared_from_this());
+        item->_taskName = _taskName;
     }
 }
 
 bool TaskManager::initTasks() {
     for (auto &t:_tasks) {
         t->initTask(shared_from_this());
+        t->_taskName = _taskName;
     }
     return false;
 }

@@ -85,11 +85,12 @@ void Process::Process::processDefaultTask(std::shared_ptr<AbstractTask> task) {
             auto t = _taskManager->getTaskByID(task->getNextTaskID());
             if (t) {
                 processTask(t);
-            } else {
-                LOG(INFO) << " process is finish";
+            } else if (task->get_type().get_name() == "EndTask") {
                 if (_taskFinishFunction) {
                     _taskFinishFunction();
                 }
+            } else {
+                LOG(ERROR) << "error this should not happend";
             }
         })).thenError(folly::tag_t<std::exception>{}, [](std::exception const &e) {
             LOG(ERROR) << e.what();
