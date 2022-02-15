@@ -8,8 +8,9 @@
 #include "rttr/registration.h"
 #include "folly/Synchronized.h"
 #include "boost/any.hpp"
-//#include "TaskManager.h"
 
+//#include "TaskManager.h"
+typedef std::function<void(void)> ExceptionHandler;
 namespace Process {
     class TaskManager;
 
@@ -30,6 +31,7 @@ namespace Process {
 
         const char *what() const _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_USE_NOEXCEPT override;
     };
+
     /**
      * 重试异常
      */

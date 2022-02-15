@@ -13,6 +13,7 @@
 #include "folly/executors/CPUThreadPoolExecutor.h"
 #include "folly/futures/Future.h"
 #include "TaskManager.h"
+#include "atomic"
 
 namespace Process {
     class Process {
@@ -36,6 +37,10 @@ namespace Process {
         void processParallelTask(std::shared_ptr<AbstractTask> task);
 
         void processSubProcessTask(std::shared_ptr<AbstractTask> sharedPtr);
+
+    public:
+        //0 default 1 start 2 retry 3 reset
+        std::atomic_int _status;
     };
 }
 

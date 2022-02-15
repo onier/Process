@@ -12,10 +12,12 @@ bool ExceptionTask::initTask(std::shared_ptr<Process::TaskManager> manager) {
 }
 
 void ExceptionTask::run(folly::Synchronized<std::map<std::string, boost::any>> &values) {
-    static int n = 1;
     if (_runTimeExceptionCounter < 5) {
         _runTimeExceptionCounter++;
         LOG(INFO) << "_runTimeExceptionCounter is " << _runTimeExceptionCounter;
         throw Process::TaskRuntimeException("", "retry again");
+    } else {
+        _runTimeExceptionCounter = 1;
     }
+    throw Process::TaskError("reset process");
 }

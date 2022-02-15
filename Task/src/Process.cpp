@@ -10,7 +10,9 @@ Process::Process::~Process() {
 
 }
 
-Process::Process::Process(const std::shared_ptr<TaskManager> &taskManager) : _taskManager(taskManager) {}
+Process::Process::Process(const std::shared_ptr<TaskManager> &taskManager) : _taskManager(taskManager) {
+    _status = 0;
+}
 
 void Process::Process::processTask(std::shared_ptr<AbstractTask> task) {
     if (task->get_type().get_name() == "ParallelTask") {
@@ -72,6 +74,7 @@ void Process::Process::processParallelTask(std::shared_ptr<AbstractTask> task1) 
 
 void Process::Process::startProcess(folly::Synchronized<std::map<std::string, boost::any>> &values) {
     _processValues = values;
+    _status = 1;
     processTask(_taskManager->getStartTask());
 }
 
@@ -79,20 +82,39 @@ void Process::Process::processDefaultTask(std::shared_ptr<AbstractTask> task) {
 //    LOG(INFO)<<task->getName() <<"  "<<task->get_type().get_name();
     if (task) {
         folly::via(&executor, std::bind([&, task]() {
-            task->run(_processValues);
-        })).then(std::bind([&, task]() {
-//            LOG(INFO) << "processDefaultTask then " << task->_name <<" "<<task->getNextTaskID();
-            auto t = _taskManager->getTaskByID(task->getNextTaskID());
-            if (t) {
-                processTask(t);
-            } else if (task->get_type().get_name() == "EndTask") {
-                if (_taskFinishFunction) {
-                    _taskFinishFunction();
+            try {
+                task->run(_processValues);
+                _status = 1;
+            } catch (TaskRuntimeException &ex) {
+                _status = 2;
+                LOG(ERROR) << task->getName() << " " << task->getID() << " retry again";
+                processTask(task);
+            } catch (TaskError &err) {
+                _status = 3;
+                LOG(ERROR) << task->getName() << " " << task->getID() << " restart process";
+                processTask(_taskManager->getStartTask());
+            } catch (UserDefinedExeception &ex) {
+                boost::any any = _processValues.rlock()->find(ex._type);
+                ExceptionHandler exceptionHandler = boost::any_cast<ExceptionHandler>(any);
+                if (exceptionHandler) {
+                    exceptionHandler();
                 }
-            } else {
-                LOG(ERROR) << "error this should not happend";
             }
-        })).thenError(folly::tag_t<std::exception>{}, [](std::exception const &e) {
+        })).then(std::bind([&, task]() {
+            if (_status == 1) {
+//            LOG(INFO) << "processDefaultTask then " << task->_name <<" "<<task->getNextTaskID();
+                auto t = _taskManager->getTaskByID(task->getNextTaskID());
+                if (t) {
+                    processTask(t);
+                } else if (task->get_type().get_name() == "EndTask") {
+                    if (_taskFinishFunction) {
+                        _taskFinishFunction();
+                    }
+                } else {
+                    LOG(ERROR) << "error this should not happend";
+                }
+            }
+        })).thenError(folly::tag_t<TaskRuntimeException>{}, [](TaskRuntimeException const &e) {
             LOG(ERROR) << e.what();
         });
     } else {

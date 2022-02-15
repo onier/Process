@@ -232,6 +232,7 @@ bool TaskManager::loadXML(std::string value) {
         item->initTask(shared_from_this());
         item->_taskName = _taskName;
     }
+    return true;
 }
 
 bool TaskManager::initTasks() {
