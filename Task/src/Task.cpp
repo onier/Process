@@ -12,10 +12,6 @@ Process::TaskException::TaskException() {
 
 }
 
-Process::TaskException::~TaskException() {
-
-}
-
 const char *Process::TaskException::what() const noexcept {
     return _type.c_str();
 }

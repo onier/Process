@@ -31,5 +31,5 @@ RTTR_REGISTRATION {
                     constructor<>()(
                     rttr::policy::ctor::as_std_shared_ptr
             )
-            .property("ValueName", &ExceptionTask::_exceptionCounter);
+            .property("ExceptionCounter", &ExceptionTask::_runTimeExceptionCounter);
 }

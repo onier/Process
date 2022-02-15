@@ -4,6 +4,8 @@
 #include "AbstractTask.h"
 #include "ExclusiveTask.h"
 #include "TaskManager.h"
+#include "StartTask.h"
+#include "EndTask.h"
 
 using namespace Process;
 
@@ -64,6 +66,20 @@ RTTR_REGISTRATION {
             )
             .property("InTasks", &ParallelTask::_inTasks)
             .property("OutTasks", &ParallelTask::_outTasks);
+
+    rttr::registration::class_<StartTask>("StartTask")
+            .
+
+                    constructor<>()(
+                    rttr::policy::ctor::as_std_shared_ptr
+            );
+
+    rttr::registration::class_<EndTask>("EndTask")
+            .
+
+                    constructor<>()(
+                    rttr::policy::ctor::as_std_shared_ptr
+            );
 
     rttr::registration::class_<SubProcessTask>("SubProcessTask")
             .

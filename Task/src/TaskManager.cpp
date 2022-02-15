@@ -31,7 +31,7 @@ using namespace Process;
 std::shared_ptr<Process::AbstractTask> TaskManager::getStartTask() {
     std::vector<std::shared_ptr<Process::AbstractTask>> temps;
     for (auto &task: _tasks) {
-        if (task->getPreTaskID().empty() && !task->getNextTaskID().empty()) {
+        if (task->get_type().get_name()=="StartTask") {
             temps.push_back(task);
         }
     }
