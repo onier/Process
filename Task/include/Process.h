@@ -9,7 +9,7 @@
 #include "Task.h"
 #include "folly/Synchronized.h"
 #include "boost/any.hpp"
-#include "ExclusiveTask.h"
+#include "ExclusiveGateway.h"
 #include "folly/executors/CPUThreadPoolExecutor.h"
 #include "folly/futures/Future.h"
 #include "TaskManager.h"

@@ -1,8 +1,8 @@
-#include <ParallelTask.h>
+#include <ParallelGateway.h>
 #include <SubProcessTask.h>
 #include "rttr/registration.h"
 #include "AbstractTask.h"
-#include "ExclusiveTask.h"
+#include "ExclusiveGateway.h"
 #include "TaskManager.h"
 #include "StartTask.h"
 #include "EndTask.h"
@@ -42,13 +42,13 @@ RTTR_REGISTRATION {
             .property("Value", &ExclusiveRule::_value)
             .property("TaskID", &ExclusiveRule::_taskID);
 
-    rttr::registration::class_<ExclusiveTask>("ExclusiveTask")
+    rttr::registration::class_<ExclusiveGateway>("ExclusiveGateway")
             .
 
                     constructor<>()(
                     rttr::policy::ctor::as_std_shared_ptr
             )
-            .property("SubTasks", &ExclusiveTask::_subTasks);
+            .property("SubTasks", &ExclusiveGateway::_subTasks);
 
     rttr::registration::class_<TaskGroup>("TaskGroup")
             .
@@ -58,14 +58,14 @@ RTTR_REGISTRATION {
             )
             .property("Tasks", &TaskGroup::_tasks);
 
-    rttr::registration::class_<ParallelTask>("ParallelTask")
+    rttr::registration::class_<ParallelGateway>("ParallelGateway")
             .
 
                     constructor<>()(
                     rttr::policy::ctor::as_std_shared_ptr
             )
-            .property("InTasks", &ParallelTask::_inTasks)
-            .property("OutTasks", &ParallelTask::_outTasks);
+            .property("InTasks", &ParallelGateway::_inTasks)
+            .property("OutTasks", &ParallelGateway::_outTasks);
 
     rttr::registration::class_<StartTask>("StartTask")
             .

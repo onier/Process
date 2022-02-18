@@ -2,8 +2,8 @@
 // Created by xuzhenhai on 2021/10/21.
 //
 
-#ifndef PUPPY_EXCLUSIVETASK_H
-#define PUPPY_EXCLUSIVETASK_H
+#ifndef PUPPY_EXCLUSIVEGATEWAY_H
+#define PUPPY_EXCLUSIVEGATEWAY_H
 
 #include "AbstractTask.h"
 #include "folly/Synchronized.h"
@@ -34,9 +34,9 @@ struct ExclusiveRule {
 RTTR_ENABLE()
 };
 
-class ExclusiveTask : public Process::AbstractTask {
+class ExclusiveGateway : public Process::AbstractTask {
 public:
-    ExclusiveTask();
+    ExclusiveGateway();
 
     std::string getNextTaskID() override;
 
@@ -50,4 +50,4 @@ RTTR_ENABLE(AbstractTask)
 };
 
 
-#endif //PUPPY_EXCLUSIVETASK_H
+#endif //PUPPY_EXCLUSIVEGATEWAY_H

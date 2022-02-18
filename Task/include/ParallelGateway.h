@@ -2,16 +2,16 @@
 // Created by xuzhenhai on 2021/10/22.
 //
 
-#ifndef PUPPY_PARALLELTASK_H
-#define PUPPY_PARALLELTASK_H
+#ifndef PUPPY_PARALLELGATEWAY_H
+#define PUPPY_PARALLELGATEWAY_H
 
 #include "Task.h"
 #include "AbstractTask.h"
 
 
-class ParallelTask : public Process::AbstractTask {
+class ParallelGateway : public Process::AbstractTask {
 public:
-    ParallelTask();
+    ParallelGateway();
 
     void run(folly::Synchronized<std::map<std::string, boost::any>> &values) override;
 
@@ -29,4 +29,4 @@ RTTR_ENABLE(AbstractTask)
 };
 
 
-#endif //PUPPY_PARALLELTASK_H
+#endif //PUPPY_PARALLELGATEWAY_H

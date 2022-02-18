@@ -3,7 +3,7 @@
 //
 
 #include "Process.h"
-#include "ParallelTask.h"
+#include "ParallelGateway.h"
 #include "SubProcessTask.h"
 
 Process::Process::~Process() {
@@ -15,7 +15,7 @@ Process::Process::Process(const std::shared_ptr<TaskManager> &taskManager) : _ta
 }
 
 void Process::Process::processTask(std::shared_ptr<AbstractTask> task) {
-    if (task->get_type().get_name() == "ParallelTask") {
+    if (task->get_type().get_name() == "ParallelGateway") {
         processParallelTask(task);
     } else if (task->get_type().get_name() == "SubProcessTask") {
 //        std::shared_ptr<SubProcessTask> subProcessTask = std::dynamic_pointer_cast<SubProcessTask>(task);
@@ -39,7 +39,7 @@ void Process::Process::processSubProcessTask(std::shared_ptr<AbstractTask> task1
 }
 
 void Process::Process::processParallelTask(std::shared_ptr<AbstractTask> task1) {
-    std::shared_ptr<ParallelTask> task = std::dynamic_pointer_cast<ParallelTask>(task1);
+    std::shared_ptr<ParallelGateway> task = std::dynamic_pointer_cast<ParallelGateway>(task1);
 //    LOG(INFO) << "processParallelTask " << task->_name << "  " << task->_taskCount;
     folly::via(&executor, std::bind([&, task]() {
         task->run(_processValues);
@@ -56,11 +56,11 @@ void Process::Process::processParallelTask(std::shared_ptr<AbstractTask> task1) 
                 }
             } else if (task->_taskCount == task->_inTasks.size()) {//并发的任务已经全部结束继续往下执行
                 auto t = _taskManager->getTaskByID(task->getNextTaskID());
-//                LOG(INFO) << "start ParallelTask next task  " << task->_name << " " << task->_taskCount;
+//                LOG(INFO) << "start ParallelGateway next task  " << task->_name << " " << task->_taskCount;
                 if (t) {
                     processTask(t);
                 } else {
-                    LOG(INFO) << "  ParallelTask can not find next task";
+                    LOG(INFO) << "  ParallelGateway can not find next task";
                     if (_taskFinishFunction) {
                         _taskFinishFunction();
                     }

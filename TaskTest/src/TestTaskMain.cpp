@@ -9,10 +9,10 @@
 #include "boost/lexical_cast.hpp"
 #include "glog/logging.h"
 #include "Process.h"
-#include "ParallelTask.h"
+#include "ParallelGateway.h"
 #include "TaskManager.h"
 #include "rttr/registration.h"
-#include "ParallelTask.h"
+#include "ParallelGateway.h"
 #include "TestTask1.h"
 #include "TestTask2.h"
 #include "TestTask3.h"
@@ -103,8 +103,8 @@ int main() {
         std::string text = "{\n"
                            "  \"Tasks\": [\n"
                            "    \"<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\" standalone=\\\"no\\\" ?>\\n<TestTask1 NextTaskID=\\\"a92c2f45-dd70-4440-85c7-58068ae460bc\\\" id=\\\"bc3045c9-2a63-4b82-8977-1e620519ed6b\\\" name=\\\"startTask\\\" xmlns=\\\"\\\"/>\\n\",\n"
-                           "    \"<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\" standalone=\\\"no\\\" ?>\\n<ParallelTask PreTaskID=\\\"bc3045c9-2a63-4b82-8977-1e620519ed6b\\\" id=\\\"a92c2f45-dd70-4440-85c7-58068ae460bc\\\" name=\\\"startParallelTask\\\" xmlns=\\\"\\\">\\n\\n  <list name=\\\"OutTasks\\\" type=\\\"std::string\\\">\\n    <std::string value=\\\"57eccfb9-472a-4151-a3e1-56b235b11185\\\"/>\\n    <std::string value=\\\"b325ceed-441d-4fc8-ab95-7015c501aca5\\\"/>\\n    <std::string value=\\\"46b2a86a-8b64-4cbe-8c63-1b9d9ad8a3a1\\\"/>\\n  </list>\\n\\n</ParallelTask>\\n\",\n"
-                           "    \"<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\" standalone=\\\"no\\\" ?>\\n<ParallelTask NextTaskID=\\\"3d12eb05-ec40-4b40-983d-e08bea75e455\\\" PreTaskID=\\\"a92c2f45-dd70-4440-85c7-58068ae460bc\\\" id=\\\"5aa80f88-244c-4541-9856-2fdaf1c80942\\\" name=\\\"endParallelTask\\\" xmlns=\\\"\\\">\\n\\n  <list name=\\\"InTasks\\\" type=\\\"std::string\\\">\\n    <std::string value=\\\"57eccfb9-472a-4151-a3e1-56b235b11185\\\"/>\\n    <std::string value=\\\"b325ceed-441d-4fc8-ab95-7015c501aca5\\\"/>\\n    <std::string value=\\\"46b2a86a-8b64-4cbe-8c63-1b9d9ad8a3a1\\\"/>\\n  </list>\\n\\n</ParallelTask>\\n\",\n"
+                           "    \"<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\" standalone=\\\"no\\\" ?>\\n<ParallelGateway PreTaskID=\\\"bc3045c9-2a63-4b82-8977-1e620519ed6b\\\" id=\\\"a92c2f45-dd70-4440-85c7-58068ae460bc\\\" name=\\\"startParallelTask\\\" xmlns=\\\"\\\">\\n\\n  <list name=\\\"OutTasks\\\" type=\\\"std::string\\\">\\n    <std::string value=\\\"57eccfb9-472a-4151-a3e1-56b235b11185\\\"/>\\n    <std::string value=\\\"b325ceed-441d-4fc8-ab95-7015c501aca5\\\"/>\\n    <std::string value=\\\"46b2a86a-8b64-4cbe-8c63-1b9d9ad8a3a1\\\"/>\\n  </list>\\n\\n</ParallelGateway>\\n\",\n"
+                           "    \"<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\" standalone=\\\"no\\\" ?>\\n<ParallelGateway NextTaskID=\\\"3d12eb05-ec40-4b40-983d-e08bea75e455\\\" PreTaskID=\\\"a92c2f45-dd70-4440-85c7-58068ae460bc\\\" id=\\\"5aa80f88-244c-4541-9856-2fdaf1c80942\\\" name=\\\"endParallelTask\\\" xmlns=\\\"\\\">\\n\\n  <list name=\\\"InTasks\\\" type=\\\"std::string\\\">\\n    <std::string value=\\\"57eccfb9-472a-4151-a3e1-56b235b11185\\\"/>\\n    <std::string value=\\\"b325ceed-441d-4fc8-ab95-7015c501aca5\\\"/>\\n    <std::string value=\\\"46b2a86a-8b64-4cbe-8c63-1b9d9ad8a3a1\\\"/>\\n  </list>\\n\\n</ParallelGateway>\\n\",\n"
                            "    \"<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\" standalone=\\\"no\\\" ?>\\n<TestTask1 NextTaskID=\\\"5aa80f88-244c-4541-9856-2fdaf1c80942\\\" PreTaskID=\\\"a92c2f45-dd70-4440-85c7-58068ae460bc\\\" id=\\\"57eccfb9-472a-4151-a3e1-56b235b11185\\\" name=\\\"task1\\\" xmlns=\\\"\\\"/>\\n\",\n"
                            "    \"<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\" standalone=\\\"no\\\" ?>\\n<TestTask2 NextTaskID=\\\"5aa80f88-244c-4541-9856-2fdaf1c80942\\\" PreTaskID=\\\"a92c2f45-dd70-4440-85c7-58068ae460bc\\\" id=\\\"b325ceed-441d-4fc8-ab95-7015c501aca5\\\" name=\\\"task2\\\" xmlns=\\\"\\\"/>\\n\",\n"
                            "    \"<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\" standalone=\\\"no\\\" ?>\\n<TestTask3 NextTaskID=\\\"5aa80f88-244c-4541-9856-2fdaf1c80942\\\" PreTaskID=\\\"a92c2f45-dd70-4440-85c7-58068ae460bc\\\" id=\\\"46b2a86a-8b64-4cbe-8c63-1b9d9ad8a3a1\\\" name=\\\"task3\\\" xmlns=\\\"\\\"/>\\n\",\n"
@@ -153,8 +153,8 @@ int main1() {
     startTask->_id = uuid();
     startTask->_name = "startTask";
 
-    std::shared_ptr<ParallelTask> startParallelTask = std::make_shared<ParallelTask>();
-    std::shared_ptr<ParallelTask> endParallelTask = std::make_shared<ParallelTask>();
+    std::shared_ptr<ParallelGateway> startParallelTask = std::make_shared<ParallelGateway>();
+    std::shared_ptr<ParallelGateway> endParallelTask = std::make_shared<ParallelGateway>();
     tasks.push_back(startParallelTask);
     tasks.push_back(endParallelTask);
     {
@@ -208,7 +208,7 @@ int main1() {
     std::shared_ptr<Process::TaskManager> taskManager = std::make_shared<Process::TaskManager>();
     taskManager->_tasks = tasks;
     LOG(INFO) << taskManager->saveXML();
-//    std::shared_ptr<ParallelTask> parallelTask = std::make_shared<ParallelTask>();
+//    std::shared_ptr<ParallelGateway> parallelTask = std::make_shared<ParallelGateway>();
 //    std::shared_ptr<Process::TaskManager> taskManager = std::make_shared<Process::TaskManager>();
 //    std::string text = "{\n"
 //                       "    \"Tasks\": [\n"
