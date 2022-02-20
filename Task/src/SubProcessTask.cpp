@@ -7,7 +7,8 @@
 #include <xercesc/dom/DOMNamedNodeMap.hpp>
 #include <xercesc/dom/DOMNodeList.hpp>
 
-SubProcessTask::SubProcessTask() {;
+SubProcessTask::SubProcessTask() {
+    _subProcess = std::make_shared<Process::Process>(1);
 }
 
 void SubProcessTask::run(std::shared_ptr<Process::ProcessContext> context) {
@@ -15,7 +16,6 @@ void SubProcessTask::run(std::shared_ptr<Process::ProcessContext> context) {
 }
 
 bool SubProcessTask::initTask(Process::ProcessContext * manager) {
-    _subProcess = std::make_shared<Process::Process>(1);
     _subProcess->getProcessContext()->_executor=manager->_executor;
     return true;
 }

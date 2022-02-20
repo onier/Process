@@ -63,7 +63,7 @@ bool ProcessContext::loadDomElement(xercesc::DOMNode *domElement) {
             }
         }
     }
-
+    initTasks();
     return true;
 }
 
@@ -82,10 +82,7 @@ void ProcessContext::loadXML(std::string xml) {
             loadDomElement(process->item(i));
         }
     }
-    for (auto &item:_tasks) {
-        item->initTask(this);
-        item->_taskName = _taskName;
-    }
+    initTasks();
 }
 
 std::string ProcessContext::saveXML() {
@@ -144,7 +141,11 @@ std::shared_ptr<Process::Task> ProcessContext::getEndTask() {
 }
 
 bool ProcessContext::initTasks() {
-    return false;
+    for (auto &item:_tasks) {
+        item->initTask(this);
+        item->_taskName = _taskName;
+    }
+    return true;
 }
 
 void ProcessContext::createElement(rttr::instance obj2, xercesc::DOMElement *domElement, xercesc::DOMDocument *document,
