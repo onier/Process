@@ -26,10 +26,6 @@ std::string Process::AbstractTask::getPreTaskID() {
     return _preTaskID;
 }
 
-bool Process::AbstractTask::initTask(std::shared_ptr<TaskManager> manager) {
-    return true;
-}
-
-void Process::AbstractTask::run(folly::Synchronized<std::map<std::string, boost::any>> &values) {
+void Process::AbstractTask::run(std::shared_ptr<Process::ProcessContext> context) {
     exit(11);
 }

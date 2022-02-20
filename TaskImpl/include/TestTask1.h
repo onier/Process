@@ -9,9 +9,9 @@
 
 struct TestTask1 : public Process::AbstractTask {
 public:
-    bool initTask(std::shared_ptr<Process::TaskManager> manager) override;
+    bool initTask(Process::ProcessContext * manager) override;
 
-    void run(folly::Synchronized<std::map<std::string, boost::any>> &values) override;
+    void run(std::shared_ptr<Process::ProcessContext> manager) override;
 
 
 RTTR_ENABLE(AbstractTask)

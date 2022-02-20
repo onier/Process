@@ -6,9 +6,10 @@
 
 #include <xercesc/dom/DOMElement.hpp>
 #include "Task.h"
+#include "ProcessContext.h"
 
 namespace Process {
-    struct AbstractTask : public Process::Task {
+    struct AbstractTask : public Task {
     public:
         AbstractTask();
 
@@ -21,25 +22,24 @@ namespace Process {
         std::string getPreTaskID() override;
 
         //must
-        bool initTask(std::shared_ptr<TaskManager> manager) override;
-
-        //must
-        void run(folly::Synchronized<std::map<std::string, boost::any>> &values) override;
+        void run(std::shared_ptr<ProcessContext> context) override;
 
         virtual bool saveDomElement(xercesc::DOMElement *domElement, std::shared_ptr<xercesc::DOMDocument> document) {
             return false;
         };
 
+        virtual bool initTask(ProcessContext *processContext) {
+            return false;
+        }
+
         virtual bool loadDomElement(xercesc::DOMNode *domElement) {
             return false;
         };
-    RTTR_ENABLE()
     public:
-        std::string _id;
         std::string _name;
         std::string _nextTaskID;
         std::string _preTaskID;
-        std::string _taskName;
+    RTTR_ENABLE(Task)
     };
 }
 

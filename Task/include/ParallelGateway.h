@@ -13,7 +13,7 @@ class ParallelGateway : public Process::AbstractTask {
 public:
     ParallelGateway();
 
-    void run(folly::Synchronized<std::map<std::string, boost::any>> &values) override;
+    void run(std::shared_ptr<Process::ProcessContext> context) override;
 
     /**
      * 行进入的任务，如果为空直接启动outTask

@@ -50,14 +50,6 @@ RTTR_REGISTRATION {
             )
             .property("SubTasks", &ExclusiveGateway::_subTasks);
 
-    rttr::registration::class_<TaskGroup>("TaskGroup")
-            .
-
-                    constructor<>()(
-                    rttr::policy::ctor::as_object
-            )
-            .property("Tasks", &TaskGroup::_tasks);
-
     rttr::registration::class_<ParallelGateway>("ParallelGateway")
             .
 

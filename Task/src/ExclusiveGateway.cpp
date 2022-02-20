@@ -5,6 +5,7 @@
 #include "ExclusiveGateway.h"
 #include "folly/Conv.h"
 #include "XML.h"
+#include "ProcessContext.h"
 
 std::string ExclusiveGateway::getNextTaskID() {
     return _nextTaskID;
@@ -29,13 +30,14 @@ bool ExclusiveRule::checkRule(folly::Synchronized<std::map<std::string, boost::a
     return false;
 }
 
-void ExclusiveGateway::run(folly::Synchronized<std::map<std::string, boost::any>> &values) {
+void ExclusiveGateway::run(std::shared_ptr<Process::ProcessContext> context) {
     if (_subTasks.empty()) {
         LOG(INFO) << "sub task is empty use default next task";
         return;
     }
+    auto values = context->getProcessValues();
     for (auto &task: _subTasks) {
-        if (task.checkRule(values)) {
+        if (task.checkRule(*values)) {
             _nextTaskID = task._taskID;
             LOG(INFO) << " ExclusiveGateway  found  next task " << task._taskID;
             return;

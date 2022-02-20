@@ -25,7 +25,7 @@ int main() {
     TestTask1 testTask1;
 
 //    std::shared_ptr<ParallelGateway> parallelTask = std::make_shared<ParallelGateway>();
-    std::shared_ptr<Process::TaskManager> taskManager = std::make_shared<Process::TaskManager>();
+//    std::shared_ptr<Process::TaskManager> taskManager = std::make_shared<Process::TaskManager>();
 
     /*   排他  {"taskValue", 2.0} 流程结构图  选择条件为1-->task1  2-->task2  3-->task3
  *                      startTask
@@ -168,12 +168,14 @@ int main() {
 //                       "    </TaskManager>\n"
 //                       "\n"
 //                       "</Process>";
-    taskManager->loadXML(text);
-    Process::Process process(taskManager);
-    folly::Synchronized<std::map<std::string, boost::any>> values;
-    values.wlock()->insert({"taskValue", 2.0});
-    process.startProcess(values);
-    LOG(INFO)<<taskManager->saveXML();
+//    taskManager->loadXML(text);
+    Process::Process process(6);
+    process.loadXML(text);
+    process.initProcessValues({{"taskValue", 2.0}});
+//    folly::Synchronized<std::map<std::string, boost::any>> values;
+//    values.wlock()->insert({"taskValue", 2.0});
+    process.startProcess(nullptr);
+    LOG(INFO)<<process.saveXML();
 //    auto t = rttr::type::get_by_name("TestTask1");
 //    LOG(INFO) << puppy::common::XML::toXMLString(t);
     sleep(1111);
@@ -183,51 +185,51 @@ int main() {
 //    t1->run(values);
 }
 
-int main1(){
-    std::string text = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>\n"
-                       "<Process xmlns=\"\">\n"
-                       "\n"
-                       "  <TaskManager>\n"
-                       "    <tasks>\n"
-                       "      <TestTask1 NextTaskID=\"07673c72-f698-4741-b98f-f2ff6ae59f47\" id=\"07673c72-f698-4741-b98f-f2ff6ae59f48\" name=\"startTask\"/>\n"
-                       "      <SubProcessTask NextTaskID=\"647da05a-9cfd-40b5-b483-22f2b14e4a9c\" PreTaskID=\"07673c72-f698-4741-b98f-f2ff6ae59f47\" id=\"07673c72-f698-4741-b98f-f2ff6ae59f47\" name=\"subProcessTask\">\n"
-                       "        <SubTaskManager>\n"
-                       "          <tasks>\n"
-                       "            <TestTask1 NextTaskID=\"a92c2f45-dd70-4440-85c7-58068ae460bc\" id=\"bc3045c9-2a63-4b82-8977-1e620519ed6b\" name=\"startTask\"/>\n"
-                       "            <ParallelGateway PreTaskID=\"bc3045c9-2a63-4b82-8977-1e620519ed6b\" id=\"a92c2f45-dd70-4440-85c7-58068ae460bc\" name=\"startParallelTask\">\n"
-                       "              <list name=\"OutTasks\" type=\"std::string\">\n"
-                       "                <std::string value=\"57eccfb9-472a-4151-a3e1-56b235b11185\"/>\n"
-                       "                <std::string value=\"b325ceed-441d-4fc8-ab95-7015c501aca5\"/>\n"
-                       "                <std::string value=\"46b2a86a-8b64-4cbe-8c63-1b9d9ad8a3a1\"/>\n"
-                       "              </list>\n"
-                       "            </ParallelGateway>\n"
-                       "            <ParallelGateway NextTaskID=\"3d12eb05-ec40-4b40-983d-e08bea75e455\" PreTaskID=\"a92c2f45-dd70-4440-85c7-58068ae460bc\" id=\"5aa80f88-244c-4541-9856-2fdaf1c80942\" name=\"endParallelTask\">\n"
-                       "              <list name=\"InTasks\" type=\"std::string\">\n"
-                       "                <std::string value=\"57eccfb9-472a-4151-a3e1-56b235b11185\"/>\n"
-                       "                <std::string value=\"b325ceed-441d-4fc8-ab95-7015c501aca5\"/>\n"
-                       "                <std::string value=\"46b2a86a-8b64-4cbe-8c63-1b9d9ad8a3a1\"/>\n"
-                       "              </list>\n"
-                       "            </ParallelGateway>\n"
-                       "            <TestTask1 NextTaskID=\"5aa80f88-244c-4541-9856-2fdaf1c80942\" PreTaskID=\"a92c2f45-dd70-4440-85c7-58068ae460bc\" id=\"57eccfb9-472a-4151-a3e1-56b235b11185\" name=\"task1\"/>\n"
-                       "            <TestTask2 NextTaskID=\"5aa80f88-244c-4541-9856-2fdaf1c80942\" PreTaskID=\"a92c2f45-dd70-4440-85c7-58068ae460bc\" id=\"b325ceed-441d-4fc8-ab95-7015c501aca5\" name=\"task2\"/>\n"
-                       "            <TestTask3 NextTaskID=\"5aa80f88-244c-4541-9856-2fdaf1c80942\" PreTaskID=\"a92c2f45-dd70-4440-85c7-58068ae460bc\" id=\"46b2a86a-8b64-4cbe-8c63-1b9d9ad8a3a1\" name=\"task3\"/>\n"
-                       "            <TestTask3 PreTaskID=\"5aa80f88-244c-4541-9856-2fdaf1c80942\" id=\"3d12eb05-ec40-4b40-983d-e08bea75e455\" name=\"task after endParallelTask \"/>\n"
-                       "          </tasks>\n"
-                       "        </SubTaskManager>\n"
-                       "      </SubProcessTask>\n"
-                       "      <TestTask1 PreTaskID=\"07673c72-f698-4741-b98f-f2ff6ae59f47\" id=\"647da05a-9cfd-40b5-b483-22f2b14e4a9c\" name=\"endTask\"/>\n"
-                       "    </tasks>\n"
-                       "  </TaskManager>\n"
-                       "\n"
-                       "</Process>";
-    std::shared_ptr<Process::TaskManager> taskManager = std::make_shared<Process::TaskManager>();
-    taskManager->loadXML(text);
-    Process::Process process(taskManager);
-    process._processValues.wlock()->insert({"taskValue", 2.0});
-    folly::Synchronized<std::map<std::string, boost::any>> values;
-    process.startProcess(values);
-    LOG(INFO)<<taskManager->saveXML();
-//    auto t = rttr::type::get_by_name("TestTask1");
-//    LOG(INFO) << puppy::common::XML::toXMLString(t);
-    sleep(1111);
-}
+//int main1(){
+//    std::string text = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>\n"
+//                       "<Process xmlns=\"\">\n"
+//                       "\n"
+//                       "  <TaskManager>\n"
+//                       "    <tasks>\n"
+//                       "      <TestTask1 NextTaskID=\"07673c72-f698-4741-b98f-f2ff6ae59f47\" id=\"07673c72-f698-4741-b98f-f2ff6ae59f48\" name=\"startTask\"/>\n"
+//                       "      <SubProcessTask NextTaskID=\"647da05a-9cfd-40b5-b483-22f2b14e4a9c\" PreTaskID=\"07673c72-f698-4741-b98f-f2ff6ae59f47\" id=\"07673c72-f698-4741-b98f-f2ff6ae59f47\" name=\"subProcessTask\">\n"
+//                       "        <SubTaskManager>\n"
+//                       "          <tasks>\n"
+//                       "            <TestTask1 NextTaskID=\"a92c2f45-dd70-4440-85c7-58068ae460bc\" id=\"bc3045c9-2a63-4b82-8977-1e620519ed6b\" name=\"startTask\"/>\n"
+//                       "            <ParallelGateway PreTaskID=\"bc3045c9-2a63-4b82-8977-1e620519ed6b\" id=\"a92c2f45-dd70-4440-85c7-58068ae460bc\" name=\"startParallelTask\">\n"
+//                       "              <list name=\"OutTasks\" type=\"std::string\">\n"
+//                       "                <std::string value=\"57eccfb9-472a-4151-a3e1-56b235b11185\"/>\n"
+//                       "                <std::string value=\"b325ceed-441d-4fc8-ab95-7015c501aca5\"/>\n"
+//                       "                <std::string value=\"46b2a86a-8b64-4cbe-8c63-1b9d9ad8a3a1\"/>\n"
+//                       "              </list>\n"
+//                       "            </ParallelGateway>\n"
+//                       "            <ParallelGateway NextTaskID=\"3d12eb05-ec40-4b40-983d-e08bea75e455\" PreTaskID=\"a92c2f45-dd70-4440-85c7-58068ae460bc\" id=\"5aa80f88-244c-4541-9856-2fdaf1c80942\" name=\"endParallelTask\">\n"
+//                       "              <list name=\"InTasks\" type=\"std::string\">\n"
+//                       "                <std::string value=\"57eccfb9-472a-4151-a3e1-56b235b11185\"/>\n"
+//                       "                <std::string value=\"b325ceed-441d-4fc8-ab95-7015c501aca5\"/>\n"
+//                       "                <std::string value=\"46b2a86a-8b64-4cbe-8c63-1b9d9ad8a3a1\"/>\n"
+//                       "              </list>\n"
+//                       "            </ParallelGateway>\n"
+//                       "            <TestTask1 NextTaskID=\"5aa80f88-244c-4541-9856-2fdaf1c80942\" PreTaskID=\"a92c2f45-dd70-4440-85c7-58068ae460bc\" id=\"57eccfb9-472a-4151-a3e1-56b235b11185\" name=\"task1\"/>\n"
+//                       "            <TestTask2 NextTaskID=\"5aa80f88-244c-4541-9856-2fdaf1c80942\" PreTaskID=\"a92c2f45-dd70-4440-85c7-58068ae460bc\" id=\"b325ceed-441d-4fc8-ab95-7015c501aca5\" name=\"task2\"/>\n"
+//                       "            <TestTask3 NextTaskID=\"5aa80f88-244c-4541-9856-2fdaf1c80942\" PreTaskID=\"a92c2f45-dd70-4440-85c7-58068ae460bc\" id=\"46b2a86a-8b64-4cbe-8c63-1b9d9ad8a3a1\" name=\"task3\"/>\n"
+//                       "            <TestTask3 PreTaskID=\"5aa80f88-244c-4541-9856-2fdaf1c80942\" id=\"3d12eb05-ec40-4b40-983d-e08bea75e455\" name=\"task after endParallelTask \"/>\n"
+//                       "          </tasks>\n"
+//                       "        </SubTaskManager>\n"
+//                       "      </SubProcessTask>\n"
+//                       "      <TestTask1 PreTaskID=\"07673c72-f698-4741-b98f-f2ff6ae59f47\" id=\"647da05a-9cfd-40b5-b483-22f2b14e4a9c\" name=\"endTask\"/>\n"
+//                       "    </tasks>\n"
+//                       "  </TaskManager>\n"
+//                       "\n"
+//                       "</Process>";
+//    std::shared_ptr<Process::TaskManager> taskManager = std::make_shared<Process::TaskManager>();
+//    taskManager->loadXML(text);
+//    Process::Process process(taskManager);
+//    process._processValues.wlock()->insert({"taskValue", 2.0});
+//    folly::Synchronized<std::map<std::string, boost::any>> values;
+//    process.startProcess(values);
+//    LOG(INFO)<<taskManager->saveXML();
+////    auto t = rttr::type::get_by_name("TestTask1");
+////    LOG(INFO) << puppy::common::XML::toXMLString(t);
+//    sleep(1111);
+//}

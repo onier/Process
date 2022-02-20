@@ -4,10 +4,10 @@
 
 #include "EndTask.h"
 
-bool EndTask::initTask(std::shared_ptr <Process::TaskManager> manager) {
+bool EndTask::initTask(Process::ProcessContext* manager) {
     return true;
 }
 
-void EndTask::run(folly::Synchronized <std::map<std::string, boost::any>> &values) {
+void EndTask::run(std::shared_ptr<Process::ProcessContext> context) {
     LOG(INFO) << _taskName << " process is end";
 }

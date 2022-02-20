@@ -8,9 +8,9 @@
 
 class StartTask : public Process::AbstractTask {
 public:
-    bool initTask(std::shared_ptr <Process::TaskManager> manager) override;
+    bool initTask(Process::ProcessContext* context) override;
 
-    void run(folly::Synchronized <std::map<std::string, boost::any>> &values) override;
+    void run(std::shared_ptr<Process::ProcessContext> context) override;
 
 
     RTTR_ENABLE(AbstractTask)

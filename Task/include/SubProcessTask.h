@@ -12,15 +12,14 @@ class SubProcessTask : public Process::AbstractTask {
 public:
     SubProcessTask();
 
-    void run(folly::Synchronized<std::map<std::string, boost::any>> &values) override;
+    void run(std::shared_ptr<Process::ProcessContext> context) override;
 
-    bool initTask(std::shared_ptr<Process::TaskManager> manager) override;
+    bool initTask(Process::ProcessContext * context) override;
 
     void setTaskFinishFunction(std::function<void(void)> taskFinishFunction);
 
-    std::string _subTaskProcess;
+//    std::string _subTaskProcess;
     std::shared_ptr<Process::Process> _subProcess;
-    std::shared_ptr<Process::TaskManager> _subTaskManager;
     std::function<void(void)> _taskFinishFunction;
 
     bool saveDomElement(xercesc::DOMElement *domElement, std::shared_ptr<xercesc::DOMDocument> document);

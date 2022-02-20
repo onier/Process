@@ -9,5 +9,5 @@ ParallelGateway::ParallelGateway() {
     _taskCount = 0;
 }
 
-void ParallelGateway::run(folly::Synchronized<std::map<std::string, boost::any>> &values) {
+void ParallelGateway::run(std::shared_ptr<Process::ProcessContext> context) {
 }

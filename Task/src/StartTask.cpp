@@ -4,11 +4,12 @@
 
 #include "StartTask.h"
 #include "AbstractTask.h"
+#include "ProcessContext.h"
 
-bool StartTask::initTask(std::shared_ptr<Process::TaskManager> manager) {
+bool StartTask::initTask(Process::ProcessContext* manager) {
     return true;
 }
 
-void StartTask::run(folly::Synchronized <std::map<std::string, boost::any>> &values) {
+void StartTask::run(std::shared_ptr<Process::ProcessContext> context) {
     LOG(INFO) <<  _taskName << " process is start";
 }

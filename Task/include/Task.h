@@ -8,11 +8,12 @@
 #include "rttr/registration.h"
 #include "folly/Synchronized.h"
 #include "boost/any.hpp"
+#include <xercesc/dom/DOMElement.hpp>
 
 //#include "TaskManager.h"
 typedef std::function<void(void)> ExceptionHandler;
 namespace Process {
-    class TaskManager;
+    class ProcessContext;
 
     /**
      * task异常基类
@@ -71,13 +72,13 @@ namespace Process {
          * @param manager 任务管理器对象
          * @return 是否初始化成功
          */
-        virtual bool initTask(std::shared_ptr<TaskManager> manager) = 0;
+        virtual bool initTask(ProcessContext* processContext) = 0;
 
         /**
          * 每一个task的执行函数。
          * @param values 为当前taskmanager中存放的全部对象。folly::Synchronized提供了便捷的读写锁极致保证线程安全。
          */
-        virtual void run(folly::Synchronized<std::map<std::string, boost::any>> &values) = 0;
+        virtual void run(std::shared_ptr<ProcessContext> context) = 0;
 
         /**
          * 当前task id
@@ -102,6 +103,16 @@ namespace Process {
          * @return 字符串
          */
         virtual std::string getPreTaskID() = 0;
+
+        virtual bool
+        saveDomElement(xercesc::DOMElement *domElement, std::shared_ptr<xercesc::DOMDocument> document) = 0;
+
+        virtual bool loadDomElement(xercesc::DOMNode *domElement) = 0;
+
+        std::string _id;
+
+        std::string _taskName;
+    RTTR_ENABLE()
     };
 }
 

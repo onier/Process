@@ -40,7 +40,7 @@ public:
 
     std::string getNextTaskID() override;
 
-    void run(folly::Synchronized<std::map<std::string, boost::any>> &values) override;
+    void run(std::shared_ptr<Process::ProcessContext> context) override;
 
 
     std::map<std::string, std::function<bool(folly::Synchronized<std::map<std::string, boost::any>> &)>> _ruleFunctions;

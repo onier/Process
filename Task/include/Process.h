@@ -9,38 +9,39 @@
 #include "Task.h"
 #include "folly/Synchronized.h"
 #include "boost/any.hpp"
-#include "ExclusiveGateway.h"
 #include "folly/executors/CPUThreadPoolExecutor.h"
 #include "folly/futures/Future.h"
-#include "TaskManager.h"
 #include "atomic"
+#include "ProcessContext.h"
 
 namespace Process {
     class Process {
     public:
-        Process(const std::shared_ptr<TaskManager> &taskManager);
+        Process(int threadCount);
 
         ~Process();
 
-        void startProcess(folly::Synchronized<std::map<std::string, boost::any>> &values);
+        void startProcess(std::shared_ptr<ProcessContext> context, bool isSub = false);
 
-        void processTask(std::shared_ptr<AbstractTask> task);
+        void processTask(std::shared_ptr<Task> task);
 
-        folly::CPUThreadPoolExecutor executor{13};
+        std::shared_ptr<ProcessContext> getProcessContext();
 
-        folly::Synchronized<std::map<std::string, boost::any>> _processValues;
-        std::shared_ptr<TaskManager> _taskManager;
-        std::function<void(void)> _taskFinishFunction;
+        void loadXML(std::string xml);
+
+        std::string saveXML();
+
+        void initProcessValues(std::map<std::string,boost::any> values);
+
     private:
-        void processDefaultTask(std::shared_ptr<AbstractTask> task);
+        void processDefaultTask(std::shared_ptr<Task> task);
 
-        void processParallelTask(std::shared_ptr<AbstractTask> task);
+        void processParallelTask(std::shared_ptr<Task> task);
 
-        void processSubProcessTask(std::shared_ptr<AbstractTask> sharedPtr);
+        void processSubProcessTask(std::shared_ptr<Task> sharedPtr);
 
-    public:
-        //0 default 1 start 2 retry 3 reset
-        std::atomic_int _status;
+        std::shared_ptr<ProcessContext> _processContext;
+
     };
 }
 

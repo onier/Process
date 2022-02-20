@@ -6,10 +6,10 @@
 #include "glog/logging.h"
 #include "XML.h"
 
-bool TestTask3::initTask(std::shared_ptr<Process::TaskManager> manager) {
+bool TestTask3::initTask(Process::ProcessContext* manager) {
     return true;
 }
 
-void TestTask3::run(folly::Synchronized<std::map<std::string, boost::any>> &values) {
+void TestTask3::run(std::shared_ptr<Process::ProcessContext> manager) {
     LOG(INFO) << _name;
 }
