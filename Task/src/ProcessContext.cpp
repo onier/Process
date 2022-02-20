@@ -110,7 +110,13 @@ std::string ProcessContext::saveXML() {
 }
 
 std::vector<std::shared_ptr<Process::Task>> ProcessContext::getTasksByType(std::string type) {
-    return std::vector<std::shared_ptr<Process::Task>>();
+    std::vector<std::shared_ptr<Process::Task>> result;
+    for (auto & task:_tasks) {
+        if (task->get_type().get_name() == type) {
+            result.push_back(task);
+        }
+    }
+    return result;
 }
 
 std::shared_ptr<Process::Task> ProcessContext::getStartTask() {
@@ -240,6 +246,14 @@ void ProcessContext::createElement(rttr::instance obj2, xercesc::DOMElement *dom
                 domElement->appendChild(element);
                 createElement(var, element, document);
             }
+        }
+    }
+}
+
+void ProcessContext::notifyEvent(std::string eventType, Process::Task *task) {
+    for (auto & iteer:_eventHandler) {
+        if (eventType==iteer.first){
+            iteer.second();
         }
     }
 }

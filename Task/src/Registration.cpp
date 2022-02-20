@@ -6,6 +6,7 @@
 #include "TaskManager.h"
 #include "StartTask.h"
 #include "EndTask.h"
+#include "EventGateway.h"
 
 using namespace Process;
 
@@ -79,5 +80,13 @@ RTTR_REGISTRATION {
                     constructor<>()(
                     rttr::policy::ctor::as_std_shared_ptr
             );
+
+    rttr::registration::class_<EventGateway>("EventGateway")
+            .
+
+                    constructor<>()(
+                    rttr::policy::ctor::as_std_shared_ptr
+            )
+            .property("EventRules",&EventGateway::_eventRules);
 //            .property("SubTaskProcess", &SubProcessTask::_subTaskProcess);
 }

@@ -42,6 +42,7 @@ namespace Process {
 
         std::shared_ptr<ProcessContext> _processContext;
 
+        void initEventHandlers();
     };
 }
 

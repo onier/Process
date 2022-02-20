@@ -34,6 +34,9 @@ namespace Process {
         bool saveDomElement(xercesc::DOMElement *domElement, std::shared_ptr<xercesc::DOMDocument> document);
 
         bool loadDomElement(xercesc::DOMNode *domElement);
+
+        void notifyEvent(std::string eventType, Process::Task *task);
+
     public:
         auto getExecutor() {
             return _executor;
@@ -65,6 +68,7 @@ namespace Process {
     public:
         std::shared_ptr<folly::Synchronized<std::map<std::string, boost::any>>> _processValues;
         std::shared_ptr<folly::CPUThreadPoolExecutor> _executor;
+        std::map<std::string, std::function<void()>> _eventHandler;
     };
 }
 

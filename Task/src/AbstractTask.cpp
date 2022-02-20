@@ -27,5 +27,6 @@ std::string Process::AbstractTask::getPreTaskID() {
 }
 
 void Process::AbstractTask::run(std::shared_ptr<Process::ProcessContext> context) {
+    LOG(ERROR)<<"you must overrite the default run";
     exit(11);
 }

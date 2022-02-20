@@ -5,6 +5,7 @@
 #include "Process.h"
 #include "ParallelGateway.h"
 #include "SubProcessTask.h"
+#include "EventGateway.h"
 
 Process::Process::~Process() {
 
@@ -79,6 +80,7 @@ void Process::Process::startProcess(std::shared_ptr<ProcessContext> context, boo
         _processContext->_executor = context->_executor;
     }
     _processContext->_status = 1;
+    initEventHandlers();
     processTask(_processContext->getStartTask());
 }
 
@@ -140,8 +142,21 @@ std::string Process::Process::saveXML() {
 
 void Process::Process::initProcessValues(std::map<std::string, boost::any> values) {
     auto lock = _processContext->getProcessValues()->wlock();
-    for (auto & pair:values) {
+    for (auto &pair:values) {
         lock->insert(pair);
     }
 }
 
+void Process::Process::initEventHandlers() {
+    auto events = _processContext->getTasksByType("EventGateway");
+    for (auto &event:events) {
+        auto eventGateway = std::dynamic_pointer_cast<EventGateway>(event);
+        auto eventTyes = eventGateway->_eventRules;
+        for (auto &et:eventTyes) {
+            auto task = _processContext->getTaskByID(et.second);
+            _processContext->_eventHandler.insert({et.first,[&,task](){
+                folly::via(_processContext->_executor.get(), [&, task]() { processDefaultTask(task) ;});
+            }});
+        }
+    }
+}
