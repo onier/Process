@@ -116,9 +116,10 @@ void Process::Process::processDefaultTask(std::shared_ptr<Task> task) {
                     if (_processContext->_taskFinishFunction) {
                         _processContext->_taskFinishFunction();
                     }
-                } else {
-                    LOG(ERROR) << "error this should not happend";
                 }
+//                else {
+//                    LOG(WARNING) << "the task has no next task and is not endtask "<<;
+//                }
             }
         })).thenError(folly::tag_t<TaskRuntimeException>{}, [](TaskRuntimeException const &e) {
             LOG(ERROR) << e.what();

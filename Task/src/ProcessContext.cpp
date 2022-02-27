@@ -23,6 +23,7 @@
 #include <xercesc/dom/DOMLSSerializer.hpp>
 #include <xercesc/dom/DOMLSOutput.hpp>
 #include "XML.h"
+#include "glog/logging.h"
 
 using namespace Process;
 
@@ -142,16 +143,49 @@ std::shared_ptr<Process::Task> ProcessContext::getTaskByID(std::string id) {
     return nullptr;
 }
 
-std::shared_ptr<Process::Task> ProcessContext::getEndTask() {
-    return std::shared_ptr<Process::Task>();
+std::vector<std::shared_ptr<Process::Task>> ProcessContext::getPreTaskByID(std::string id) {
+    std::vector<std::shared_ptr<Process::Task>> temps;
+    for(auto & task:_tasks){
+        if (task->getNextTaskID()==id){
+            temps.push_back(task);
+        }
+    }
+    return temps;
+}
+
+std::vector<std::shared_ptr<Process::Task>> ProcessContext::getEndTask() {
+    std::vector<std::shared_ptr<Process::Task>> temps;
+    for (auto &task: _tasks) {
+        if (task->get_type().get_name() == "EndTask") {
+            temps.push_back(task);
+        }
+    }
+    return temps;
 }
 
 bool ProcessContext::initTasks() {
+    checkProcessTasks();
     for (auto &item:_tasks) {
         item->initTask(this);
         item->_taskName = _taskName;
     }
     return true;
+}
+
+bool ProcessContext::checkProcessTasks() {
+     auto startTask = getStartTask();
+    if (!startTask){
+        LOG(FATAL)<<" the process is not define start Task";
+    }
+    auto endTasks = getEndTask();
+    if (endTasks.empty()){
+        LOG(FATAL)<<" the process is not define end task";
+    }
+    for (auto task:endTasks) {
+        if (getPreTaskByID(task->getID()).empty()){
+            LOG(FATAL)<<" the process end task is invalid "<<task->getName()<<"  "<<task->getID();
+        }
+    }
 }
 
 void ProcessContext::createElement(rttr::instance obj2, xercesc::DOMElement *domElement, xercesc::DOMDocument *document,

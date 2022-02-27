@@ -27,9 +27,11 @@ namespace Process {
 
         std::shared_ptr<Process::Task> getStartTask();
 
-        std::shared_ptr<Process::Task> getEndTask();
+        std::vector<std::shared_ptr<Process::Task>> getEndTask();
 
         std::shared_ptr<Process::Task> getTaskByID(std::string id);
+
+        std::vector<std::shared_ptr<Process::Task>> getPreTaskByID(std::string id);
 
         bool saveDomElement(xercesc::DOMElement *domElement, std::shared_ptr<xercesc::DOMDocument> document);
 
@@ -59,6 +61,8 @@ namespace Process {
         std::atomic_int _status;
     private:
         bool initTasks();
+
+        bool checkProcessTasks();
 
         void createElement(rttr::instance obj2, xercesc::DOMElement *domElement, xercesc::DOMDocument *document,
                            std::shared_ptr<Task> task = nullptr);

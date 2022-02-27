@@ -42,34 +42,34 @@ int main() {
  *                        |
  *                      EndTask
  */
- std::string text ="<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>\n"
-                   "<Process xmlns=\"\">\n"
-                   "\n"
-                   "    <TaskManager taskName=\"mainTask\">\n"
-                   "        <tasks>\n"
-                   "            <StartTask NextTaskID=\"0c8858ec-df51-4fca-8d09-85b2bf27f0d7\" id=\"9b823fca-56e9-4808-b8f8-4be2a10ceacf\" name=\"startTask\"/>\n"
-                   "            <ExceptionTask id=\"0c8858ec-df51-4fca-8d09-85b2bf27f0d7\" name=\"exceptionTask\" NextTaskID=\"9b823fca-56e9-4808-b8f8-4be2a10ceaff\"/>\n"
-                   "            <EventGateway id=\"9b823fca-56e9-4808-b8f8-4be2a10ceaff\" name=\"exceptionTask\">\n"
-                   "                \n"
-                   "                <map keyType=\"std::string\" name=\"EventRules\" valueType=\"std::string\">\n"
-                   "                    <item>\n"
-                   "                        <key type=\"std::string\" value=\"EventA\"/>\n"
-                   "                        <value type=\"std::string\" value=\"f8fa1ff1-3d8d-42ee-a8f9-d00424a98ac1\"/>\n"
-                   "                    </item>\n"
-                   "                    <item>\n"
-                   "                        <key type=\"std::string\" value=\"EventB\"/>\n"
-                   "                        <value type=\"std::string\" value=\"f31eea0c-9d59-47b5-8c4f-8317de76453e\"/>\n"
-                   "                    </item>\n"
-                   "                </map>\n"
-                   "\n"
-                   "            </EventGateway>\n"
-                   "            <TestTask1 NextTaskID=\"496addbb-8d82-4ce1-b829-4c0e0b2b680f\" PreTaskID=\"9b823fca-56e9-4808-b8f8-4be2a10ceacf\" id=\"f8fa1ff1-3d8d-42ee-a8f9-d00424a98ac1\" name=\"task1\"/>\n"
-                   "            <TestTask2 NextTaskID=\"\" PreTaskID=\"9b823fca-56e9-4808-b8f8-4be2a10ceacf\" id=\"f31eea0c-9d59-47b5-8c4f-8317de76453e\" name=\"task2\"/>\n"
-                   "            <EndTask NextTaskID=\"\" PreTaskID=\"f8fa1ff1-3d8d-42ee-a8f9-d00424a98ac1\" id=\"f627851e-5e78-4788-af0b-4f1b5eab9b40\" name=\"task3\"/>\n"
-                   "           </tasks>\n"
-                   "    </TaskManager>\n"
-                   "\n"
-                   "</Process>";
+// std::string text ="<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>\n"
+//                   "<Process xmlns=\"\">\n"
+//                   "\n"
+//                   "    <TaskManager taskName=\"mainTask\">\n"
+//                   "        <tasks>\n"
+//                   "            <StartTask NextTaskID=\"0c8858ec-df51-4fca-8d09-85b2bf27f0d7\" id=\"9b823fca-56e9-4808-b8f8-4be2a10ceacf\" name=\"startTask\"/>\n"
+//                   "            <ExceptionTask id=\"0c8858ec-df51-4fca-8d09-85b2bf27f0d7\" name=\"exceptionTask\" NextTaskID=\"9b823fca-56e9-4808-b8f8-4be2a10ceaff\"/>\n"
+//                   "            <EventGateway id=\"9b823fca-56e9-4808-b8f8-4be2a10ceaff\" name=\"exceptionTask\">\n"
+//                   "                \n"
+//                   "                <map keyType=\"std::string\" name=\"EventRules\" valueType=\"std::string\">\n"
+//                   "                    <item>\n"
+//                   "                        <key type=\"std::string\" value=\"EventA\"/>\n"
+//                   "                        <value type=\"std::string\" value=\"f8fa1ff1-3d8d-42ee-a8f9-d00424a98ac1\"/>\n"
+//                   "                    </item>\n"
+//                   "                    <item>\n"
+//                   "                        <key type=\"std::string\" value=\"EventB\"/>\n"
+//                   "                        <value type=\"std::string\" value=\"f31eea0c-9d59-47b5-8c4f-8317de76453e\"/>\n"
+//                   "                    </item>\n"
+//                   "                </map>\n"
+//                   "\n"
+//                   "            </EventGateway>\n"
+//                   "            <TestTask1 NextTaskID=\"496addbb-8d82-4ce1-b829-4c0e0b2b680f\" PreTaskID=\"9b823fca-56e9-4808-b8f8-4be2a10ceacf\" id=\"f8fa1ff1-3d8d-42ee-a8f9-d00424a98ac1\" name=\"task1\"/>\n"
+//                   "            <TestTask2 NextTaskID=\"\" PreTaskID=\"9b823fca-56e9-4808-b8f8-4be2a10ceacf\" id=\"f31eea0c-9d59-47b5-8c4f-8317de76453e\" name=\"task2\"/>\n"
+//                   "            <EndTask NextTaskID=\"\" PreTaskID=\"f8fa1ff1-3d8d-42ee-a8f9-d00424a98ac1\" id=\"f627851e-5e78-4788-af0b-4f1b5eab9b40\" name=\"task3\"/>\n"
+//                   "           </tasks>\n"
+//                   "    </TaskManager>\n"
+//                   "\n"
+//                   "</Process>";
     /*   排他  {"taskValue", 2.0} 流程结构图  选择条件为1-->task1  2-->task2  3-->task3
  *                      startTask
  *                          |
@@ -124,34 +124,26 @@ int main() {
  *                           |
  *                 task after endParallelTask
  */
-//    std::string text = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>\n"
-//                       "<Process xmlns=\"\">\n"
-//                       "\n"
-//                       "    <TaskManager  taskName=\"mainTask\">\n"
-//                       "        <tasks>\n"
-//                       "            <StartTask NextTaskID=\"0c8858ec-df51-4fca-8d09-85b2bf27f0d7\" id=\"9b823fca-56e9-4808-b8f8-4be2a10ceacf\" name=\"startTask\"/>\n"
-//                       "            <ParallelGateway PreTaskID=\"9b823fca-56e9-4808-b8f8-4be2a10ceacf\" id=\"0c8858ec-df51-4fca-8d09-85b2bf27f0d7\" name=\"startParallelTask\">\n"
-//                       "                <list name=\"OutTasks\" type=\"std::string\">\n"
-//                       "                    <std::string value=\"f8fa1ff1-3d8d-42ee-a8f9-d00424a98ac1\"/>\n"
-//                       "                    <std::string value=\"f31eea0c-9d59-47b5-8c4f-8317de76453e\"/>\n"
-//                       "                    <std::string value=\"f627851e-5e78-4788-af0b-4f1b5eab9b40\"/>\n"
-//                       "                </list>\n"
-//                       "            </ParallelGateway>\n"
-//                       "            <ParallelGateway NextTaskID=\"d954d497-643a-4389-9f56-543732f473dc\" PreTaskID=\"0c8858ec-df51-4fca-8d09-85b2bf27f0d7\" id=\"496addbb-8d82-4ce1-b829-4c0e0b2b680f\" name=\"endParallelTask\">\n"
-//                       "                <list name=\"InTasks\" type=\"std::string\">\n"
-//                       "                    <std::string value=\"f8fa1ff1-3d8d-42ee-a8f9-d00424a98ac1\"/>\n"
-//                       "                    <std::string value=\"f31eea0c-9d59-47b5-8c4f-8317de76453e\"/>\n"
-//                       "                    <std::string value=\"f627851e-5e78-4788-af0b-4f1b5eab9b40\"/>\n"
-//                       "                </list>\n"
-//                       "            </ParallelGateway>\n"
-//                       "            <TestTask1 NextTaskID=\"496addbb-8d82-4ce1-b829-4c0e0b2b680f\" PreTaskID=\"0c8858ec-df51-4fca-8d09-85b2bf27f0d7\" id=\"f8fa1ff1-3d8d-42ee-a8f9-d00424a98ac1\" name=\"task1\"/>\n"
-//                       "            <TestTask2 NextTaskID=\"496addbb-8d82-4ce1-b829-4c0e0b2b680f\" PreTaskID=\"0c8858ec-df51-4fca-8d09-85b2bf27f0d7\" id=\"f31eea0c-9d59-47b5-8c4f-8317de76453e\" name=\"task2\"/>\n"
-//                       "            <TestTask3 NextTaskID=\"496addbb-8d82-4ce1-b829-4c0e0b2b680f\" PreTaskID=\"0c8858ec-df51-4fca-8d09-85b2bf27f0d7\" id=\"f627851e-5e78-4788-af0b-4f1b5eab9b40\" name=\"task3\"/>\n"
-//                       "            <EndTask PreTaskID=\"496addbb-8d82-4ce1-b829-4c0e0b2b680f\" id=\"d954d497-643a-4389-9f56-543732f473dc\" name=\"task after endParallelTask \"/>\n"
-//                       "        </tasks>\n"
-//                       "    </TaskManager>\n"
-//                       "\n"
-//                       "</Process>";
+    std::string text = "<Process xmlns=\"\">\n"
+                       "\n"
+                       "<TaskManager  taskName=\"mainTask\">\n"
+                       "    <tasks>\n"
+                       "        <StartTask NextTaskID=\"0c8858ec-df51-4fca-8d09-85b2bf27f0d7\" id=\"9b823fca-56e9-4808-b8f8-4be2a10ceacf\" name=\"startTask\"/>\n"
+                       "        <ParallelGateway PreTaskID=\"9b823fca-56e9-4808-b8f8-4be2a10ceacf\" id=\"0c8858ec-df51-4fca-8d09-85b2bf27f0d7\" name=\"startParallelTask\">\n"
+                       "            <list name=\"OutTasks\" type=\"std::string\">\n"
+                       "                <std::string value=\"f8fa1ff1-3d8d-42ee-a8f9-d00424a98ac1\"/>\n"
+                       "                <std::string value=\"f31eea0c-9d59-47b5-8c4f-8317de76453e\"/>\n"
+                       "                <std::string value=\"f627851e-5e78-4788-af0b-4f1b5eab9b40\"/>\n"
+                       "            </list>\n"
+                       "        </ParallelGateway>\n"
+                       "        <TestTask1 NextTaskID=\"496addbb-8d82-4ce1-b829-4c0e0b2b680f\" PreTaskID=\"0c8858ec-df51-4fca-8d09-85b2bf27f0d7\" id=\"f8fa1ff1-3d8d-42ee-a8f9-d00424a98ac1\" name=\"task1\"/>\n"
+                       "        <TestTask2 NextTaskID=\"496addbb-8d82-4ce1-b829-4c0e0b2b680f\" PreTaskID=\"0c8858ec-df51-4fca-8d09-85b2bf27f0d7\" id=\"f31eea0c-9d59-47b5-8c4f-8317de76453e\" name=\"task2\"/>\n"
+                       "        <TestTask3 NextTaskID=\"d954d497-643a-4389-9f56-543732f473dc\" PreTaskID=\"0c8858ec-df51-4fca-8d09-85b2bf27f0d7\" id=\"f627851e-5e78-4788-af0b-4f1b5eab9b40\" name=\"task3\"/>\n"
+                       "        <EndTask PreTaskID=\"496addbb-8d82-4ce1-b829-4c0e0b2b680f\" id=\"d954d497-643a-4389-9f56-543732f473dc\" name=\"task after endParallelTask \"/>\n"
+                       "    </tasks>\n"
+                       "</TaskManager>\n"
+                       "\n"
+                       "</Process>";
 
 /** 流程如下中间为一个subprocessTask包含一个并行子进程
  *                      startTask
@@ -212,6 +204,7 @@ int main() {
 //                       "\n"
 //                       "</Process>";
 //    taskManager->loadXML(text);
+    LOG(INFO)<<text;
     Process::Process process(1);
     process.loadXML(text);
     process.initProcessValues({{"taskValue", 2.0}});
