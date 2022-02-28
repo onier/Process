@@ -78,6 +78,7 @@ void Process::Process::startProcess(std::shared_ptr<ProcessContext> context, boo
     if (isSub) {
         _processContext->_processValues = context->_processValues;
         _processContext->_executor = context->_executor;
+        _processContext->_eventHandler = context->_eventHandler;
     }
     _processContext->_status = 1;
     initEventHandlers();
@@ -155,7 +156,7 @@ void Process::Process::initEventHandlers() {
         auto eventTyes = eventGateway->_eventRules;
         for (auto &et:eventTyes) {
             auto task = _processContext->getTaskByID(et.second);
-            _processContext->_eventHandler.insert({et.first,[&,task](){
+            _processContext->_eventHandler->insert({et.first,[&,task](){
                 folly::via(_processContext->_executor.get(), [&, task]() { processDefaultTask(task) ;});
             }});
         }

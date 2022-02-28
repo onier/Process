@@ -72,7 +72,7 @@ namespace Process {
     public:
         std::shared_ptr<folly::Synchronized<std::map<std::string, boost::any>>> _processValues;
         std::shared_ptr<folly::CPUThreadPoolExecutor> _executor;
-        std::map<std::string, std::function<void()>> _eventHandler;
+        std::shared_ptr<std::map<std::string, std::function<void()>>> _eventHandler;
     };
 }
 
