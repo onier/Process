@@ -29,7 +29,7 @@ using namespace Process;
 
 ProcessContext::ProcessContext(int threadCount) {
     _executor = std::make_shared<folly::CPUThreadPoolExecutor>(threadCount);
-    _processValues = std::make_shared<folly::Synchronized<std::map<std::string, boost::any>>>();
+    _processValues = std::make_shared<folly::Synchronized < std::map<std::string, boost::any>> > ();
 }
 
 bool ProcessContext::saveDomElement(xercesc::DOMElement *domElement, std::shared_ptr<xercesc::DOMDocument> document) {
@@ -46,7 +46,9 @@ bool ProcessContext::saveDomElement(xercesc::DOMElement *domElement, std::shared
 
 bool ProcessContext::loadDomElement(xercesc::DOMNode *domElement) {
     auto taskManagerNode = domElement->getChildNodes();
-    _taskName = puppy::common::XML::toStr(domElement->getAttributes()->getNamedItem(XStr("taskName"))->getNodeValue());
+    auto task = domElement->getAttributes()->getNamedItem(XStr("taskName"));
+    if (task)
+        _taskName = puppy::common::XML::toStr(task->getNodeValue());
     for (int i = 0; i < taskManagerNode->getLength(); ++i) {
         auto name = puppy::common::XML::toStr(taskManagerNode->item(i)->getNodeName());
         if (name == "tasks") {
@@ -112,7 +114,7 @@ std::string ProcessContext::saveXML() {
 
 std::vector<std::shared_ptr<Process::Task>> ProcessContext::getTasksByType(std::string type) {
     std::vector<std::shared_ptr<Process::Task>> result;
-    for (auto & task:_tasks) {
+    for (auto &task:_tasks) {
         if (task->get_type().get_name() == type) {
             result.push_back(task);
         }
@@ -145,8 +147,8 @@ std::shared_ptr<Process::Task> ProcessContext::getTaskByID(std::string id) {
 
 std::vector<std::shared_ptr<Process::Task>> ProcessContext::getPreTaskByID(std::string id) {
     std::vector<std::shared_ptr<Process::Task>> temps;
-    for(auto & task:_tasks){
-        if (task->getNextTaskID()==id){
+    for (auto &task:_tasks) {
+        if (task->getNextTaskID() == id) {
             temps.push_back(task);
         }
     }
@@ -173,17 +175,17 @@ bool ProcessContext::initTasks() {
 }
 
 bool ProcessContext::checkProcessTasks() {
-     auto startTask = getStartTask();
-    if (!startTask){
-        LOG(FATAL)<<" the process is not define start Task";
+    auto startTask = getStartTask();
+    if (!startTask) {
+        LOG(FATAL) << " the process is not define start Task";
     }
     auto endTasks = getEndTask();
-    if (endTasks.empty()){
-        LOG(FATAL)<<" the process is not define end task";
+    if (endTasks.empty()) {
+        LOG(FATAL) << " the process is not define end task";
     }
     for (auto task:endTasks) {
-        if (getPreTaskByID(task->getID()).empty()){
-            LOG(FATAL)<<" the process end task is invalid "<<task->getName()<<"  "<<task->getID();
+        if (getPreTaskByID(task->getID()).empty()) {
+            LOG(FATAL) << " the process end task is invalid " << task->getName() << "  " << task->getID();
         }
     }
 }
@@ -191,9 +193,9 @@ bool ProcessContext::checkProcessTasks() {
 void ProcessContext::createElement(rttr::instance obj2, xercesc::DOMElement *domElement, xercesc::DOMDocument *document,
                                    std::shared_ptr<Task> task) {
     rttr::instance variant = obj2.get_type().get_raw_type().is_wrapper() ? obj2.get_wrapped_instance() : obj2;
-    auto props = std::make_shared<rttr::array_range<rttr::property> >(variant.get_type().get_properties());
+    auto props = std::make_shared<rttr::array_range < rttr::property> > (variant.get_type().get_properties());
     if (task) {
-        props = std::make_shared<rttr::array_range<rttr::property> >(task->get_type().get_properties());
+        props = std::make_shared<rttr::array_range < rttr::property> > (task->get_type().get_properties());
     }
     for (auto prop:*props) {
         auto propName = prop.get_name();
@@ -285,8 +287,8 @@ void ProcessContext::createElement(rttr::instance obj2, xercesc::DOMElement *dom
 }
 
 void ProcessContext::notifyEvent(std::string eventType, Process::Task *task) {
-    for (auto & iteer:_eventHandler) {
-        if (eventType==iteer.first){
+    for (auto &iteer:_eventHandler) {
+        if (eventType == iteer.first) {
             iteer.second();
         }
     }
