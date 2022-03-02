@@ -1,4 +1,4 @@
-# Process
+# DummyProcess
 
 #### 介绍
 项目依赖于https://gitee.com/qq2820/puppy编译工程，目前只是一个简单的流程管理软件，项目依赖于folly，rttr等，目前已经提供了并行任务，串行任务，条件选择任务，子流程等任务。
@@ -11,7 +11,7 @@ TaskImpl为几个测试的任务。
 TaskJSON为从字符配置加载任务的测试代码,目前已经重构全部使用xml,TaskTest/src/目录下有个三个demo.xml文件可以参照。
 
 TaskTest以代码方式构建流程，并保存为字符。
-` <Process xmlns="">
+` <DummyProcess xmlns="">
 
     <TaskManager>
         <tasks>
@@ -31,10 +31,10 @@ TaskTest以代码方式构建流程，并保存为字符。
         </tasks>
     </TaskManager>
 
-</Process>`
+</DummyProcess>`
 
 `<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
-<Process xmlns="">
+<DummyProcess xmlns="">
 
     <TaskManager>
         <tasks>
@@ -60,11 +60,11 @@ TaskTest以代码方式构建流程，并保存为字符。
         </tasks>
     </TaskManager>
 
-</Process>`
+</DummyProcess>`
 
 
 `<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
-<Process xmlns="">
+<DummyProcess xmlns="">
 
     <TaskManager>
         <tasks>
@@ -98,4 +98,4 @@ TaskTest以代码方式构建流程，并保存为字符。
         </tasks>
     </TaskManager>
 
-</Process>`
+</DummyProcess>`
