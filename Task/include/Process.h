@@ -19,7 +19,7 @@ namespace Process {
     public:
         Process(int threadCount);
 
-        Process(int threadCount,std::shared_ptr<ProcessContext> processContext);
+        Process(std::shared_ptr<ProcessContext> processContext);
 
         ~Process();
 

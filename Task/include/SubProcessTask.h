@@ -12,6 +12,8 @@ class SubProcessTask : public Process::AbstractTask {
 public:
     SubProcessTask();
 
+    SubProcessTask(std::shared_ptr<Process::Process> subProcess);
+
     void run(std::shared_ptr<Process::ProcessContext> context) override;
 
     bool initTask(Process::ProcessContext * context) override;

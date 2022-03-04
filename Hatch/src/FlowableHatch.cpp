@@ -29,6 +29,7 @@
 #include <boost/algorithm/string.hpp>
 #include "rttr/registration.h"
 #include "boost/lexical_cast.hpp"
+#include "SubProcessTask.h"
 
 #define toStr(args)  puppy::common::XML::toStr(args)
 
@@ -403,10 +404,20 @@ std::shared_ptr<PrimitiveProcess> createProcess(std::shared_ptr<DummyProcess> du
     return primitiveProcess;
 }
 
+//std::shared_ptr<Process::Process> createProcess( std::vector<std::shared_ptr<Process::Task>> _tasks,int threadCount){
+//    std::shared_ptr<Process::ProcessContext> processContext = std::make_shared<Process::ProcessContext>(threadCount);
+//    processContext->_tasks = _tasks;
+//    return std::make_shared<Process::Process>(processContext);
+//}
+
 std::shared_ptr<Process::Process> parseProcess(std::shared_ptr<PrimitiveProcess> primitiveProcess,int threadCount) {
     std::shared_ptr<Process::ProcessContext> processContext = std::make_shared<Process::ProcessContext>(threadCount);
     processContext->_tasks = primitiveProcess->_tasks;
-
+    for(auto & sub:primitiveProcess->_subProcess){
+       auto process = parseProcess(sub,threadCount);
+       processContext->_tasks.push_back(std::shared_ptr<Process::Task>(new SubProcessTask(process)));
+    }
+    return std::make_shared<Process::Process>(processContext);
 }
 
 std::shared_ptr<Process::Process> createProcessFromFlowableBpmn(std::string file, int threadCount) {
@@ -418,6 +429,9 @@ std::shared_ptr<Process::Process> createProcessFromFlowableBpmn(std::string file
 int main() {
     auto task = parseFromFlowableBpmn("/home/xuzhenhai/puppy/Process/Hatch/flowable.bpmn20.xml");;
     LOG(INFO) << task;
+    auto process = parseProcess(task,3);
+    LOG(INFO)<<process;
+
 //    std::string text = "{B}==\"B\"";
 //    auto subStrs = split(text, '=');
 //    LOG(INFO) << split(split(subStrs[0], '{')[0], '}')[0] << subStrs[1];

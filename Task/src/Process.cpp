@@ -16,7 +16,7 @@ Process::Process::Process(int threadCount) {
     _processContext->_status = 0;
 }
 
-Process::Process::Process(int threadCount, std::shared_ptr<ProcessContext> processContext) {
+Process::Process::Process(std::shared_ptr<ProcessContext> processContext) {
     _processContext = processContext;
     _processContext->_status = 0;
 }

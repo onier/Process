@@ -11,6 +11,10 @@ SubProcessTask::SubProcessTask() {
     _subProcess = std::make_shared<Process::Process>(1);
 }
 
+SubProcessTask::SubProcessTask(std::shared_ptr<Process::Process> subProcess) {
+   _subProcess = subProcess;
+}
+
 void SubProcessTask::run(std::shared_ptr<Process::ProcessContext> context) {
     _subProcess->startProcess(context, true);
 }
