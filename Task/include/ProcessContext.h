@@ -66,13 +66,12 @@ namespace Process {
 
         void createElement(rttr::instance obj2, xercesc::DOMElement *domElement, xercesc::DOMDocument *document,
                            std::shared_ptr<Task> task = nullptr);
-    private:
-        std::string _taskName;
-        std::vector<std::shared_ptr<Process::Task>> _tasks;
     public:
         std::shared_ptr<folly::Synchronized<std::map<std::string, boost::any>>> _processValues;
         std::shared_ptr<folly::CPUThreadPoolExecutor> _executor;
         std::shared_ptr<std::map<std::string, std::function<void()>>> _eventHandler;
+        std::string _taskName;
+        std::vector<std::shared_ptr<Process::Task>> _tasks;
     };
 }
 

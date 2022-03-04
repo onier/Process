@@ -10,6 +10,12 @@
 #include "vector"
 #include "map"
 #include "memory"
+#include "StartTask.h"
+#include "EndTask.h"
+#include "EventGateway.h"
+#include "ParallelGateway.h"
+#include "ExclusiveGateway.h"
+#include "Process.h"
 
 struct Link {
     std::string _preTaskID;
@@ -118,7 +124,14 @@ struct SequenceFlow {
     std::string _conditionExpression;
 };
 
+struct PrimitiveProcess {
+    std::vector<std::shared_ptr<Process::Task>> _tasks;
+    std::vector<std::shared_ptr<PrimitiveProcess>> _subProcess;
+};
+
 struct DummyProcess {
+    std::string _id;
+    std::string _name;
     std::shared_ptr<DummyStartEvent> _startEvent;
     std::shared_ptr<DummyEndEvent> _endEvent;
     std::vector<std::shared_ptr<PrimitiveTask>> _tasks;
@@ -136,6 +149,10 @@ struct DummyProcess {
 
 std::vector<std::string> split(const std::string &s, char seperator);
 
-std::shared_ptr<DummyProcess> parseFromFlowableBpmn(std::string file);
+std::shared_ptr<PrimitiveProcess> parseFromFlowableBpmn(std::string file);
+
+std::shared_ptr<PrimitiveProcess> createProcess(std::shared_ptr<DummyProcess> dummyProcess);
+
+std::shared_ptr<Process::Process> createProcessFromFlowableBpmn(std::string file, int threadCount);
 
 #endif //PUPPY_FLOWABLEHATCH_H

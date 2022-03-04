@@ -46,6 +46,8 @@ public:
     std::map<std::string, std::function<bool(folly::Synchronized<std::map<std::string, boost::any>> &)>> _ruleFunctions;
 
     std::vector<ExclusiveRule> _subTasks;
+
+    std::map<std::string ,std::string > _rules;
 RTTR_ENABLE(AbstractTask)
 };
 

@@ -27,6 +27,8 @@
 #include <xercesc/dom/DOMLSOutput.hpp>
 #include "XML.h"
 #include <boost/algorithm/string.hpp>
+#include "rttr/registration.h"
+#include "boost/lexical_cast.hpp"
 
 #define toStr(args)  puppy::common::XML::toStr(args)
 
@@ -195,7 +197,8 @@ void DummyProcess::constructTaskFlow() {
             target->_preTaskID = flow->_sourceRef;
         }
         {
-            std::shared_ptr<DummyParallelGateway> parallelGateway = std::dynamic_pointer_cast<DummyParallelGateway>(source);
+            std::shared_ptr<DummyParallelGateway> parallelGateway = std::dynamic_pointer_cast<DummyParallelGateway>(
+                    source);
             if (parallelGateway) {
                 parallelGateway->_outPrallelRules.push_back(flow->_targetRef);
             }
@@ -205,16 +208,18 @@ void DummyProcess::constructTaskFlow() {
             }
         }
         {
-            std::shared_ptr<DummyExclusiveGateway> exclusiveGateway = std::dynamic_pointer_cast<DummyExclusiveGateway>(source);
+            std::shared_ptr<DummyExclusiveGateway> exclusiveGateway = std::dynamic_pointer_cast<DummyExclusiveGateway>(
+                    source);
             if (exclusiveGateway) {
                 exclusiveGateway->_exclusiveRules.insert(parseRule(flow->_conditionExpression));
             }
         }
         {
-            std::shared_ptr<DummyEventBasedGateway> eventBasedGateway = std::dynamic_pointer_cast<DummyEventBasedGateway>(source);
-            if (eventBasedGateway){
+            std::shared_ptr<DummyEventBasedGateway> eventBasedGateway = std::dynamic_pointer_cast<DummyEventBasedGateway>(
+                    source);
+            if (eventBasedGateway) {
                 auto subStrs = split(flow->_conditionExpression, '=');
-                eventBasedGateway->_eventRules.insert({flow->_conditionExpression,flow->_targetRef});
+                eventBasedGateway->_eventRules.insert({flow->_conditionExpression, flow->_targetRef});
             }
         }
     }
@@ -276,7 +281,7 @@ std::vector<std::string> split(const std::string &s, char seperator) {
     return output;
 }
 
-std::shared_ptr<DummyProcess> parseFromFlowableBpmn(std::string file) {
+std::shared_ptr<PrimitiveProcess> parseFromFlowableBpmn(std::string file) {
     std::string xmlContent = readFile(file);
     xercesc::XMLPlatformUtils::Initialize();
     xercesc::XercesDOMParser xercesDOMParser;
@@ -287,12 +292,132 @@ std::shared_ptr<DummyProcess> parseFromFlowableBpmn(std::string file) {
     auto root = document->getDocumentElement();
     auto definitions = document->getElementsByTagName(XStr("definitions"));
     auto processes = getElementsByName(definitions->item(0), "process");
-    return parseProcess(processes.at(0));
+    return createProcess(parseProcess(processes.at(0)));
 }
 
+std::shared_ptr<StartTask> createTask(std::shared_ptr<DummyStartEvent> dummyStartEvent) {
+    std::shared_ptr<StartTask> startTask = std::make_shared<StartTask>();
+    startTask->_id = dummyStartEvent->_id;
+    startTask->_name = dummyStartEvent->_name;
+    startTask->_preTaskID = dummyStartEvent->_preTaskID;
+    startTask->_nextTaskID = dummyStartEvent->_nextTaskID;
+    return startTask;
+}
+
+std::shared_ptr<EndTask> createTask(std::shared_ptr<DummyEndEvent> dummyStartEvent) {
+    std::shared_ptr<EndTask> endTask = std::make_shared<EndTask>();
+    endTask->_id = dummyStartEvent->_id;
+    endTask->_name = dummyStartEvent->_name;
+    endTask->_preTaskID = dummyStartEvent->_preTaskID;
+    endTask->_nextTaskID = dummyStartEvent->_nextTaskID;
+    return endTask;
+}
+
+std::shared_ptr<ParallelGateway> createTask(std::shared_ptr<DummyParallelGateway> parallelGateway) {
+    std::shared_ptr<ParallelGateway> parallelGateway1 = std::make_shared<ParallelGateway>();
+    parallelGateway1->_id = parallelGateway->_id;
+    parallelGateway1->_inTasks = parallelGateway->_inParallelRules;
+    parallelGateway1->_outTasks = parallelGateway->_outPrallelRules;
+    parallelGateway1->_taskName = parallelGateway->_name;
+    parallelGateway1->_preTaskID = parallelGateway->_preTaskID;
+    parallelGateway1->_nextTaskID = parallelGateway->_nextTaskID;
+    return parallelGateway1;
+}
+
+std::shared_ptr<EventGateway> createTask(std::shared_ptr<DummyEventBasedGateway> dummyEndEvent) {
+    std::shared_ptr<EventGateway> eventGateway = std::make_shared<EventGateway>();
+    eventGateway->_id = dummyEndEvent->_id;
+    eventGateway->_name = dummyEndEvent->_name;
+    eventGateway->_eventRules = dummyEndEvent->_eventRules;
+    eventGateway->_preTaskID = dummyEndEvent->_preTaskID;
+    eventGateway->_nextTaskID = dummyEndEvent->_nextTaskID;
+    return eventGateway;
+}
+
+std::shared_ptr<ExclusiveGateway> createTask(std::shared_ptr<DummyExclusiveGateway> dummyExclusiveGateway) {
+    std::shared_ptr<ExclusiveGateway> exclusiveGateway = std::make_shared<ExclusiveGateway>();
+    exclusiveGateway->_id = dummyExclusiveGateway->_id;
+    exclusiveGateway->_name = dummyExclusiveGateway->_name;
+    exclusiveGateway->_rules = dummyExclusiveGateway->_exclusiveRules;
+    exclusiveGateway->_preTaskID = dummyExclusiveGateway->_preTaskID;
+    exclusiveGateway->_nextTaskID = dummyExclusiveGateway->_nextTaskID;
+    return exclusiveGateway;
+}
+
+std::shared_ptr<Process::Task> createTask(std::shared_ptr<PrimitiveTask> dummyTask) {
+    auto type = rttr::type::get_by_name(dummyTask->_name);
+    if (type.is_valid()) {
+        auto taskVariant = type.create();
+        for (auto &parameter:dummyTask->_parameters) {
+            if (parameter._type == "int") {
+                taskVariant.get_type().get_property(parameter._id).set_value(taskVariant, boost::lexical_cast<int>(
+                        parameter._value));
+            } else if (parameter._type == "double") {
+                taskVariant.get_type().get_property(parameter._id).set_value(taskVariant, boost::lexical_cast<double>(
+                        parameter._value));
+            } else if (parameter._type == "long") {
+                taskVariant.get_type().get_property(parameter._id).set_value(taskVariant, boost::lexical_cast<long>(
+                        parameter._value));
+            } else if (parameter._type == "string") {
+                taskVariant.get_type().get_property(parameter._id).set_value(taskVariant, parameter._value);
+            } else if (parameter._type == "float") {
+                taskVariant.get_type().get_property(parameter._id).set_value(taskVariant, boost::lexical_cast<float>(
+                        parameter._value));
+            }
+        }
+        return taskVariant.get_value<std::shared_ptr<Process::Task>>();
+    }
+    return {};
+}
+
+std::shared_ptr<PrimitiveProcess> createProcess(std::shared_ptr<DummyProcess> dummyProcess) {
+    std::shared_ptr<PrimitiveProcess> primitiveProcess = std::make_shared<PrimitiveProcess>();
+    auto startEvent = createTask(dummyProcess->_startEvent);
+    if (!startEvent) {
+        LOG(FATAL) << " null start task";
+    }
+    primitiveProcess->_tasks.push_back(startEvent);
+    auto endEvent = createTask(dummyProcess->_endEvent);
+    if (!endEvent) {
+        LOG(FATAL) << " null end task";
+    }
+    for (auto dumyyTask:dummyProcess->_tasks) {
+        auto task = createTask(dumyyTask);
+        primitiveProcess->_tasks.push_back(task);
+    }
+    for (auto gateway:dummyProcess->_exclusiveGateways) {
+        auto way = createTask(gateway);
+        primitiveProcess->_tasks.push_back(way);
+    }
+    for (auto gateway:dummyProcess->_parallelGateways) {
+        auto way = createTask(gateway);
+        primitiveProcess->_tasks.push_back(way);
+    }
+    for (auto gateway:dummyProcess->_eventBasedGateways) {
+        auto way = createTask(gateway);
+        primitiveProcess->_tasks.push_back(way);
+    }
+    for (auto &subP:dummyProcess->_subProcess) {
+        primitiveProcess->_subProcess.push_back(createProcess(subP));
+    }
+    return primitiveProcess;
+}
+
+std::shared_ptr<Process::Process> parseProcess(std::shared_ptr<PrimitiveProcess> primitiveProcess,int threadCount) {
+    std::shared_ptr<Process::ProcessContext> processContext = std::make_shared<Process::ProcessContext>(threadCount);
+    processContext->_tasks = primitiveProcess->_tasks;
+
+}
+
+std::shared_ptr<Process::Process> createProcessFromFlowableBpmn(std::string file, int threadCount) {
+    auto primitiveProcess = parseFromFlowableBpmn("/home/xuzhenhai/puppy/Process/Hatch/flowable.bpmn20.xml");
+
+
+}
 
 int main() {
-    LOG(INFO) << parseFromFlowableBpmn("/home/xuzhenhai/puppy/Process/Hatch/flowable.bpmn20.xml");
+    auto task = parseFromFlowableBpmn("/home/xuzhenhai/puppy/Process/Hatch/flowable.bpmn20.xml");;
+    LOG(INFO) << task;
 //    std::string text = "{B}==\"B\"";
 //    auto subStrs = split(text, '=');
 //    LOG(INFO) << split(split(subStrs[0], '{')[0], '}')[0] << subStrs[1];

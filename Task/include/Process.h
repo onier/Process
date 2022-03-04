@@ -19,6 +19,8 @@ namespace Process {
     public:
         Process(int threadCount);
 
+        Process(int threadCount,std::shared_ptr<ProcessContext> processContext);
+
         ~Process();
 
         void startProcess(std::shared_ptr<ProcessContext> context, bool isSub = false);

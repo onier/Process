@@ -36,6 +36,16 @@ void ExclusiveGateway::run(std::shared_ptr<Process::ProcessContext> context) {
         return;
     }
     auto values = context->getProcessValues();
+    auto lock = values->rlock();
+    for (auto &strRule:_rules) {
+        if (lock->count(strRule.first)) {
+            if (boost::any_cast<std::string>(lock->at(strRule.first)) == strRule.second) {
+                _nextTaskID = strRule.second;
+                return;
+            }
+        }
+
+    }
     for (auto &task: _subTasks) {
         if (task.checkRule(*values)) {
             _nextTaskID = task._taskID;
