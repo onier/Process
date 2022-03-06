@@ -1,52 +1,12 @@
-<Process xmlns="">
-
-    <TaskManager taskName="mainTask">
+<SubProcessTask id="slave_side_check_process" NextTaskID="moveToThirdCheckPointTask">
+    <SubTaskManager taskName="slave_side_check_process">
         <tasks>
-            <StartTask NextTaskID="0c8858ec-df51-4fca-8d09-85b2bf27f0d7" id="9b823fca-56e9-4808-b8f8-4be2a10ceacf" name="startTask"/>
-            <ExceptionTask id="0c8858ec-df51-4fca-8d09-85b2bf27f0d7" name="exceptionTask" NextTaskID="9b823fca-56e9-4808-b8f8-4be2a10ceaff"/>
-            <EventGateway id="9b823fca-56e9-4808-b8f8-4be2a10ceaff" name="exceptionTask">
+            <StartTask NextTaskID="slave_side_check_process_end_task" id="slave_side_check_process_start_task"
+                       name="slave_side_check_process_start_task"/>
 
-                <map keyType="std::string" name="EventRules" valueType="std::string">
-                    <item>
-                        <key type="std::string" value="EventA"/>
-                        <value type="std::string" value="f8fa1ff1-3d8d-42ee-a8f9-d00424a98ac1"/>
-                    </item>
-                    <item>
-                        <key type="std::string" value="EventB"/>
-                        <value type="std::string" value="f31eea0c-9d59-47b5-8c4f-8317de76453e"/>
-                    </item>
-                </map>
-
-            </EventGateway>
-<!--            <TestTask1 NextTaskID="496addbb-8d82-4ce1-b829-4c0e0b2b680f" PreTaskID="9b823fca-56e9-4808-b8f8-4be2a10ceacf" id="f8fa1ff1-3d8d-42ee-a8f9-d00424a98ac1" name="task1"/>-->
-            <SubProcessTask NextTaskID="496addbb-8d82-4ce1-b829-4c0e0b2b680f" PreTaskID="9b823fca-56e9-4808-b8f8-4be2a10ceacf" id="f8fa1ff1-3d8d-42ee-a8f9-d00424a98ac1" name="subProcessTask">
-                <SubTaskManager taskName="subTask">
-                    <tasks>
-                        <StartTask NextTaskID="a92c2f45-dd70-4440-85c7-58068ae460bc" id="bc3045c9-2a63-4b82-8977-1e620519ed6b" name="startTask"/>
-                        <ParallelGateway PreTaskID="bc3045c9-2a63-4b82-8977-1e620519ed6b" id="a92c2f45-dd70-4440-85c7-58068ae460bc" name="startParallelTask">
-                            <list name="OutTasks" type="std::string">
-                                <std::string value="57eccfb9-472a-4151-a3e1-56b235b11185"/>
-                                <std::string value="b325ceed-441d-4fc8-ab95-7015c501aca5"/>
-                                <std::string value="46b2a86a-8b64-4cbe-8c63-1b9d9ad8a3a1"/>
-                            </list>
-                        </ParallelGateway>
-                        <ParallelGateway NextTaskID="3d12eb05-ec40-4b40-983d-e08bea75e455" PreTaskID="a92c2f45-dd70-4440-85c7-58068ae460bc" id="5aa80f88-244c-4541-9856-2fdaf1c80942" name="endParallelTask">
-                            <list name="InTasks" type="std::string">
-                                <std::string value="57eccfb9-472a-4151-a3e1-56b235b11185"/>
-                                <std::string value="b325ceed-441d-4fc8-ab95-7015c501aca5"/>
-                                <std::string value="46b2a86a-8b64-4cbe-8c63-1b9d9ad8a3a1"/>
-                            </list>
-                        </ParallelGateway>
-                        <TestTask1 NextTaskID="5aa80f88-244c-4541-9856-2fdaf1c80942" PreTaskID="a92c2f45-dd70-4440-85c7-58068ae460bc" id="57eccfb9-472a-4151-a3e1-56b235b11185" name="task1"/>
-                        <TestTask2 NextTaskID="5aa80f88-244c-4541-9856-2fdaf1c80942" PreTaskID="a92c2f45-dd70-4440-85c7-58068ae460bc" id="b325ceed-441d-4fc8-ab95-7015c501aca5" name="task2"/>
-                        <TestTask3 NextTaskID="5aa80f88-244c-4541-9856-2fdaf1c80942" PreTaskID="a92c2f45-dd70-4440-85c7-58068ae460bc" id="46b2a86a-8b64-4cbe-8c63-1b9d9ad8a3a1" name="task3"/>
-                        <EndTask PreTaskID="5aa80f88-244c-4541-9856-2fdaf1c80942" id="3d12eb05-ec40-4b40-983d-e08bea75e455" name="task after endParallelTask "/>
-                    </tasks>
-                </SubTaskManager>
-            </SubProcessTask>
-            <TestTask2 NextTaskID="f627851e-5e78-4788-af0b-4f1b5eab9b40" PreTaskID="9b823fca-56e9-4808-b8f8-4be2a10ceacf" id="f31eea0c-9d59-47b5-8c4f-8317de76453e" name="task2"/>
-            <EndTask NextTaskID="" PreTaskID="f8fa1ff1-3d8d-42ee-a8f9-d00424a98ac1" id="f627851e-5e78-4788-af0b-4f1b5eab9b40" name="task3"/>
+            <EndTask  id="slave_side_check_process_end_task"
+                      name="slave_side_check_process_end_task"/>
         </tasks>
-    </TaskManager>
-
-</Process>
+    </SubTaskManager>
+</SubProcessTask>
+            

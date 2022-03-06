@@ -186,7 +186,7 @@ bool ProcessContext::checkProcessTasks() {
     }
     for (auto task:endTasks) {
         if (getPreTaskByID(task->getID()).empty()) {
-            LOG(FATAL) << " the process end task is invalid " << task->getName() << "  " << task->getID();
+//            LOG(FATAL) << " the process end task is invalid " << task->getName() << "  " << task->getID();
         }
     }
 }

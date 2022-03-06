@@ -41,6 +41,7 @@ RTTR_REGISTRATION {
             .property("ValueName", &ExclusiveRule::_valueName)
             .property("Operator", &ExclusiveRule::_operator)
             .property("Value", &ExclusiveRule::_value)
+            .property("Type", &ExclusiveRule::_type)
             .property("TaskID", &ExclusiveRule::_taskID);
 
     rttr::registration::class_<ExclusiveGateway>("ExclusiveGateway")
@@ -49,7 +50,8 @@ RTTR_REGISTRATION {
                     constructor<>()(
                     rttr::policy::ctor::as_std_shared_ptr
             )
-            .property("SubTasks", &ExclusiveGateway::_subTasks);
+            .property("SubTasks", &ExclusiveGateway::_subTasks)
+            ;
 
     rttr::registration::class_<ParallelGateway>("ParallelGateway")
             .

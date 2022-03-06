@@ -1,0 +1,156 @@
+<Process xmlns="">
+
+    <TaskManager taskName="主电机控制流程">
+        <tasks>
+            <StartTask NextTaskID="master_clibration_process" id="master_motor_start_task"
+                       name="master_motor_start_task"/>
+            <!--        master 马达校准流程-->
+            <SubProcessTask NextTaskID="masterMotroMoveToPrimaryPostion"
+                            id="master_clibration_process" name="master_clibration_process">
+                <SubTaskManager taskName="master马达校准子流程">
+                    <tasks>
+                        <StartTask NextTaskID="checkMasterMotorState" id="master_clibration_process_startTask"
+                                   name="master motor calibration start"/>
+                        <FakeTask NextTaskID="moveToCalibratonPosition" id="checkMasterMotorState"
+                                  name="checkMasterMotorState"
+                                  Int="1" Text="检查马达状态"/>
+                        <!--                        检查马达状态-->
+                        <FakeTask NextTaskID="startCalibration" PreTaskID="checkMasterMotorState"
+                                  id="moveToCalibratonPosition"
+                                  name="moveToCalibratonPosition" int="100"
+                                  Text="移动到校准位置"/>
+                        <FakeTask NextTaskID="checkMasterCalibrationGateway"
+                                  id="startCalibration"
+                                  name="startCalibration" int="1" Text="启动校准">
+                            <map keyType="std::string" name="Values" valueType="std::string">
+                                <item>
+                                    <key type="std::string" value="MasterMotroCalibrationState"/>
+                                    <value type="std::string" value="YES"/>
+                                </item>
+                            </map>
+                        </FakeTask>
+
+                        <ExclusiveGateway id="checkMasterCalibrationGateway">
+                            <list name="SubTasks" type="ExclusiveRule">
+                                <ExclusiveRule Operator="=" TaskID="checkMasterMotorStateSucess" Value="YES"
+                                               Type="string" ValueName="MasterMotroCalibrationState"/>
+                                <ExclusiveRule Operator="=" TaskID="checkMasterMotorStateFail" Value="NO" Type="string"
+                                               ValueName="MasterMotroCalibrationState"/>
+                            </list>
+                        </ExclusiveGateway>
+                        <FakeTask NextTaskID="master_clibration_process_end_task"
+                                  id="checkMasterMotorStateSucess"
+                                  name="checkMasterMotorStateSucess" Int="1"
+                                  Text="校准成功"/>
+                        <FakeTask NextTaskID="master_clibration_process_end_task"
+                                  id="checkMasterMotorStateFail"
+                                  name="checkMasterMotorStateFail" Int="1"
+                                  Text="校准失败"/>
+                        <EndTask id="master_clibration_process_end_task"
+                                 name="master motor calibration end"/>
+                    </tasks>
+                </SubTaskManager>
+            </SubProcessTask>
+            <FakeTask NextTaskID="startSlaverMotorParaGateway"
+                      id="masterMotroMoveToPrimaryPostion"
+                      name="masterMotroMoveToPrimaryPostion" Int="400"
+                      Text="移动到第一检测点"/>
+
+
+            <ParallelGateway id="startSlaverMotorParaGateway" name="startSlaverMotorParaGateway">
+                <list name="OutTasks" type="std::string">
+                    <std::string value="slave_motor_task"/>
+                    <std::string value="primary_checkpoint_task"/>
+                </list>
+            </ParallelGateway>
+<!--slave马达控制流程,控制slave检测的过程-->
+            <SubProcessTask id="slave_motor_task">
+                <SubTaskManager taskName="slave马达控制子流程">
+                    <tasks>
+                        <StartTask NextTaskID="slaveMotorCalibrationCheck" id="slave_motor_start_task"
+                               name="slave_motor_start_task"/>
+
+                        <FakeTask NextTaskID="slave_motor_end_task"
+                                  id="slaveMotorCalibrationCheck"
+                                  name="startCalibration" Int="100" Text="启动校准">
+                            <map keyType="std::string" name="Values" valueType="std::string">
+                                <item>
+                                    <key type="std::string" value="MasterMotroCalibrationState"/>
+                                    <value type="std::string" value="YES"/>
+                                </item>
+                            </map>
+                        </FakeTask>
+
+                        <EndTask  id="slave_motor_end_task"
+                               name="slave_motor_end_task"/>
+                    </tasks>
+                </SubTaskManager>
+            </SubProcessTask>
+<!--第一监测点检测流程-->
+            <SubProcessTask id="primary_checkpoint_task" NextTaskID="moveToSecondaryCheckPointTask">
+                <SubTaskManager taskName="priamry检测子流程">
+                    <tasks>
+                        <StartTask NextTaskID="primary_checkpoint_task_end_task" id="primary_checkpoint_task_start_task"
+                                   name="primary_checkpoint_task_start_task"/>
+
+                        <EndTask  id="primary_checkpoint_task_end_task"
+                                  name="primary_checkpoint_task_end_task"/>
+                    </tasks>
+                </SubTaskManager>
+            </SubProcessTask>
+            <FakeTask id="moveToSecondaryCheckPointTask" Int="500" NextTaskID="secondary_checkpoint_task" Text="移动到第二检测点" />
+<!--第二检测点流程-->
+            <SubProcessTask id="secondary_checkpoint_task" NextTaskID="moveToThirdCheckPointTask">
+                <SubTaskManager taskName="secondary检测子流程">
+                    <tasks>
+                        <StartTask NextTaskID="secondary_checkpoint_task_end_task" id="secondary_checkpoint_task_start_task"
+                                   name="secondary_checkpoint_task_start_task"/>
+
+                        <EndTask  id="secondary_checkpoint_task_end_task"
+                                  name="secondary_checkpoint_task_end_task"/>
+                    </tasks>
+                </SubTaskManager>
+            </SubProcessTask>
+            <FakeTask id="moveToThirdCheckPointTask" Int="300" NextTaskID="master_release_sucker" Text="移动到第三检测点" />
+<!--第三点检测流程-->
+            <SubProcessTask id="third_checkpoint_task" NextTaskID="master_motor_end_task">
+                <SubTaskManager taskName="third检测子流程">
+                    <tasks>
+                        <StartTask NextTaskID="third_checkpoint_task_end_task" id="third_checkpoint_task_start_task"
+                                   name="third_checkpoint_task_start_task"/>
+
+                        <EndTask  id="third_checkpoint_task_end_task"
+                                  name="third_checkpoint_task_end_task"/>
+                    </tasks>
+                </SubTaskManager>
+            </SubProcessTask>
+
+            <FakeTask id="master_release_sucker" Int="100" NextTaskID="check_calibration_task" Text="释放吸盘" />
+            <FakeTask id="check_calibration_task" Int="3" NextTaskID="checkMasterCalibrationGateway" Text="检测是否需要校准" >
+                 <map keyType="std::string" name="Values" valueType="std::string">
+                    <item>
+                        <key type="std::string" value="MasterMotroCalibrationStateEnable"/>
+                        <value type="std::string" value="YES"/>
+                    </item>
+                </map>
+            </FakeTask>
+            <ExclusiveGateway id="checkMasterCalibrationGateway">
+                <list name="SubTasks" type="ExclusiveRule">
+<!--                    <ExclusiveRule Operator="=" TaskID="master_clibration_process" Value="YES"-->
+<!--                                   Type="string" ValueName="MasterMotroCalibrationStateEnable"/>-->
+<!--                    <ExclusiveRule Operator="=" TaskID="masterMotroMoveToPrimaryPostion" Value="NO" Type="string"-->
+<!--                                   ValueName="MasterMotroCalibrationStateEnable"/>-->
+                    <ExclusiveRule Operator="=" TaskID="master_motor_end_task" Value="YES"
+                                   Type="string" ValueName="MasterMotroCalibrationStateEnable"/>
+                    <ExclusiveRule Operator="=" TaskID="master_motor_end_task" Value="NO" Type="string"
+                                   ValueName="MasterMotroCalibrationStateEnable"/>
+                </list>
+            </ExclusiveGateway>
+
+
+            <EndTask NextTaskID="" id="master_motor_end_task"
+                     name="master_motor_end_task"/>
+        </tasks>
+    </TaskManager>
+
+</Process>

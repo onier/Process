@@ -20,14 +20,15 @@ enum class Operator {
 struct ExclusiveRule {
     std::string _valueName;
     Operator _operator;
-    double _value;
+    std::string _value;
     std::string _taskID;
+    std::string _type;
 
     ExclusiveRule(const std::string &valueName, Operator op, double value, const std::string &taskId);
 
     ExclusiveRule(const std::string &valueName, Operator op, int value, const std::string &taskId);
 
-    bool checkRule(folly::Synchronized<std::map<std::string, boost::any>> &values);
+    bool checkRule(std::shared_ptr<folly::Synchronized<std::map<std::string, boost::any>>> values);
 
     ExclusiveRule();
 
@@ -47,7 +48,6 @@ public:
 
     std::vector<ExclusiveRule> _subTasks;
 
-    std::map<std::string ,std::string > _rules;
 RTTR_ENABLE(AbstractTask)
 };
 

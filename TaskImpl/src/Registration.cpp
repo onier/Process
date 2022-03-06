@@ -3,6 +3,7 @@
 #include "TestTask2.h"
 #include "TestTask3.h"
 #include "ExceptionTask.h"
+#include "FakeTask.h"
 
 using namespace Process;
 
@@ -32,4 +33,16 @@ RTTR_REGISTRATION {
                     rttr::policy::ctor::as_std_shared_ptr
             )
             .property("ExceptionCounter", &ExceptionTask::_runTimeExceptionCounter);
+    rttr::registration::class_<FakeTask>("FakeTask")
+            .
+
+                    constructor<>()(
+                    rttr::policy::ctor::as_std_shared_ptr
+            )
+            .property("Text", &FakeTask::_text)
+            .property("Double", &FakeTask::_d)
+            .property("Int", &FakeTask::_n)
+            .property("EventName", &FakeTask::_eventName)
+            .property("Values", &FakeTask::_values)
+            .property("Long", &FakeTask::_l);
 }

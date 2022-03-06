@@ -43,8 +43,7 @@ bool SubProcessTask::loadDomElement(xercesc::DOMNode *domElement) {
         auto nodeName = puppy::common::XML::toStr(domElement->getChildNodes()->item(i)->getNodeName());
         if (nodeName == "SubTaskManager") {
             auto taskName = domElement->getChildNodes()->item(i)->getAttributes()->getNamedItem(XStr("taskName"));
-            if (taskName)
-                LOG(INFO) << puppy::common::XML::toStr(taskName->getNodeValue());
+            _subProcess->getProcessContext()->_taskName=puppy::common::XML::toStr(taskName->getNodeValue());
             _subProcess->getProcessContext()->loadDomElement(domElement->getChildNodes()->item(i));
         }
     }

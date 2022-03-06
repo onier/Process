@@ -21,7 +21,7 @@ std::string uuid() {
 #include "XML.h"
 #include "rttr/library.h"
 #include "EventGateway.h"
-int main() {
+int main2() {
 //    EventGateway  eventGateway;
 //    eventGateway._eventRules.insert({"A","A"});
 //    eventGateway._eventRules.insert({"B","B"});
@@ -244,7 +244,42 @@ int main() {
 //    auto t1 = rttr::type::get_by_name("TestTask1").create().get_value<std::shared_ptr<TestTask1>>();
 //    t1->run(values);
 }
+#include "fstream"
 
+std::string readFile(std::string path) {
+    std::string line, content;
+    std::ifstream myfile(path);
+    if (myfile.is_open()) {
+        while (getline(myfile, line)) {
+            content += line + '\n';
+        }
+        myfile.close();
+    }
+    return content;
+}
+#include "FakeTask.h"
+#include "ExclusiveGateway.h"
+
+int main(){
+    FakeTask fakeTask;
+    fakeTask._values.insert({"A","A"});
+    LOG(INFO)<<puppy::common::XML::toXMLString(fakeTask);
+//    ExclusiveGateway exclusiveGateway;
+//    exclusiveGateway._rules.insert({"A","B"});
+//    exclusiveGateway._rules.insert({"C","C"});
+//    LOG(INFO)<<puppy::common::XML::toXMLString(exclusiveGateway);
+    std::string text = readFile("/home/tian/fuxios/Process/TaskJSON/src/slave.xml");
+    Process::Process process(1);
+    process.loadXML(text);
+    process.initProcessValues({{"taskValue", 2.0}});
+    //    folly::Synchronized<std::map<std::string, boost::any>> values;
+    //    values.wlock()->insert({"taskValue", 2.0});
+    process.startProcess(nullptr);
+    //    LOG(INFO)<<process.saveXML();
+    //    auto t = rttr::type::get_by_name("TestTask1");
+    //    LOG(INFO) << puppy::common::XML::toXMLString(t);
+    sleep(1111);
+}
 //int main1(){
 //    std::string text = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>\n"
 //                       "<Process xmlns=\"\">\n"

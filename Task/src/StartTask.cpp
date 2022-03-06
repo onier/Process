@@ -11,5 +11,5 @@ bool StartTask::initTask(Process::ProcessContext* manager) {
 }
 
 void StartTask::run(std::shared_ptr<Process::ProcessContext> context) {
-    LOG(INFO) <<  _taskName << " process is start";
+    LOG(INFO) <<  _taskName << "  is start";
 }

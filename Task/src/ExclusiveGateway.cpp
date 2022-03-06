@@ -11,20 +11,27 @@ std::string ExclusiveGateway::getNextTaskID() {
     return _nextTaskID;
 }
 
-bool ExclusiveRule::checkRule(folly::Synchronized<std::map<std::string, boost::any>> &values) {
-    if (values->count(_valueName) > 0) {
-        double temp = boost::any_cast<double>(values->at(_valueName));
-        switch (_operator) {
-            case Operator::EQUAL:
-                return temp == folly::to<double>(_value);
-            case Operator::GREATER:
-                return temp > folly::to<double>(_value);
-            case Operator::LESS:
-                return temp < folly::to<double>(_value);
-            case Operator::GREATER_EUQAL:
-                return temp >= folly::to<double>(_value);
-            case Operator::LESS_EUQAL:
-                return temp <= folly::to<double>(_value);
+bool ExclusiveRule::checkRule(std::shared_ptr<folly::Synchronized<std::map<std::string, boost::any>>> values) {
+    auto lock = values->rlock();
+    if (lock->count(_valueName) > 0) {
+        if (_type == "double") {
+            double temp = boost::any_cast<double>(lock->at(_valueName));
+            switch (_operator) {
+                case Operator::EQUAL:
+                    return temp == folly::to<double>(_value);
+                case Operator::GREATER:
+                    return temp > folly::to<double>(_value);
+                case Operator::LESS:
+                    return temp < folly::to<double>(_value);
+                case Operator::GREATER_EUQAL:
+                    return temp >= folly::to<double>(_value);
+                case Operator::LESS_EUQAL:
+                    return temp <= folly::to<double>(_value);
+            }
+        }
+        if(_type == "string"){
+            std::string temp = boost::any_cast<std::string>(lock->at(_valueName));
+             return temp == _value;
         }
     }
     return false;
@@ -36,20 +43,10 @@ void ExclusiveGateway::run(std::shared_ptr<Process::ProcessContext> context) {
         return;
     }
     auto values = context->getProcessValues();
-    auto lock = values->rlock();
-    for (auto &strRule:_rules) {
-        if (lock->count(strRule.first)) {
-            if (boost::any_cast<std::string>(lock->at(strRule.first)) == strRule.second) {
-                _nextTaskID = strRule.second;
-                return;
-            }
-        }
-
-    }
     for (auto &task: _subTasks) {
-        if (task.checkRule(*values)) {
+        if (task.checkRule(values)) {
             _nextTaskID = task._taskID;
-            LOG(INFO) << " ExclusiveGateway  found  next task " << task._taskID;
+//            LOG(INFO) << " ExclusiveGateway  found  next task " << task._taskID ;
             return;
         }
     }
@@ -67,6 +64,6 @@ ExclusiveGateway::ExclusiveGateway() {
 }
 
 ExclusiveRule::ExclusiveRule(const std::string &valueName, Operator op, double value, const std::string &taskId)
-        : _valueName(valueName), _operator(op), _value(value), _taskID(taskId) {}
+        : _valueName(valueName), _operator(op),  _taskID(taskId) {}
 
 
