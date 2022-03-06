@@ -10,7 +10,7 @@ bool FakeTask::initTask(Process::ProcessContext *manager) {
 
 void FakeTask::run(std::shared_ptr<Process::ProcessContext> manager) {
     for(auto & item:_values){
-        manager->getProcessValues()->wlock()->insert({item.first,item.second});
+        manager->getProcessValues()->wlock()->operator[](item.first) = item.second;
     }
    LOG(INFO)<<_text;
     if(!_eventName.empty()){

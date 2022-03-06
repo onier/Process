@@ -12,7 +12,7 @@ SubProcessTask::SubProcessTask() {
 }
 
 SubProcessTask::SubProcessTask(std::shared_ptr<Process::Process> subProcess) {
-   _subProcess = subProcess;
+    _subProcess = subProcess;
 }
 
 void SubProcessTask::run(std::shared_ptr<Process::ProcessContext> context) {
@@ -41,7 +41,7 @@ bool SubProcessTask::loadDomElement(xercesc::DOMNode *domElement) {
     int n = domElement->getChildNodes()->getLength();
     for (int i = 0; i < n; ++i) {
         auto nodeName = puppy::common::XML::toStr(domElement->getChildNodes()->item(i)->getNodeName());
-        if (nodeName == "SubTaskManager") {
+        if (nodeName == "SubTaskManager"||nodeName == "TaskManager") {
             auto taskName = domElement->getChildNodes()->item(i)->getAttributes()->getNamedItem(XStr("taskName"));
             _subProcess->getProcessContext()->_taskName=puppy::common::XML::toStr(taskName->getNodeValue());
             _subProcess->getProcessContext()->loadDomElement(domElement->getChildNodes()->item(i));

@@ -28,6 +28,8 @@ public:
 
     bool loadDomElement(xercesc::DOMNode *domElement);
 
+    std::string _processFile;
+
 RTTR_ENABLE(Process::AbstractTask);
 };
 

@@ -262,15 +262,21 @@ std::string readFile(std::string path) {
 
 int main(){
     FakeTask fakeTask;
-    fakeTask._values.insert({"A","A"});
-    LOG(INFO)<<puppy::common::XML::toXMLString(fakeTask);
+//    fakeTask._values.insert({"SlaveMotorRunningState","RUNNING"});
+//    fakeTask._values.insert({"CheckSlateMotroCalibrationState","YES"});
+//    fakeTask._values.insert({"CheckMasterVisionResult","YES"});
+//    fakeTask._values.insert({"CheckSlaveVisionResult","YES"});
+//    auto xml = puppy::common::XML::toXMLString(fakeTask);
+//   auto var =  puppy::common::XML::par(xml);
 //    ExclusiveGateway exclusiveGateway;
 //    exclusiveGateway._rules.insert({"A","B"});
 //    exclusiveGateway._rules.insert({"C","C"});
 //    LOG(INFO)<<puppy::common::XML::toXMLString(exclusiveGateway);
-    std::string text = readFile("/home/tian/fuxios/Process/TaskJSON/src/slave.xml");
-    Process::Process process(1);
-    process.loadXML(text);
+//    std::string text = readFile("/home/tian/fuxios/Process/TaskJSON/src/demo.xml");
+    Process::Process process(10);
+//    process.loadXML(text);
+    FakeTask fakeTask1;
+    process.loadFile("/home/tian/fuxios/Process/TaskJSON/src/demo.xml");
     process.initProcessValues({{"taskValue", 2.0}});
     //    folly::Synchronized<std::map<std::string, boost::any>> values;
     //    values.wlock()->insert({"taskValue", 2.0});

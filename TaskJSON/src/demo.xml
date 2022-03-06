@@ -64,30 +64,11 @@
                 </list>
             </ParallelGateway>
 <!--slave马达控制流程,控制slave检测的过程-->
-            <SubProcessTask id="slave_motor_task">
-                <SubTaskManager taskName="slave马达控制子流程">
-                    <tasks>
-                        <StartTask NextTaskID="slaveMotorCalibrationCheck" id="slave_motor_start_task"
-                               name="slave_motor_start_task"/>
+            <SubProcessTask id="slave_motor_task" ProcessFile="slave.xml">
 
-                        <FakeTask NextTaskID="slave_motor_end_task"
-                                  id="slaveMotorCalibrationCheck"
-                                  name="startCalibration" Int="100" Text="启动校准">
-                            <map keyType="std::string" name="Values" valueType="std::string">
-                                <item>
-                                    <key type="std::string" value="MasterMotroCalibrationState"/>
-                                    <value type="std::string" value="YES"/>
-                                </item>
-                            </map>
-                        </FakeTask>
-
-                        <EndTask  id="slave_motor_end_task"
-                               name="slave_motor_end_task"/>
-                    </tasks>
-                </SubTaskManager>
             </SubProcessTask>
 <!--第一监测点检测流程-->
-            <SubProcessTask id="primary_checkpoint_task" NextTaskID="moveToSecondaryCheckPointTask">
+            <SubProcessTask id="primary_checkpoint_task" NextTaskID="waitForSlaveStop">
                 <SubTaskManager taskName="priamry检测子流程">
                     <tasks>
                         <StartTask NextTaskID="primary_checkpoint_task_end_task" id="primary_checkpoint_task_start_task"
@@ -98,7 +79,9 @@
                     </tasks>
                 </SubTaskManager>
             </SubProcessTask>
-            <FakeTask id="moveToSecondaryCheckPointTask" Int="500" NextTaskID="secondary_checkpoint_task" Text="移动到第二检测点" />
+            <WaitForTask id="waitForSlaveStop" NextTaskID="moveToSecondaryCheckPointTask" ValueName="SlaveMotorRunningState" Value="STOP" />
+
+            <FakeTask id="moveToSecondaryCheckPointTask" Int="500" NextTaskID="secondary_checkpoint_task" Text="master移动到第二检测点" />
 <!--第二检测点流程-->
             <SubProcessTask id="secondary_checkpoint_task" NextTaskID="moveToThirdCheckPointTask">
                 <SubTaskManager taskName="secondary检测子流程">

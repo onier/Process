@@ -143,6 +143,11 @@ void Process::Process::loadXML(std::string xml) {
     _processContext->loadXML(xml);
 }
 
+void Process::Process::loadFile(std::string filePath) {
+    std::lock_guard<std::mutex> guard{_mutex};
+    _processContext->loadFile(filePath);
+}
+
 std::string Process::Process::saveXML() {
     return _processContext->saveXML();
 }

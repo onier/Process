@@ -31,6 +31,8 @@ namespace Process {
 
         void loadXML(std::string xml);
 
+        void loadFile(std::string filePath);
+
         std::string saveXML();
 
         void initProcessValues(std::map<std::string,boost::any> values);
@@ -45,6 +47,8 @@ namespace Process {
         std::shared_ptr<ProcessContext> _processContext;
 
         void initEventHandlers();
+
+        std::mutex _mutex;
     };
 }
 

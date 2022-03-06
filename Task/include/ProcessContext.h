@@ -21,6 +21,8 @@ namespace Process {
 
         void loadXML(std::string xml);
 
+        void loadFile(std::string file);
+
         std::string saveXML();
 
         std::vector<std::shared_ptr<Process::Task>> getTasksByType(std::string type);
@@ -66,6 +68,12 @@ namespace Process {
 
         void createElement(rttr::instance obj2, xercesc::DOMElement *domElement, xercesc::DOMDocument *document,
                            std::shared_ptr<Task> task = nullptr);
+
+        std::vector<xercesc::DOMNode *> getSubProcessTasks(xercesc::DOMNode * subProcessNode);
+
+        auto getElementsByName(xercesc::DOMNode *parent, std::string name);
+
+        std::string _currentFilePath;
     public:
         std::shared_ptr<folly::Synchronized<std::map<std::string, boost::any>>> _processValues;
         std::shared_ptr<folly::CPUThreadPoolExecutor> _executor;

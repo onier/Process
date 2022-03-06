@@ -3,6 +3,7 @@
 //
 
 #include "ProcessContext.h"
+#include "boost/filesystem.hpp"
 #include "xercesc/util/PlatformUtils.hpp"
 #include <xercesc/util/PlatformUtils.hpp>
 #include <xercesc/parsers/XercesDOMParser.hpp>
@@ -45,6 +46,42 @@ bool ProcessContext::saveDomElement(xercesc::DOMElement *domElement, std::shared
     return true;
 }
 
+auto ProcessContext::getElementsByName(xercesc::DOMNode *parent, std::string name) {
+    std::vector<xercesc::DOMNode *> result;
+    auto children = parent->getChildNodes();
+    for (int i = 0; i < children->getLength(); ++i) {
+        LOG(INFO)<<puppy::common::XML::toStr(children->item(i)->getNodeName());
+        if (puppy::common::XML::toStr(children->item(i)->getNodeName()) == name) {
+            result.push_back(children->item(i));
+        }
+    }
+    return result;
+}
+
+std::vector<xercesc::DOMNode *>  ProcessContext::getSubProcessTasks(xercesc::DOMNode * subProcessNode) {
+    auto file= subProcessNode->getAttributes()->getNamedItem(XStr("ProcessFile"));
+    if(file){
+        boost::filesystem::path p(_currentFilePath);
+       auto subFilePath = p.parent_path().string()+"/"+puppy::common::XML::toStr(file->getNodeValue());
+//       xercesc::XMLPlatformUtils::Initialize();
+       xercesc::XercesDOMParser xercesDOMParser;
+       xercesDOMParser.parse(subFilePath.data());
+       auto document = xercesDOMParser.getDocument();
+       auto root = document->getDocumentElement();
+       LOG(INFO)<<puppy::common::XML::toStr(root->getNodeName());
+       auto taskManager = getElementsByName(root,"TaskManager");
+       if(taskManager.size()!=1){
+           LOG(FATAL)<<" error taskmanager size "<<taskManager.size();
+       }
+       auto subTaskManager = document->createElement(XStr("SubProcess"));
+       subTaskManager->appendChild(taskManager.at(0));
+//       auto tasks = getElementsByName(taskManager.at(0),"tasks");
+//       LOG(INFO)<<tasks.size();
+        return {subTaskManager};
+    }
+    return {};
+}
+
 bool ProcessContext::loadDomElement(xercesc::DOMNode *domElement) {
     auto taskManagerNode = domElement->getChildNodes();
     auto task = domElement->getAttributes()->getNamedItem(XStr("taskName"));
@@ -61,7 +98,17 @@ bool ProcessContext::loadDomElement(xercesc::DOMNode *domElement) {
                     auto taskVariant = taskType.create();
                     puppy::common::XML::parseInstance(tasks->item(i), taskVariant);
                     auto absPtr = taskVariant.get_value<std::shared_ptr<Process::Task>>();
-                    absPtr->loadDomElement(tasks->item(i));
+                    if(taskTypeName=="SubProcessTask"){
+                        auto subTasks =getSubProcessTasks(tasks->item(i));
+                        if(subTasks.empty()){
+                            absPtr->loadDomElement(tasks->item(i));
+                        }else{
+                            sleep(1);
+                            absPtr->loadDomElement(subTasks.at(0));
+                        }
+                    }else{
+                        absPtr->loadDomElement(tasks->item(i));
+                    }
                     _tasks.push_back(absPtr);
                 }
             }
@@ -69,6 +116,23 @@ bool ProcessContext::loadDomElement(xercesc::DOMNode *domElement) {
     }
     initTasks();
     return true;
+}
+
+void ProcessContext::loadFile(std::string file) {
+    _currentFilePath = file;
+    xercesc::XMLPlatformUtils::Initialize();
+    xercesc::XercesDOMParser xercesDOMParser;
+    xercesDOMParser.parse(file.data());
+    auto document = xercesDOMParser.getDocument();
+    auto root = document->getDocumentElement();
+    auto process = root->getChildNodes();
+    for (int i = 0; i < process->getLength(); ++i) {
+        auto nodeName = puppy::common::XML::toStr(process->item(i)->getNodeName());
+        if (nodeName == "TaskManager") {
+            loadDomElement(process->item(i));
+        }
+    }
+    initTasks();
 }
 
 void ProcessContext::loadXML(std::string xml) {

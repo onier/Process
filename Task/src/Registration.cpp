@@ -7,6 +7,7 @@
 #include "StartTask.h"
 #include "EndTask.h"
 #include "EventGateway.h"
+#include "WaitForTask.h"
 
 using namespace Process;
 
@@ -81,7 +82,19 @@ RTTR_REGISTRATION {
 
                     constructor<>()(
                     rttr::policy::ctor::as_std_shared_ptr
-            );
+            )
+            .property("ProcessFile",&SubProcessTask::_processFile)
+            ;
+
+    rttr::registration::class_<WaitForTask>("WaitForTask")
+            .
+
+                    constructor<>()(
+                    rttr::policy::ctor::as_std_shared_ptr
+                    )
+                    .property("ValueName",&WaitForTask::_valueName)
+                    .property("Value",&WaitForTask::_value)
+            ;
 
     rttr::registration::class_<EventGateway>("EventGateway")
             .
