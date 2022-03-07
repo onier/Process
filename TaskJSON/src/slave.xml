@@ -28,102 +28,102 @@
                 </map>
             </FakeTask>
 
-<!--            <ExclusiveGateway id="checkSlaveCalibrationGateway">-->
-<!--                <list name="SubTasks" type="ExclusiveRule">-->
-<!--                    <ExclusiveRule Operator="=" TaskID="slave_motor_calibration" Value="YES"-->
-<!--                                   Type="string" ValueName="CheckSlateMotroCalibrationState"/>-->
-<!--                    <ExclusiveRule Operator="=" TaskID="slaveMoveToThirdPosition" Value="NO" Type="string"-->
-<!--                                   ValueName="CheckSlateMotroCalibrationState"/>-->
-<!--                </list>-->
-<!--            </ExclusiveGateway>-->
+            <ExclusiveGateway id="checkSlaveCalibrationGateway">
+                <list name="SubTasks" type="ExclusiveRule">
+                    <ExclusiveRule Operator="=" TaskID="slave_motor_calibration" Value="YES"
+                                   Type="string" ValueName="CheckSlateMotroCalibrationState"/>
+                    <ExclusiveRule Operator="=" TaskID="slaveMoveToThirdPosition" Value="NO" Type="string"
+                                   ValueName="CheckSlateMotroCalibrationState"/>
+                </list>
+            </ExclusiveGateway>
 
-<!--            <FakeTask id="slaveMoveToThirdPosition" Int="500" NextTaskID="checkMasterVisionResult" Text="slave移动到third点" />-->
+            <FakeTask id="slaveMoveToThirdPosition" Int="500" NextTaskID="checkMasterVisionResult" Text="slave移动到third点" />
 
-<!--            <SubProcessTask id="slave_motor_calibration" NextTaskID="slaveMoveToThirdPosition">-->
-<!--                <SubTaskManager taskName="slave电机校准子流程">-->
-<!--                    <tasks>-->
-<!--                        <StartTask NextTaskID="slaveMotorMoveToCalibrationPosition" id="slave_motor_calibration_start_task"-->
-<!--                                   name="slave_motor_calibration_start_task"/>-->
-<!--                        <FakeTask id="slaveMotorMoveToCalibrationPosition" Int="500" NextTaskID="startSlaveMotorCalibration" Text="slave移动到校准点" />-->
-<!--                        <FakeTask id="startSlaveMotorCalibration" Int="500" NextTaskID="slaveMotorCalibrationSucee" Text="slave开始校准" >-->
-<!--                            <map keyType="std::string" name="Values" valueType="std::string">-->
-<!--                                <item>-->
-<!--                                    <key type="std::string" value="CheckSlaveCalibrationResult"/>-->
-<!--                                    <value type="std::string" value="YES"/>-->
-<!--                                </item>-->
-<!--                            </map>-->
-<!--                        </FakeTask>-->
-<!--                        &lt;!&ndash;结果判断&ndash;&gt;-->
-<!--                        <ExclusiveGateway id="checkSlaveCalibrationResultGateway">-->
-<!--                            <list name="SubTasks" type="ExclusiveRule">-->
-<!--                                <ExclusiveRule Operator="=" TaskID="slaveMotorCalibrationSucee" Value="YES"-->
-<!--                                               Type="string" ValueName="CheckSlaveCalibrationResult"/>-->
-<!--                                <ExclusiveRule Operator="=" TaskID="slaveMotorCalibrationFail" Value="NO" Type="string"-->
-<!--                                               ValueName="CheckSlaveCalibrationResult"/>-->
-<!--                            </list>-->
-<!--                        </ExclusiveGateway>-->
-<!--                        <FakeTask id="slaveMotorCalibrationSucee" Int="500" NextTaskID="slave_motor_calibration_end_task" Text="slave校准成功" />-->
-<!--                        <FakeTask id="slaveMotorCalibrationFail" Int="500" NextTaskID="slave_motor_calibration_end_task" Text="slave校准失败" />-->
-<!--                        <EndTask  id="slave_motor_calibration_end_task"-->
-<!--                                  name="slave_motor_calibration_end_task"/>-->
-<!--                    </tasks>-->
-<!--                </SubTaskManager>-->
-<!--            </SubProcessTask>-->
-<!--            &lt;!&ndash;判断master的检测结果&ndash;&gt;-->
-<!--            <ExclusiveGateway id="checkMasterVisionResult">-->
-<!--                <list name="SubTasks" type="ExclusiveRule">-->
-<!--                    <ExclusiveRule Operator="=" TaskID="slave_side_check_process" Value="YES"-->
-<!--                                   Type="string" ValueName="CheckMasterVisionResult"/>-->
-<!--                    <ExclusiveRule Operator="=" TaskID="slavePickForVisionFail" Value="NO" Type="string"-->
-<!--                                   ValueName="CheckMasterVisionResult"/>-->
-<!--                </list>-->
-<!--            </ExclusiveGateway>-->
+            <SubProcessTask id="slave_motor_calibration" NextTaskID="slaveMoveToThirdPosition">
+                <SubTaskManager taskName="slave电机校准子流程">
+                    <tasks>
+                        <StartTask NextTaskID="slaveMotorMoveToCalibrationPosition" id="slave_motor_calibration_start_task"
+                                   name="slave_motor_calibration_start_task"/>
+                        <FakeTask id="slaveMotorMoveToCalibrationPosition" Int="500" NextTaskID="startSlaveMotorCalibration" Text="slave移动到校准点" />
+                        <FakeTask id="startSlaveMotorCalibration" Int="500" NextTaskID="slaveMotorCalibrationSucee" Text="slave开始校准" >
+                            <map keyType="std::string" name="Values" valueType="std::string">
+                                <item>
+                                    <key type="std::string" value="CheckSlaveCalibrationResult"/>
+                                    <value type="std::string" value="YES"/>
+                                </item>
+                            </map>
+                        </FakeTask>
+                        <!--结果判断-->
+                        <ExclusiveGateway id="checkSlaveCalibrationResultGateway">
+                            <list name="SubTasks" type="ExclusiveRule">
+                                <ExclusiveRule Operator="=" TaskID="slaveMotorCalibrationSucee" Value="YES"
+                                               Type="string" ValueName="CheckSlaveCalibrationResult"/>
+                                <ExclusiveRule Operator="=" TaskID="slaveMotorCalibrationFail" Value="NO" Type="string"
+                                               ValueName="CheckSlaveCalibrationResult"/>
+                            </list>
+                        </ExclusiveGateway>
+                        <FakeTask id="slaveMotorCalibrationSucee" Int="500" NextTaskID="slave_motor_calibration_end_task" Text="slave校准成功" />
+                        <FakeTask id="slaveMotorCalibrationFail" Int="500" NextTaskID="slave_motor_calibration_end_task" Text="slave校准失败" />
+                        <EndTask  id="slave_motor_calibration_end_task"
+                                  name="slave_motor_calibration_end_task"/>
+                    </tasks>
+                </SubTaskManager>
+            </SubProcessTask>
+            <!--判断master的检测结果-->
+            <ExclusiveGateway id="checkMasterVisionResult">
+                <list name="SubTasks" type="ExclusiveRule">
+                    <ExclusiveRule Operator="=" TaskID="slave_side_check_process" Value="YES"
+                                   Type="string" ValueName="CheckMasterVisionResult"/>
+                    <ExclusiveRule Operator="=" TaskID="slavePickForVisionFail" Value="NO" Type="string"
+                                   ValueName="CheckMasterVisionResult"/>
+                </list>
+            </ExclusiveGateway>
 
 <!--            &lt;!&ndash;slave端面检测流程&ndash;&gt;-->
-<!--            <SubProcessTask id="slave_side_check_process" NextTaskID="checkSlaveVisionResult">-->
-<!--                <SubTaskManager taskName="slave端面检测子流程">-->
-<!--                    <tasks>-->
-<!--                        <StartTask NextTaskID="slaveMotorServoCameraFocusInThird" id="slave_side_check_process_start_task"-->
-<!--                                   name="slave_side_check_process_start_task"/>-->
-<!--                        <FakeTask id="slaveMotorServoCameraFocusInThird" Int="500" NextTaskID="slaveMotorTopCameraCaputure" Text="顶面检测伺服对焦" />-->
-<!--                        <FakeTask id="slaveMotorTopCameraCaputure" Int="10" NextTaskID="slaveMotorTopAngleFromVision" Text="顶面相机拍照" />-->
-<!--                        <FakeTask id="slaveMotorTopAngleFromVision" Int="10" NextTaskID="adjustAngle" Text="角度定位计算" />-->
-<!--                        <FakeTask id="adjustAngle" Int="10" NextTaskID="slaveSideServoCameraFocus" Text="角度定位调整" />-->
-<!--                        <FakeTask id="slaveSideServoCameraFocus" Int="10" NextTaskID="slaveMotorSideCameraCaputure" Text="端面相机伺服对焦" />-->
-<!--                        <FakeTask id="slaveMotorSideCameraCaputure" Int="10" NextTaskID="slaveMotorSideVisionProcess" Text="端面相机拍照" />-->
-<!--                        <FakeTask id="slaveMotorSideVisionProcess" Int="10" NextTaskID="slave_side_check_process_end_task" Text="端面视觉检测" />-->
-<!--                        <EndTask  id="slave_side_check_process_end_task"-->
-<!--                                  name="slave_side_check_process_end_task"/>-->
-<!--                    </tasks>-->
-<!--                </SubTaskManager>-->
-<!--            </SubProcessTask>-->
-<!--            &lt;!&ndash;判断端面检测结果&ndash;&gt;-->
-<!--            <ExclusiveGateway id="checkSlaveVisionResult">-->
-<!--                <list name="SubTasks" type="ExclusiveRule">-->
-<!--                    <ExclusiveRule Operator="=" TaskID="slavePickForVisionSucess" Value="YES"-->
-<!--                                   Type="string" ValueName="CheckSlaveVisionResult"/>-->
-<!--                    <ExclusiveRule Operator="=" TaskID="slavePickForVisionFail" Value="NO" Type="string"-->
-<!--                                   ValueName="CheckSlaveVisionResult"/>-->
-<!--                </list>-->
-<!--            </ExclusiveGateway>-->
+            <SubProcessTask id="slave_side_check_process" NextTaskID="checkSlaveVisionResult">
+                <SubTaskManager taskName="slave端面检测子流程">
+                    <tasks>
+                        <StartTask NextTaskID="slaveMotorServoCameraFocusInThird" id="slave_side_check_process_start_task"
+                                   name="slave_side_check_process_start_task"/>
+                        <FakeTask id="slaveMotorServoCameraFocusInThird" Int="500" NextTaskID="slaveMotorTopCameraCaputure" Text="顶面检测伺服对焦" />
+                        <FakeTask id="slaveMotorTopCameraCaputure" Int="10" NextTaskID="slaveMotorTopAngleFromVision" Text="顶面相机拍照" />
+                        <FakeTask id="slaveMotorTopAngleFromVision" Int="10" NextTaskID="adjustAngle" Text="角度定位计算" />
+                        <FakeTask id="adjustAngle" Int="10" NextTaskID="slaveSideServoCameraFocus" Text="角度定位调整" />
+                        <FakeTask id="slaveSideServoCameraFocus" Int="10" NextTaskID="slaveMotorSideCameraCaputure" Text="端面相机伺服对焦" />
+                        <FakeTask id="slaveMotorSideCameraCaputure" Int="10" NextTaskID="slaveMotorSideVisionProcess" Text="端面相机拍照" />
+                        <FakeTask id="slaveMotorSideVisionProcess" Int="10" NextTaskID="slave_side_check_process_end_task" Text="端面视觉检测" />
+                        <EndTask  id="slave_side_check_process_end_task"
+                                  name="slave_side_check_process_end_task"/>
+                    </tasks>
+                </SubTaskManager>
+            </SubProcessTask>
+            <!--判断端面检测结果-->
+            <ExclusiveGateway id="checkSlaveVisionResult">
+                <list name="SubTasks" type="ExclusiveRule">
+                    <ExclusiveRule Operator="=" TaskID="slavePickForVisionSucess" Value="YES"
+                                   Type="string" ValueName="CheckSlaveVisionResult"/>
+                    <ExclusiveRule Operator="=" TaskID="slavePickForVisionFail" Value="NO" Type="string"
+                                   ValueName="CheckSlaveVisionResult"/>
+                </list>
+            </ExclusiveGateway>
 
 
-<!--            <FakeTask id="slavePickForVisionSucess" Int = "200" NextTaskID="slaveMoveToVisionSucessPositon" Text="slave视觉检测成功抓取" />-->
-<!--            <FakeTask id="slaveMoveToVisionSucessPositon" NextTaskID="slavePlaceForVisionSucess" Int = "200" Text="移动到视觉检测成功的放置点" />-->
-<!--            <FakeTask id="slavePlaceForVisionSucess" NextTaskID="notifyMasterMotorToMove" Int = "200" Text="视觉检测成功放置" />-->
+            <FakeTask id="slavePickForVisionSucess" Int = "200" NextTaskID="slaveMoveToVisionSucessPositon" Text="slave视觉检测成功抓取" />
+            <FakeTask id="slaveMoveToVisionSucessPositon" NextTaskID="slavePlaceForVisionSucess" Int = "200" Text="移动到视觉检测成功的放置点" />
+            <FakeTask id="slavePlaceForVisionSucess" NextTaskID="notifyMasterMotorToMove" Int = "200" Text="视觉检测成功放置" />
 
 
-<!--            <FakeTask id="slavePickForVisionFail" NextTaskID="slaveMoveToVisionFailPositon" Int = "200" Text="slave视觉检测失败抓取" />-->
-<!--            <FakeTask id="slaveMoveToVisionFailPositon" NextTaskID="slavePlaceForVisionFail"  Int = "200" Text="移动到视觉检测失败的放置点" />-->
-<!--            <FakeTask id="slavePlaceForVisionFail" NextTaskID="notifyMasterMotorToMove" Int = "200" Text="视觉检测失败放置" />-->
-<!--            <FakeTask id="notifyMasterMotorToMove" NextTaskID="slave_motor_end_task" Text="通知master电机开始进入干涉区域" >-->
-<!--                <map keyType="std::string" name="Values" valueType="std::string">-->
-<!--                    <item>-->
-<!--                        <key type="std::string" value="SlaveMotorRunningState"/>-->
-<!--                        <value type="std::string" value="STOP" />-->
-<!--                    </item>-->
-<!--                </map>-->
-<!--            </FakeTask>-->
+            <FakeTask id="slavePickForVisionFail" NextTaskID="slaveMoveToVisionFailPositon" Int = "200" Text="slave视觉检测失败抓取" />
+            <FakeTask id="slaveMoveToVisionFailPositon" NextTaskID="slavePlaceForVisionFail"  Int = "200" Text="移动到视觉检测失败的放置点" />
+            <FakeTask id="slavePlaceForVisionFail" NextTaskID="notifyMasterMotorToMove" Int = "200" Text="视觉检测失败放置" />
+            <FakeTask id="notifyMasterMotorToMove" NextTaskID="slave_motor_end_task" Text="通知master电机开始进入干涉区域" >
+                <map keyType="std::string" name="Values" valueType="std::string">
+                    <item>
+                        <key type="std::string" value="SlaveMotorRunningState"/>
+                        <value type="std::string" value="STOP" />
+                    </item>
+                </map>
+            </FakeTask>
 
             <EndTask id="slave_motor_end_task"
                      name="slave_motor_end_task"/>

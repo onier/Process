@@ -64,9 +64,10 @@ std::vector<xercesc::DOMNode *>  ProcessContext::getSubProcessTasks(xercesc::DOM
         boost::filesystem::path p(_currentFilePath);
        auto subFilePath = p.parent_path().string()+"/"+puppy::common::XML::toStr(file->getNodeValue());
 //       xercesc::XMLPlatformUtils::Initialize();
-       xercesc::XercesDOMParser xercesDOMParser;
-       xercesDOMParser.parse(subFilePath.data());
-       auto document = xercesDOMParser.getDocument();
+       std::shared_ptr< xercesc::XercesDOMParser> xercesDOMParser = std::make_shared< xercesc::XercesDOMParser>();
+       _parseCaches.push_back(xercesDOMParser);
+       xercesDOMParser->parse(subFilePath.data());
+       auto document = xercesDOMParser->getDocument();
        auto root = document->getDocumentElement();
        LOG(INFO)<<puppy::common::XML::toStr(root->getNodeName());
        auto taskManager = getElementsByName(root,"TaskManager");

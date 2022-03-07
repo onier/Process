@@ -13,6 +13,7 @@
 #include "folly/executors/CPUThreadPoolExecutor.h"
 #include "folly/futures/Future.h"
 #include "atomic"
+#include "xercesc/parsers/XercesDOMParser.hpp"
 
 namespace Process {
     class ProcessContext : public std::enable_shared_from_this<ProcessContext> {
@@ -80,6 +81,8 @@ namespace Process {
         std::shared_ptr<std::map<std::string, std::function<void()>>> _eventHandler;
         std::string _taskName;
         std::vector<std::shared_ptr<Process::Task>> _tasks;
+    private:
+        std::vector<std::shared_ptr<xercesc::XercesDOMParser>> _parseCaches;
     };
 }
 
