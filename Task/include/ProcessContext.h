@@ -16,6 +16,8 @@
 #include "xercesc/parsers/XercesDOMParser.hpp"
 
 namespace Process {
+    typedef folly::Synchronized<std::vector<std::shared_ptr<Process::Task>>> SuspendTask;
+
     class ProcessContext : public std::enable_shared_from_this<ProcessContext> {
     public:
         ProcessContext(int threadCount);
@@ -81,6 +83,7 @@ namespace Process {
         std::shared_ptr<std::map<std::string, std::function<void()>>> _eventHandler;
         std::string _taskName;
         std::vector<std::shared_ptr<Process::Task>> _tasks;
+        std::shared_ptr<SuspendTask> _suspendTasks;
     private:
         std::vector<std::shared_ptr<xercesc::XercesDOMParser>> _parseCaches;
     };

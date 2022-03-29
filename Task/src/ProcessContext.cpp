@@ -32,6 +32,7 @@ ProcessContext::ProcessContext(int threadCount) {
     _executor = std::make_shared<folly::CPUThreadPoolExecutor>(threadCount);
     _processValues = std::make_shared<folly::Synchronized < std::map<std::string, boost::any>> > ();
     _eventHandler = std::make_shared<std::map<std::string, std::function<void()>>>();
+    _suspendTasks = std::make_shared<SuspendTask>();
 }
 
 bool ProcessContext::saveDomElement(xercesc::DOMElement *domElement, std::shared_ptr<xercesc::DOMDocument> document) {

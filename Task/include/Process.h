@@ -15,6 +15,14 @@
 #include "ProcessContext.h"
 
 namespace Process {
+
+    enum class State{
+        RUNNING,
+        STOPED,
+        SUSPEND,
+        RESTORE,
+        UNKNOW
+    };
     class Process {
     public:
         Process(int threadCount);
@@ -37,6 +45,15 @@ namespace Process {
 
         void initProcessValues(std::map<std::string,boost::any> values);
 
+        void stopProcess();
+
+        void suspend();
+
+        void restore();
+
+        void setState(State state);
+
+        State getState();
     private:
         void processDefaultTask(std::shared_ptr<Task> task);
 

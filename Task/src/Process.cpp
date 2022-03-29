@@ -22,6 +22,16 @@ Process::Process::Process(std::shared_ptr<ProcessContext> processContext) {
 }
 
 void Process::Process::processTask(std::shared_ptr<Task> task) {
+    auto state = getState();
+    switch (state) {
+        case State::STOPED:
+            LOG(ERROR)<<"process is stop";
+            return;
+        case State::SUSPEND:
+            LOG(ERROR)<<"process is suspend";
+            _processContext->_suspendTasks->wlock()->push_back(task);
+            return;
+    }
     if (task->get_type().get_name() == "ParallelGateway") {
         processParallelTask(task);
     } else if (task->get_type().get_name() == "SubProcessTask") {
@@ -80,6 +90,7 @@ void Process::Process::processParallelTask(std::shared_ptr<Task> task1) {
 }
 
 void Process::Process::startProcess(std::shared_ptr<ProcessContext> context, bool isSub) {
+    setState(State::RUNNING);
     if (isSub) {
         _processContext->_processValues = context->_processValues;
         _processContext->_executor = context->_executor;
@@ -122,8 +133,7 @@ void Process::Process::processDefaultTask(std::shared_ptr<Task> task) {
                     if (_processContext->_taskFinishFunction) {
                         _processContext->_taskFinishFunction();
                     }
-                }
-                else {
+                } else {
                     LOG(WARNING) << "the task has no next task and is not endtask ";
                 }
             }
@@ -152,6 +162,35 @@ std::string Process::Process::saveXML() {
     return _processContext->saveXML();
 }
 
+void Process::Process::stopProcess() {
+    setState(State::STOPED);
+}
+
+void Process::Process::suspend() {
+    setState(State::SUSPEND);
+}
+
+void Process::Process::restore() {
+    setState(State::RUNNING);
+    auto taskRlock = _processContext->_suspendTasks->wlock();
+    for (int i = 0; i < taskRlock->size(); i++) {
+        processTask(taskRlock->at(i));
+    }
+    taskRlock->clear();
+}
+
+void Process::Process::setState(State state) {
+    _processContext->getProcessValues()->wlock()->operator[]("ProcessRunState")= state;
+}
+
+Process::State Process::Process::getState() {
+    auto rlock = _processContext->getProcessValues()->rlock();
+    if (rlock->find("ProcessRunState") != rlock->end()) {
+        return boost::any_cast<State>(rlock->at("ProcessRunState"));
+    }
+    return State::UNKNOW;
+}
+
 void Process::Process::initProcessValues(std::map<std::string, boost::any> values) {
     auto lock = _processContext->getProcessValues()->wlock();
     for (auto &pair:values) {
@@ -166,8 +205,8 @@ void Process::Process::initEventHandlers() {
         auto eventTyes = eventGateway->_eventRules;
         for (auto &et:eventTyes) {
             auto task = _processContext->getTaskByID(et.second);
-            _processContext->_eventHandler->insert({et.first,[&,task](){
-                folly::via(_processContext->_executor.get(), [&, task]() { processDefaultTask(task) ;});
+            _processContext->_eventHandler->insert({et.first, [&, task]() {
+                folly::via(_processContext->_executor.get(), [&, task]() { processDefaultTask(task); });
             }});
         }
     }
