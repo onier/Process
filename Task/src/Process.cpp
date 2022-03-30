@@ -172,6 +172,12 @@ void Process::Process::suspend() {
 
 void Process::Process::restore() {
     setState(State::RUNNING);
+    for(auto & t:_processContext->_tasks){
+        if(t->get_type().get_name()=="SubProcessTask"){
+            std::shared_ptr<SubProcessTask> subProcess = std::dynamic_pointer_cast<SubProcessTask>(t);
+            subProcess->_subProcess->restore();
+        }
+    }
     auto taskRlock = _processContext->_suspendTasks->wlock();
     for (int i = 0; i < taskRlock->size(); i++) {
         processTask(taskRlock->at(i));
