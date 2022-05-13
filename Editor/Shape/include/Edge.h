@@ -9,6 +9,8 @@
 
 class Edge : public Shape {
 public:
+    Edge();
+
     Bound getBound() override;
 
     void paint(QPainter *painter) override;
@@ -29,10 +31,17 @@ public:
 
     void transform(float x, float y) override;
 
-    bool getAnchor(QPointF point, QPointF &value) override;
+    bool getNearestAnchor(QPointF point, QPointF &value) override;
+
+    bool checkNearAnchor(QPointF point, QPointF &target, double value) override;
+
+    bool isContained(QPointF pointF) override;
 
     Point _start, _end;
     std::shared_ptr<Shape> _startShape, _endShape;
+
+private:
+    void recompute();
 };
 
 

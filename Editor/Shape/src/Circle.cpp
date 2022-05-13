@@ -5,12 +5,14 @@
 #include "Circle.h"
 #include "QPen"
 #include "QPainter"
+#include "cmath"
 
 Circle::Circle() {
     _bColor = {255, 255, 255};
     _fColor = {0, 0, 0};
     _isSelected = false;
     _isShowAncher = false;
+    _type = 2;
 }
 
 Bound Circle::getBound() {
@@ -109,10 +111,33 @@ void Circle::paintControllPoints(QPainter *painter) {
     }
 }
 
-bool Circle::getAnchor(QPointF point, QPointF &value) {
+bool Circle::getNearestAnchor(QPointF point, QPointF &value) {
     auto as = getAnchorPoints();
-    std::sort(as.begin(),as.end(),[point](auto & a1,auto &a2){
+    std::sort(as.begin(), as.end(), [point](QPointF &a1, QPointF &a2) {
+        return std::pow(std::pow((a1.x() - point.x()), 2) + std::pow((a1.y() - point.y()), 2), 0.5)
+               < std::pow(std::pow((a2.x() - point.x()), 2) + std::pow((a2.y() - point.y()), 2), 0.5);
+    });
+    if (as.empty())
+        return false;
+    else
+        value = as[0];
+    return true;
+}
 
-    })
+bool Circle::checkNearAnchor(QPointF point, QPointF &target, double value) {
+    auto as = getAnchorPoints();
+    for (auto &a: as) {
+        if (std::pow(std::pow((a.x() - point.x()), 2) + std::pow((a.y() - point.y()), 2), 0.5) < value) {
+            target = a;
+            return true;
+        }
+    }
+    return false;
+}
+
+bool Circle::isContained(QPointF pointF) {
+    if (QRectF(_bound._x, _bound._y, _bound._w, _bound._h).contains(pointF)) {
+        return true;
+    }
     return false;
 }

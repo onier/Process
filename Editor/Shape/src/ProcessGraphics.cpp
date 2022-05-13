@@ -26,10 +26,13 @@ void ProcessGraphics::notify(std::shared_ptr<Shape> shape, ShapeStatus status) {
     }
 }
 
-std::shared_ptr<Shape> ProcessGraphics::getShape(QPointF pointF) {
+std::shared_ptr<Shape> ProcessGraphics::getShape(QPointF pointF, int type) {
     for (auto &s: _shapes) {
         auto b = s->getBound();
-        if (QRectF(b._x, b._y, b._w, b._h).contains(pointF)) {
+//        if (QRectF(b._x, b._y, b._w, b._h).contains(pointF)) {
+//            return s;
+//        }
+        if (s->isContained(pointF) && s->_type != type) {
             return s;
         }
     }
@@ -38,16 +41,16 @@ std::shared_ptr<Shape> ProcessGraphics::getShape(QPointF pointF) {
 
 std::vector<std::shared_ptr<Shape>> ProcessGraphics::getSelectShapes() {
     std::vector<std::shared_ptr<Shape>> temp;
-     for(auto & s:_shapes){
-         if(s->_isSelected){
-             temp.push_back(s);
-         }
-     }
-     return temp;
+    for (auto &s: _shapes) {
+        if (s->isSelected()) {
+            temp.push_back(s);
+        }
+    }
+    return temp;
 }
 
 void ProcessGraphics::clearSelection() {
     for (auto &s: _shapes) {
-        s->_isSelected = false;
+        s->setSelected(false);
     }
 }

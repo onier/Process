@@ -32,13 +32,16 @@ public:
 
     void transform(float x, float y) override;
 
-    bool getAnchor(QPointF point, QPointF &value) override;
+    bool getNearestAnchor(QPointF point, QPointF &value) override;
+
+    bool checkNearAnchor(QPointF point, QPointF &target, double value) override;
+
+    bool isContained(QPointF pointF) override;
 
     Point _center;
     float _r;
     Bound _bound;
-    Color _bColor;
-    Color _fColor;
+
 RTTR_ENABLE(Circle)
 };
 

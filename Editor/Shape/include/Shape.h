@@ -9,10 +9,15 @@
 #include "QPainter"
 #include "QPointF"
 #include "rttr/registration.h"
+#include "cmath"
 
 struct Point {
     float _x;
     float _y;
+
+    float distance(Point point) {
+        return std::pow(std::pow(_x - point._x, 2) + std::pow(_y - point._y, 2), 0.5);
+    }
 
     Point();
 
@@ -26,6 +31,10 @@ struct Bound {
     float _y;
     float _w;
     float _h;
+
+    QPointF center() {
+        return {_x + _w / 2, _y + _h / 2};
+    }
 
     Bound();
 
@@ -68,12 +77,31 @@ struct Shape {
     virtual void setBound(Bound rectF) = 0;
 
     virtual void transform(float x, float y) = 0;
-    virtual bool getAnchor(QPointF point,QPointF & value) = 0;
-    bool _isSelected;
+
+    virtual bool getNearestAnchor(QPointF point, QPointF &value) = 0;
+
+    virtual bool checkNearAnchor(QPointF point, QPointF &target, double value = 5) = 0;
+
+    virtual bool isContained(QPointF pointF) = 0;
+
+    virtual bool isSelected() {
+        return _isSelected;
+    }
+
+    virtual void setSelected(bool selected) {
+        _isSelected = selected;
+    }
+
     bool _isShowAncher;
     std::string _id;
     std::string _preID;
     std::string _nextID;
+    Color _bColor;
+    Color _fColor;
+    int _type;
+protected:
+    bool _isSelected;
+
 };
 
 
