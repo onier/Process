@@ -22,7 +22,7 @@ struct Action {
     virtual ActionType getActionType() = 0;
 
     std::shared_ptr<ProcessGraphics>  _processGraphics;
-    std::shared_ptr<Shape> _shape;
+    std::shared_ptr<Shape> _sourceShape;
 };
 
 

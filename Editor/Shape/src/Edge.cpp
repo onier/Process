@@ -169,9 +169,19 @@ bool Edge::isContained(QPointF pointF) {
     float lineL = _start.distance(_end);
     float l1 = _start.distance({(float) pointF.x(), (float) pointF.y()});
     float l2 = _end.distance({(float) pointF.x(), (float) pointF.y()});
-    LOG(INFO) << lineL << "    " << l1 << "    " << l2 << "    " << lineL - l1 - l2;
     if (std::abs(lineL - l1 - l2) < 1) {
         return true;
     }
     return false;
+}
+
+void Edge::setStartShape(std::shared_ptr<Shape> shape) {
+    if(!shape){
+        LOG(INFO)<<"aaaa";
+    }
+    _startShape = shape;
+}
+
+void Edge::setEndShape(std::shared_ptr<Shape> shape) {
+    _endShape = shape;
 }

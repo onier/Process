@@ -52,8 +52,8 @@ void ProcessEditor::mousePressEvent(QMouseEvent *event) {
             if (type == INVALID) {
                 _isEnableAction = false;
             } else {
-                _actions[type]->_shape = _currentSelectShape;
                 _actions[type]->_processGraphics = _graphics;
+                _actions[type]->_sourceShape=_currentSelectShape;
                 _currentAction = _actions[type];
                 _currentAction->startAction(event->posF());
                 _isEnableAction = true;
@@ -102,15 +102,13 @@ void ProcessEditor::mouseMoveEvent(QMouseEvent *event) {
             if (_currentSelectShape) {
                 QPointF p;
                 auto d = Point(_pressPoint).distance(Point(event->posF()));
-                LOG(INFO)<<_pressPoint.x()<<"   "<<_pressPoint.y()<<"   "<<event->posF().x()<<" "<<event->posF().y()<<" mouse move disssssssss "<<d;
-                if ( d> 6) {
+//                if ( d> 6) {
                     auto type = _currentSelectShape->checkActionAnchor(event->posF(), p);
                     if (type == INVALID) {
-                        LOG(INFO) << " mousePressEvent type " << type;
                         _isEnableAction = false;
                         _isEnableMove = true;
                     }
-                }
+//                }
             }
         }
     }

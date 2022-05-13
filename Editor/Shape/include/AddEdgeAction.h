@@ -24,7 +24,6 @@ public:
     ActionType getActionType() override;
 
     QPointF _startPoint;
-    std::shared_ptr<Shape> _sourceShape;
     std::shared_ptr<Edge> _edge;
 };
 

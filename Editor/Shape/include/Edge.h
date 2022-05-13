@@ -38,10 +38,14 @@ public:
     bool isContained(QPointF pointF) override;
 
     Point _start, _end;
-    std::shared_ptr<Shape> _startShape, _endShape;
 
+    void setStartShape(std::shared_ptr<Shape> shape);
+
+    void setEndShape(std::shared_ptr<Shape> shape);
 private:
     void recompute();
+
+    std::shared_ptr<Shape> _startShape, _endShape;
 };
 
 

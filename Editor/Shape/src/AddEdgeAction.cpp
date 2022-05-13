@@ -10,7 +10,6 @@ AddEdgeAction::AddEdgeAction() {
 
 bool AddEdgeAction::startAction(QPointF pointF) {
     _startPoint = pointF;
-    _sourceShape = _processGraphics->getShape(pointF);
     if (_sourceShape) {
         return true;
     } else {
@@ -19,11 +18,10 @@ bool AddEdgeAction::startAction(QPointF pointF) {
 }
 
 bool AddEdgeAction::doAction(QPointF pointF) {
-    LOG(INFO) << " AddEdgeAction::doAction ";
     if (!_edge) {
         _edge = std::make_shared<Edge>();
         _edge->_start = {(float) _startPoint.x(), (float) _startPoint.y()};
-        _edge->_startShape = _sourceShape;
+        _edge->setStartShape(_sourceShape);
         _edge->_end = {(float) pointF.x(), (float) pointF.y()};
         _edge->setSelected(true);
         _edge->_isShowAncher = true;
@@ -31,7 +29,8 @@ bool AddEdgeAction::doAction(QPointF pointF) {
     } else {
         const std::shared_ptr<Shape> &target = _processGraphics->getShape(pointF,EDGE);
         if (target ) {
-            _edge->_endShape = target;
+            LOG(INFO)<<"reach target ";
+            _edge->setEndShape(target);
         } else {
             _edge->_end = {(float) pointF.x(), (float) pointF.y()};
         }
