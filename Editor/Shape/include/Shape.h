@@ -10,6 +10,7 @@
 #include "QPointF"
 #include "rttr/registration.h"
 #include "cmath"
+#include "Datas.h"
 
 struct Point {
     float _x;
@@ -17,6 +18,10 @@ struct Point {
 
     float distance(Point point) {
         return std::pow(std::pow(_x - point._x, 2) + std::pow(_y - point._y, 2), 0.5);
+    }
+
+    Point(QPointF pointF) : _x(pointF.x()), _y(pointF.y()) {
+
     }
 
     Point();
@@ -80,7 +85,7 @@ struct Shape {
 
     virtual bool getNearestAnchor(QPointF point, QPointF &value) = 0;
 
-    virtual bool checkNearAnchor(QPointF point, QPointF &target, double value = 5) = 0;
+    virtual ActionType checkActionAnchor(QPointF point, QPointF &target, double value = 5) = 0;
 
     virtual bool isContained(QPointF pointF) = 0;
 
@@ -98,7 +103,7 @@ struct Shape {
     std::string _nextID;
     Color _bColor;
     Color _fColor;
-    int _type;
+    ShapeType _type;
 protected:
     bool _isSelected;
 

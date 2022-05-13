@@ -12,7 +12,7 @@ Circle::Circle() {
     _fColor = {0, 0, 0};
     _isSelected = false;
     _isShowAncher = false;
-    _type = 2;
+    _type = CIRCLE;
 }
 
 Bound Circle::getBound() {
@@ -124,15 +124,15 @@ bool Circle::getNearestAnchor(QPointF point, QPointF &value) {
     return true;
 }
 
-bool Circle::checkNearAnchor(QPointF point, QPointF &target, double value) {
+ActionType Circle::checkActionAnchor(QPointF point, QPointF &target, double value) {
     auto as = getAnchorPoints();
     for (auto &a: as) {
         if (std::pow(std::pow((a.x() - point.x()), 2) + std::pow((a.y() - point.y()), 2), 0.5) < value) {
             target = a;
-            return true;
+            return ADDEDGE;
         }
     }
-    return false;
+    return INVALID;
 }
 
 bool Circle::isContained(QPointF pointF) {

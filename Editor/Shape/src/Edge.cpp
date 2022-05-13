@@ -12,7 +12,7 @@ static double TwoPi = 2.0 * Pi;
 Edge::Edge() {
     _bColor = {255, 255, 255};
     _fColor = {0, 0, 0};
-    _type = 1;
+    _type = EDGE;
 }
 
 Bound Edge::getBound() {
@@ -154,15 +154,15 @@ void Edge::recompute() {
     }
 }
 
-bool Edge::checkNearAnchor(QPointF point, QPointF &target, double value) {
+ActionType Edge::checkActionAnchor(QPointF point, QPointF &target, double value) {
     auto as = getAnchorPoints();
     for (auto &a: as) {
         if (std::pow(std::pow((a.x() - point.x()), 2) + std::pow((a.y() - point.y()), 2), 0.5) < value) {
             target = a;
-            return true;
+            return ADDEDGE;
         }
     }
-    return false;
+    return INVALID;
 }
 
 bool Edge::isContained(QPointF pointF) {

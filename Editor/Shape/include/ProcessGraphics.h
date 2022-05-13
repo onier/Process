@@ -28,7 +28,7 @@ public:
 
     void clearSelection();
 
-    std::shared_ptr<Shape> getShape(QPointF pointF, int type = 0);
+    std::shared_ptr<Shape> getShape(QPointF pointF, ShapeType type = NO);
 
     std::vector<std::shared_ptr<Shape>> getSelectShapes();
 

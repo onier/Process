@@ -26,7 +26,7 @@ void ProcessGraphics::notify(std::shared_ptr<Shape> shape, ShapeStatus status) {
     }
 }
 
-std::shared_ptr<Shape> ProcessGraphics::getShape(QPointF pointF, int type) {
+std::shared_ptr<Shape> ProcessGraphics::getShape(QPointF pointF, ShapeType type) {
     for (auto &s: _shapes) {
         auto b = s->getBound();
 //        if (QRectF(b._x, b._y, b._w, b._h).contains(pointF)) {

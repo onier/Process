@@ -33,7 +33,7 @@ public:
 
     bool getNearestAnchor(QPointF point, QPointF &value) override;
 
-    bool checkNearAnchor(QPointF point, QPointF &target, double value) override;
+    ActionType checkActionAnchor(QPointF point, QPointF &target, double value) override;
 
     bool isContained(QPointF pointF) override;
 

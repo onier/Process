@@ -8,8 +8,10 @@
 #include "glog/logging.h"
 #include "QMimeData"
 #include "Edge.h"
+#include "AddEdgeAction.h"
 
 ProcessEditor::ProcessEditor(QWidget *parent, Qt::WindowFlags f) : QWidget(parent, f) {
+    _actions.insert({ADDEDGE, std::make_shared<AddEdgeAction>()});
     _graphics = std::make_shared<ProcessGraphics>();
     std::shared_ptr<Circle> circle1 = std::make_shared<Circle>();
     circle1->setBound({10, 10, 100, 100});
@@ -18,13 +20,15 @@ ProcessEditor::ProcessEditor(QWidget *parent, Qt::WindowFlags f) : QWidget(paren
     std::shared_ptr<Circle> circle2 = std::make_shared<Circle>();
     circle2->setBound({170, 170, 100, 100});
     _graphics->addShape(circle2);
-    std::shared_ptr<Edge> edge = std::make_shared<Edge>();
-    edge->_startShape = circle1;
-    edge->_endShape = circle2;
-    edge->_isShowAncher= false;
-    edge->setSelected(false);
-    _graphics->addShape(edge);
+//    std::shared_ptr<Edge> edge = std::make_shared<Edge>();
+//    edge->_startShape = circle1;
+//    edge->_endShape = circle2;
+//    edge->_isShowAncher = false;
+//    edge->setSelected(false);
+//    _graphics->addShape(edge);
     setAcceptDrops(true);
+    _isEnableMove = false;
+    _isEnableAction = false;
 }
 
 void ProcessEditor::paintEvent(QPaintEvent *event) {
@@ -37,102 +41,98 @@ void ProcessEditor::paintEvent(QPaintEvent *event) {
 }
 
 void ProcessEditor::mousePressEvent(QMouseEvent *event) {
+    _mousePoint = event->posF();
+    _pressPoint = event->posF();
+    _status = 1;
     {
-        if(_currentSelectShape){
+        if (_currentSelectShape) {
             QPointF p;
-            if(_currentSelectShape->checkNearAnchor(event->posF(),p)){
-                LOG(INFO)<<"xxxxxxxxxxxxxx ";
+            auto type = _currentSelectShape->checkActionAnchor(event->posF(), p);
+            LOG(INFO) << " mousePressEvent type " << type;
+            if (type == INVALID) {
+                _isEnableAction = false;
+            } else {
+                _actions[type]->_shape = _currentSelectShape;
+                _actions[type]->_processGraphics = _graphics;
+                _currentAction = _actions[type];
+                _currentAction->startAction(event->posF());
+                _isEnableAction = true;
+                _isEnableMove = false;
             }
         }
     }
-    _isPress = true;
-    _pressPoint = event->posF();
-    auto s = _graphics->getShape(event->posF());
-    if (s) {
-        if (s->isSelected() && !isAtAnchor(event->posF())) {
-//            s->setSelected(!s->isSelected());_current
-        } else {
-            _currentSelectShape = s;
-            s->setSelected(true);
-        }
-    } else {
-        if (!checkAddEdge(event))
-            _graphics->clearSelection();
-    }
-    repaint();
     QWidget::mousePressEvent(event);
 }
 
 void ProcessEditor::mouseReleaseEvent(QMouseEvent *event) {
-    _isPress = false;
-    auto s = _graphics->getShape(event->posF());
-    if (!s) {
-        _currentSelectShape = nullptr;
-        _graphics->clearSelection();
-        repaint();
-    }
-    if (_currentEdge) {
-        _currentEdge->_isShowAncher = false;
-        _currentEdge->setSelected(false);
-        if (_currentEdge->_endShape)
-            _currentEdge->_endShape->_isShowAncher = false;
-        _currentEdge = nullptr;
+    _status = 3;
+    if (_isEnableMove) {
+        _isEnableMove = false;
+        return;
+    } else if (_isEnableAction) {
+        _isEnableAction = false;
+        if (_currentAction) {
+            _currentAction->endAction(event->posF());
+            _currentAction = nullptr;
+            repaint();
+        }
+        _currentSelectShape = 0;
+    } else {
+        auto s = _graphics->getShape(event->posF());
+        if (!s) {
+            _currentSelectShape = nullptr;
+            _graphics->clearSelection();
+        } else {
+            if (s->isSelected()) {
+                s->_isShowAncher = false;
+            }
+            s->setSelected(!s->isSelected());
+            if (s->isSelected()) {
+                _currentSelectShape = s;
+            }
+        }
         repaint();
     }
     QWidget::mouseReleaseEvent(event);
 }
 
-bool ProcessEditor::isAtAnchor(QPointF pointF) {
-    auto selects = _graphics->getSelectShapes();
-    for (auto &s: selects) {
-        QPointF target;
-        if (s->checkNearAnchor(pointF, target)) {
-            return true;
-        }
-    }
-    return false;
-}
-
-bool ProcessEditor::checkAddEdge(QMouseEvent *event) {
-    auto selects = _graphics->getSelectShapes();
-    for (auto &s: selects) {
-        QPointF target;
-        if (s->checkNearAnchor(event->posF(), target)) {
-            _currentEdge = std::make_shared<Edge>();
-            _currentEdge->_startShape = s;
-            _currentEdge->_start = {(float) target.x(), (float) target.y()};
-            _currentEdge->_end = {(float) event->posF().x(), (float) event->posF().y()};
-            _graphics->addShape(_currentEdge);
-            return true;
-        }
-    }
-    return false;
-}
-
 void ProcessEditor::mouseMoveEvent(QMouseEvent *event) {
-    if (_isPress) {
-        if (_currentEdge) {
-            std::shared_ptr<Shape> target = _graphics->getShape(event->posF(), 1);
-            if (target && (target != _currentEdge->_startShape)) {
-                _currentEdge->_endShape = target;
-                target->_isShowAncher = true;
-            } else {
-                _currentEdge->_endShape = nullptr;
-                _currentEdge->_end = {(float) event->posF().x(), (float) event->posF().y()};
-            }
-        } else {
-            if (!checkAddEdge(event)) {
-                int x = event->posF().x() - _pressPoint.x();
-                int y = event->posF().y() - _pressPoint.y();
-                auto selects = _graphics->getSelectShapes();
-                for (auto &s: selects) {
-                    s->transform(x, y);
+    {
+        if (_status == 1) {
+            if (_currentSelectShape) {
+                QPointF p;
+                auto d = Point(_pressPoint).distance(Point(event->posF()));
+                LOG(INFO)<<_pressPoint.x()<<"   "<<_pressPoint.y()<<"   "<<event->posF().x()<<" "<<event->posF().y()<<" mouse move disssssssss "<<d;
+                if ( d> 6) {
+                    auto type = _currentSelectShape->checkActionAnchor(event->posF(), p);
+                    if (type == INVALID) {
+                        LOG(INFO) << " mousePressEvent type " << type;
+                        _isEnableAction = false;
+                        _isEnableMove = true;
+                    }
                 }
-                _pressPoint = event->posF();
             }
+        }
+    }
+    _status = 2;
+    if (_isEnableAction) {
+        if (_currentSelectShape) {
+            _currentAction->doAction(event->posF());
+            repaint();
+        }
+    } else if (_isEnableMove) {
+        float x = event->posF().x() - _mousePoint.x();
+        float y = event->posF().y() - _mousePoint.y();
+        auto ss = _graphics->getSelectShapes();
+        for (auto &s: ss) {
+            Bound b = s->getBound();
+            b._x = b._x + x;
+            b._y = b._y + y;
+            s->setBound(b);
         }
         repaint();
     }
+    _mousePoint = event->posF();
     QWidget::mouseMoveEvent(event);
 }
 

@@ -34,14 +34,15 @@ public:
 
     bool getNearestAnchor(QPointF point, QPointF &value) override;
 
-    bool checkNearAnchor(QPointF point, QPointF &target, double value) override;
+    ActionType checkActionAnchor(QPointF point, QPointF &target, double value) override;
 
     bool isContained(QPointF pointF) override;
 
     Point _center;
     float _r;
     Bound _bound;
-
+    QPointF _startActionPos;
+    Bound _old_bound;
 RTTR_ENABLE(Circle)
 };
 

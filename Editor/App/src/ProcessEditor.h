@@ -10,6 +10,7 @@
 #include "Shape.h"
 #include "ProcessGraphics.h"
 #include "Edge.h"
+#include "Action.h"
 
 class ProcessEditor : public QWidget {
 Q_OBJECT
@@ -31,14 +32,13 @@ protected:
 
     void dropEvent(QDropEvent *event) override;
 
-    bool checkAddEdge(QMouseEvent *event);
-
-    bool isAtAnchor(QPointF pointF);
-
-    bool _isPress;
-    QPointF _pressPoint;
-    std::shared_ptr<Edge> _currentEdge;
+    int _status;
+    bool _isEnableAction;
+    bool _isEnableMove;
+    QPointF _mousePoint,_pressPoint;
     std::shared_ptr<Shape> _currentSelectShape;
+    std::map<ActionType, std::shared_ptr<Action>> _actions;
+    std::shared_ptr<Action> _currentAction;
 };
 
 
