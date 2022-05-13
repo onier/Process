@@ -9,9 +9,11 @@
 #include "QMimeData"
 #include "Edge.h"
 #include "AddEdgeAction.h"
+#include "EditEdgeAction.h"
 
 ProcessEditor::ProcessEditor(QWidget *parent, Qt::WindowFlags f) : QWidget(parent, f) {
     _actions.insert({ADD_EDGE, std::make_shared<AddEdgeAction>()});
+    _actions.insert({EDIT_EDGE, std::make_shared<EditEdgeAction>()});
     _graphics = std::make_shared<ProcessGraphics>();
     std::shared_ptr<Circle> circle1 = std::make_shared<Circle>();
     circle1->setBound({10, 10, 100, 100});
@@ -52,7 +54,7 @@ void ProcessEditor::mousePressEvent(QMouseEvent *event) {
                 _isEnableAction = false;
             } else {
                 _actions[type]->_processGraphics = _graphics;
-                _actions[type]->_sourceShape=_currentSelectShape;
+                _actions[type]->_sourceShape = _currentSelectShape;
                 _currentAction = _actions[type];
                 _currentAction->startAction(event->posF());
                 _isEnableAction = true;
@@ -102,11 +104,11 @@ void ProcessEditor::mouseMoveEvent(QMouseEvent *event) {
                 QPointF p;
                 auto d = Point(_pressPoint).distance(Point(event->posF()));
 //                if ( d> 6) {
-                    auto type = _currentSelectShape->checkActionAnchor(event->posF(), p);
-                    if (type == INVALID) {
-                        _isEnableAction = false;
-                        _isEnableMove = true;
-                    }
+                auto type = _currentSelectShape->checkActionAnchor(event->posF(), p);
+                if (type == INVALID) {
+                    _isEnableAction = false;
+                    _isEnableMove = true;
+                }
 //                }
             }
         }
