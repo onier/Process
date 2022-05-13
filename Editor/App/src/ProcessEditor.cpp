@@ -11,7 +11,7 @@
 #include "AddEdgeAction.h"
 
 ProcessEditor::ProcessEditor(QWidget *parent, Qt::WindowFlags f) : QWidget(parent, f) {
-    _actions.insert({ADDEDGE, std::make_shared<AddEdgeAction>()});
+    _actions.insert({ADD_EDGE, std::make_shared<AddEdgeAction>()});
     _graphics = std::make_shared<ProcessGraphics>();
     std::shared_ptr<Circle> circle1 = std::make_shared<Circle>();
     circle1->setBound({10, 10, 100, 100});
@@ -48,7 +48,6 @@ void ProcessEditor::mousePressEvent(QMouseEvent *event) {
         if (_currentSelectShape) {
             QPointF p;
             auto type = _currentSelectShape->checkActionAnchor(event->posF(), p);
-            LOG(INFO) << " mousePressEvent type " << type;
             if (type == INVALID) {
                 _isEnableAction = false;
             } else {

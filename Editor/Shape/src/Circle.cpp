@@ -129,7 +129,7 @@ ActionType Circle::checkActionAnchor(QPointF point, QPointF &target, double valu
     for (auto &a: as) {
         if (std::pow(std::pow((a.x() - point.x()), 2) + std::pow((a.y() - point.y()), 2), 0.5) < value) {
             target = a;
-            return ADDEDGE;
+            return ADD_EDGE;
         }
     }
     return INVALID;

@@ -6,7 +6,8 @@
 #define PUPPY_DATAS_H
 enum ActionType {
     INVALID,
-    ADDEDGE
+    ADD_EDGE,
+    EDIT_EDGE
 };
 enum ShapeType {
     NO,

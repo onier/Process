@@ -29,7 +29,6 @@ bool AddEdgeAction::doAction(QPointF pointF) {
     } else {
         const std::shared_ptr<Shape> &target = _processGraphics->getShape(pointF,EDGE);
         if (target ) {
-            LOG(INFO)<<"reach target ";
             _edge->setEndShape(target);
         } else {
             _edge->_end = {(float) pointF.x(), (float) pointF.y()};
@@ -47,5 +46,5 @@ bool AddEdgeAction::endAction(QPointF pointF) {
 }
 
 ActionType AddEdgeAction::getActionType() {
-    return ADDEDGE;
+    return ADD_EDGE;
 }
