@@ -13,6 +13,7 @@ Edge::Edge() {
     _bColor = {255, 255, 255};
     _fColor = {0, 0, 0};
     _type = EDGE;
+    _text = "YES";
 }
 
 Bound Edge::getBound() {
@@ -25,6 +26,13 @@ void Edge::paint(QPainter *painter) {
     recompute();
     paintShadow(painter);
     paintAnchorPoints(painter);
+    int x = std::min(_start._x, _end._x);
+    int y = std::min(_start._y, _end._y);
+    int w = std::abs(_start._x - _end._x);
+    int h = std::abs(_start._y - _end._y);
+    QFontMetrics fm(painter->font());
+    int fw = fm.width(_text.data());
+    painter->drawText(x + w / 2 - fw / 2, y + h / 2, _text.data());
     float arrowSize = 9;
     QPointF sourcePoint{_start._x, _start._y};
     QPointF destPoint{_end._x, _end._y};
@@ -176,8 +184,8 @@ bool Edge::isContained(QPointF pointF) {
 }
 
 void Edge::setStartShape(std::shared_ptr<Shape> shape) {
-    if(!shape){
-        LOG(INFO)<<"aaaa";
+    if (!shape) {
+        LOG(INFO) << "aaaa";
     }
     _startShape = shape;
 }

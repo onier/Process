@@ -101,6 +101,7 @@ struct Shape {
     std::string _id;
     std::string _preID;
     std::string _nextID;
+    std::string _text;
     Color _bColor;
     Color _fColor;
     ShapeType _type;

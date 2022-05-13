@@ -13,6 +13,7 @@ Circle::Circle() {
     _isSelected = false;
     _isShowAncher = false;
     _type = CIRCLE;
+    _text="Start";
 }
 
 Bound Circle::getBound() {
@@ -31,6 +32,13 @@ void Circle::paint(QPainter *painter) {
     painter->drawEllipse(_bound._x + 3, _bound._y + 3, _bound._w - 6, _bound._h - 6);
     paintAnchorPoints(painter);
     paintControllPoints(painter);
+    int x = _bound._x;
+    int y = _bound._y;
+    int w = _bound._w;
+    int h = _bound._h;
+    QFontMetrics fm(painter->font());
+    int fw = fm.width(_text.data());
+    painter->drawText(x + w / 2 - fw / 2, y + h / 2+fm.height()/4, _text.data());
     painter->setPen(pp);
     painter->setBrush(pb);
 }
