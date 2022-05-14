@@ -11,19 +11,14 @@
 #include "AddEdgeAction.h"
 #include "EditEdgeAction.h"
 #include "ResizeShapeAction.h"
+#include "Rectangle.h"
 
 ProcessEditor::ProcessEditor(QWidget *parent, Qt::WindowFlags f) : QWidget(parent, f) {
     _actions.insert({ADD_EDGE, std::make_shared<AddEdgeAction>()});
     _actions.insert({EDIT_EDGE, std::make_shared<EditEdgeAction>()});
     _actions.insert({RESIZE_SHAPE, std::make_shared<ResizeShapeAction>()});
     _graphics = std::make_shared<ProcessGraphics>();
-    std::shared_ptr<Circle> circle1 = std::make_shared<Circle>();
-    circle1->setBound({10, 10, 100, 100});
-    _graphics->addShape(circle1);
 
-    std::shared_ptr<Circle> circle2 = std::make_shared<Circle>();
-    circle2->setBound({170, 170, 100, 100});
-    _graphics->addShape(circle2);
     setAcceptDrops(true);
     _isEnableMove = false;
     _isEnableAction = false;
@@ -131,15 +126,29 @@ void ProcessEditor::mouseMoveEvent(QMouseEvent *event) {
 }
 
 void ProcessEditor::dragEnterEvent(QDragEnterEvent *event) {
-    event->acceptProposedAction();
+    if (event->mimeData()->hasFormat("application/shape_icon"))
+        event->acceptProposedAction();
     QWidget::dragEnterEvent(event);
 }
 
 void ProcessEditor::dropEvent(QDropEvent *event) {
     LOG(INFO) << event->mimeData()->text().toStdString();
-    std::shared_ptr<Circle> circle = std::make_shared<Circle>();
-    circle->setBound({(float) event->posF().x(), (float) event->posF().y(), 100, 100});
-    _graphics->addShape(circle);
+    auto type = event->mimeData()->data("application/shape_icon").at(0);
+    switch (type) {
+        case CIRCLE: {
+            std::shared_ptr<Circle> circle = std::make_shared<Circle>();
+            circle->setBound({(float) event->posF().x(), (float) event->posF().y(), 100, 100});
+            _graphics->addShape(circle);
+            break;
+        }
+        case RECT: {
+            std::shared_ptr<Rectangle> rect = std::make_shared<Rectangle>();
+            rect->setBound({(float) event->posF().x(), (float) event->posF().y(), 100, 100});
+            _graphics->addShape(rect);
+            break;
+        }
+    }
+
     repaint();
     QWidget::dropEvent(event);
 }

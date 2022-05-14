@@ -18,7 +18,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
 TaskListModel *MainWindow::createTaskItemModel() {
     TaskListModel *taskListModel = new TaskListModel();
-    taskListModel->_taskItems.push_back({"Test"});
+    taskListModel->_taskItems.push_back({"Circle",CIRCLE});
+    taskListModel->_taskItems.push_back({"Rect",RECT});
     return taskListModel;
 }
 
