@@ -13,7 +13,7 @@ Circle::Circle() {
     _isSelected = false;
     _isShowAncher = false;
     _type = CIRCLE;
-    _text="Start";
+    _text = "Start";
 }
 
 Bound Circle::getBound() {
@@ -38,7 +38,7 @@ void Circle::paint(QPainter *painter) {
     int h = _bound._h;
     QFontMetrics fm(painter->font());
     int fw = fm.width(_text.data());
-    painter->drawText(x + w / 2 - fw / 2, y + h / 2+fm.height()/4, _text.data());
+    painter->drawText(x + w / 2 - fw / 2, y + h / 2 + fm.height() / 4, _text.data());
     painter->setPen(pp);
     painter->setBrush(pb);
 }
@@ -138,6 +138,14 @@ ActionType Circle::checkActionAnchor(QPointF point, QPointF &target, double valu
         if (std::pow(std::pow((a.x() - point.x()), 2) + std::pow((a.y() - point.y()), 2), 0.5) < value) {
             target = a;
             return ADD_EDGE;
+        }
+    }
+
+    as = getControlPoints();
+    for (auto &a: as) {
+        if (std::pow(std::pow((a.x() - point.x()), 2) + std::pow((a.y() - point.y()), 2), 0.5) < value) {
+            target = a;
+            return RESIZE_SHAPE;
         }
     }
     return INVALID;

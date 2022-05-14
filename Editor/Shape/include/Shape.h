@@ -37,6 +37,13 @@ struct Bound {
     float _w;
     float _h;
 
+    Bound(QPointF p1, QPointF p2) {
+        _x = std::min(p1.x(), p2.x());
+        _y = std::min(p1.y(), p2.y());
+        _w = std::abs(p1.x() - p2.x());
+        _h = std::abs(p1.y() - p2.y());
+    }
+
     QPointF center() {
         return {_x + _w / 2, _y + _h / 2};
     }

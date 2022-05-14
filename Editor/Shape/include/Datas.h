@@ -7,7 +7,8 @@
 enum ActionType {
     INVALID,
     ADD_EDGE,
-    EDIT_EDGE
+    EDIT_EDGE,
+    RESIZE_SHAPE
 };
 enum ShapeType {
     NO,

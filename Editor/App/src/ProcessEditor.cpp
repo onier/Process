@@ -10,10 +10,12 @@
 #include "Edge.h"
 #include "AddEdgeAction.h"
 #include "EditEdgeAction.h"
+#include "ResizeShapeAction.h"
 
 ProcessEditor::ProcessEditor(QWidget *parent, Qt::WindowFlags f) : QWidget(parent, f) {
     _actions.insert({ADD_EDGE, std::make_shared<AddEdgeAction>()});
     _actions.insert({EDIT_EDGE, std::make_shared<EditEdgeAction>()});
+    _actions.insert({RESIZE_SHAPE, std::make_shared<ResizeShapeAction>()});
     _graphics = std::make_shared<ProcessGraphics>();
     std::shared_ptr<Circle> circle1 = std::make_shared<Circle>();
     circle1->setBound({10, 10, 100, 100});
@@ -22,12 +24,6 @@ ProcessEditor::ProcessEditor(QWidget *parent, Qt::WindowFlags f) : QWidget(paren
     std::shared_ptr<Circle> circle2 = std::make_shared<Circle>();
     circle2->setBound({170, 170, 100, 100});
     _graphics->addShape(circle2);
-//    std::shared_ptr<Edge> edge = std::make_shared<Edge>();
-//    edge->_startShape = circle1;
-//    edge->_endShape = circle2;
-//    edge->_isShowAncher = false;
-//    edge->setSelected(false);
-//    _graphics->addShape(edge);
     setAcceptDrops(true);
     _isEnableMove = false;
     _isEnableAction = false;
@@ -77,7 +73,6 @@ void ProcessEditor::mouseReleaseEvent(QMouseEvent *event) {
             _currentAction = nullptr;
             repaint();
         }
-        _currentSelectShape = 0;
     } else {
         auto s = _graphics->getShape(event->posF());
         if (!s) {
