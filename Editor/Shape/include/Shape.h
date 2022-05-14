@@ -28,7 +28,7 @@ struct Point {
 
     Point(float x, float y) : _x(x), _y(y) {}
 
-RTTR_ENABLE(Point)
+RTTR_ENABLE()
 };
 
 struct Bound {

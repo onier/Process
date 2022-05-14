@@ -43,7 +43,7 @@ public:
     Bound _bound;
     QPointF _startActionPos;
     Bound _old_bound;
-RTTR_ENABLE(Circle)
+RTTR_ENABLE()
 };
 
 

@@ -97,7 +97,10 @@ std::vector<QPointF> Rectangle::getAnchorPoints() {
 }
 
 std::vector<QPointF> Rectangle::getControlPoints() {
-    return std::vector<QPointF>();
+    return {{_bound._x,             _bound._y},
+            {_bound._x + _bound._w, _bound._y},
+            {_bound._x + _bound._w, _bound._y + _bound._h},
+            {_bound._x,             _bound._y + _bound._h}};
 }
 
 void Rectangle::paintAxis(QPainter *painter) {
