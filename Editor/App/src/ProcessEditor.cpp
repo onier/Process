@@ -2,6 +2,8 @@
 // Created by xuzhenhai on 2022/5/12.
 //
 
+#include <ExclusiveShape.h>
+#include <EventShape.h>
 #include "ProcessEditor.h"
 #include "Circle.h"
 #include "QMouseEvent"
@@ -12,6 +14,7 @@
 #include "EditEdgeAction.h"
 #include "ResizeShapeAction.h"
 #include "Rectangle.h"
+#include "ParallelShape.h"
 
 ProcessEditor::ProcessEditor(QWidget *parent, Qt::WindowFlags f) : QWidget(parent, f) {
     _actions.insert({ADD_EDGE, std::make_shared<AddEdgeAction>()});
@@ -143,6 +146,24 @@ void ProcessEditor::dropEvent(QDropEvent *event) {
         }
         case RECT: {
             std::shared_ptr<Rectangle> rect = std::make_shared<Rectangle>();
+            rect->setBound({(float) event->posF().x(), (float) event->posF().y(), 100, 100});
+            _graphics->addShape(rect);
+            break;
+        }
+        case ExclusiveGateway: {
+            std::shared_ptr<ExclusiveShape> rect = std::make_shared<ExclusiveShape>();
+            rect->setBound({(float) event->posF().x(), (float) event->posF().y(), 100, 100});
+            _graphics->addShape(rect);
+            break;
+        }
+        case ParallelGateway: {
+            std::shared_ptr<ParallelShape> rect = std::make_shared<ParallelShape>();
+            rect->setBound({(float) event->posF().x(), (float) event->posF().y(), 100, 100});
+            _graphics->addShape(rect);
+            break;
+        }
+        case EventGateway: {
+            std::shared_ptr<EventShape> rect = std::make_shared<EventShape>();
             rect->setBound({(float) event->posF().x(), (float) event->posF().y(), 100, 100});
             _graphics->addShape(rect);
             break;

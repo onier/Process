@@ -20,6 +20,9 @@ TaskListModel *MainWindow::createTaskItemModel() {
     TaskListModel *taskListModel = new TaskListModel();
     taskListModel->_taskItems.push_back({"Circle",CIRCLE});
     taskListModel->_taskItems.push_back({"Rect",RECT});
+    taskListModel->_taskItems.push_back({"ExclusiveGateway",ExclusiveGateway});
+    taskListModel->_taskItems.push_back({"ParallelShape",ParallelGateway});
+    taskListModel->_taskItems.push_back({"EventShape",EventGateway});
     return taskListModel;
 }
 

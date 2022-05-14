@@ -14,6 +14,9 @@ enum ShapeType {
     NO,
     EDGE,
     CIRCLE,
-    RECT
+    RECT,
+    ExclusiveGateway,
+    ParallelGateway,
+    EventGateway
 };
 #endif //PUPPY_DATAS_H
