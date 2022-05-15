@@ -24,6 +24,7 @@ void EndTaskShape::paint(QPainter *painter) {
     auto pp = painter->pen();
     paintShadow(painter);
     QPen pen;
+    pen.setWidth(4);
     pen.setColor({_fColor._r, _fColor._g, _fColor._b});
     painter->setPen(pen);
     QBrush brush({{_bColor._r, _bColor._g, _bColor._b}});

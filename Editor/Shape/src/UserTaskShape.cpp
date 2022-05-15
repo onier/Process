@@ -9,7 +9,7 @@ UserTaskShape::UserTaskShape() {
     _fColor = {0, 0, 0};
     _isSelected = false;
     _isShowAncher = false;
-    _text = "Start";
+    _text = "UserTask";
 }
 
 Bound UserTaskShape::getBound() {

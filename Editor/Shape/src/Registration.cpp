@@ -9,6 +9,7 @@
 #include "ExclusiveGatewayShape.h"
 #include "ParallelGatewayShape.h"
 #include "SubProcessTaskShape.h"
+#include "EventGatewayShape.h"
 #include "UserTaskShape.h"
 
 RTTR_REGISTRATION {
@@ -95,6 +96,16 @@ RTTR_REGISTRATION {
                             rttr::policy::ctor::as_std_shared_ptr
                     )
             .property("Bound", &UserTaskShape::_bound);
+
+    rttr::registration::class_<EventGatewayShape>("EventGatewayShape")
+            (
+                    rttr::metadata("key", "Shape")
+            )
+            .constructor<>()
+                    (
+                            rttr::policy::ctor::as_std_shared_ptr
+                    )
+            .property("Bound", &EventGatewayShape::_bound);
 
     rttr::registration::class_<AddEdgeAction>("AddEdgeAction")
             (

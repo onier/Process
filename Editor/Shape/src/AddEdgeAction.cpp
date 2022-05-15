@@ -2,6 +2,7 @@
 // Created by xuzhenhai on 2022/5/13.
 //
 
+#include <TaskShape.h>
 #include "AddEdgeAction.h"
 #include "glog/logging.h"
 
@@ -27,7 +28,7 @@ bool AddEdgeAction::doAction(QPointF pointF) {
         _edge->_isShowAncher = true;
         _processGraphics->addShape(_edge);
     } else {
-        const std::shared_ptr<Shape> &target = _processGraphics->getShape<Edge>(pointF);
+        const std::shared_ptr<Shape> &target = _processGraphics->getShape<TaskShape>(pointF);
         if (target ) {
             _edge->setEndShape(target);
         } else {

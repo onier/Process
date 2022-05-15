@@ -21,7 +21,7 @@ ProcessEditor::ProcessEditor(QWidget *parent, Qt::WindowFlags f) : QWidget(paren
 void ProcessEditor::initTaskAction() {
     auto actions = puppy::common::library::get<Action>("ShapeAction");
     for (auto a:actions) {
-        LOG(INFO)<<"init action " <<a->getActionType();
+        LOG(INFO) << "init action " << a->getActionType();
         _actions.insert({a->getActionType(), a});
     }
 }
@@ -136,8 +136,13 @@ void ProcessEditor::dragEnterEvent(QDragEnterEvent *event) {
 void ProcessEditor::dropEvent(QDropEvent *event) {
     LOG(INFO) << event->mimeData()->text().toStdString();
     auto type = event->mimeData()->data("application/shape_icon").toStdString();
-    const rttr::type &shapeType = rttr::type::get_by_name(type + "Shape");
+     rttr::type shapeType = rttr::type::get_by_name(type + "Shape");
     if (shapeType.is_valid()) {
+        std::shared_ptr<Shape> shape = shapeType.create().get_value<std::shared_ptr<Shape>>();
+        shape->setBound({(float) event->posF().x(), (float) event->posF().y(), 100, 100});
+        _graphics->addShape(shape);
+    } else {
+        shapeType = rttr::type::get_by_name("UserTaskShape");
         std::shared_ptr<Shape> shape = shapeType.create().get_value<std::shared_ptr<Shape>>();
         shape->setBound({(float) event->posF().x(), (float) event->posF().y(), 100, 100});
         _graphics->addShape(shape);
