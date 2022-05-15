@@ -2,15 +2,15 @@
 // Created by xuzhenhai on 2022/5/12.
 //
 
-#ifndef PUPPY_CIRCLE_H
-#define PUPPY_CIRCLE_H
+#ifndef PUPPY_STARTTASKSHAPE_H
+#define PUPPY_STARTTASKSHAPE_H
 
-#include "Shape.h"
+#include "TaskShape.h"
 #include "rttr/registration.h"
 
-class Circle : public Shape {
+class StartTaskShape : public TaskShape {
 public:
-    Circle();
+    StartTaskShape();
 
     Bound getBound() override;
 
@@ -34,7 +34,7 @@ public:
 
     bool getNearestAnchor(QPointF point, QPointF &value) override;
 
-    ActionType checkActionAnchor(QPointF point, QPointF &target, double value) override;
+    std::string checkActionAnchor(QPointF point, QPointF &target, double value) override;
 
     bool isContained(QPointF pointF) override;
 
@@ -47,4 +47,4 @@ RTTR_ENABLE()
 };
 
 
-#endif //PUPPY_CIRCLE_H
+#endif //PUPPY_STARTTASKSHAPE_H

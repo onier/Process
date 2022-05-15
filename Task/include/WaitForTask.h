@@ -13,6 +13,8 @@ public:
 
     void run(std::shared_ptr<Process::ProcessContext> manager) override;
 
+    std::string getTaskType() override;
+
     std::string _valueName;
     std::string _value;
     std::string _type;

@@ -1,30 +1,29 @@
 //
 // Created by xuzhenhai on 2022/5/12.
 //
-
-#include <ExclusiveShape.h>
-#include <EventShape.h>
+#include "Action.h"
 #include "ProcessEditor.h"
-#include "Circle.h"
 #include "QMouseEvent"
 #include "glog/logging.h"
 #include "QMimeData"
 #include "Edge.h"
-#include "AddEdgeAction.h"
-#include "EditEdgeAction.h"
-#include "ResizeShapeAction.h"
-#include "Rectangle.h"
-#include "ParallelShape.h"
+#include "Library.h"
 
 ProcessEditor::ProcessEditor(QWidget *parent, Qt::WindowFlags f) : QWidget(parent, f) {
-    _actions.insert({ADD_EDGE, std::make_shared<AddEdgeAction>()});
-    _actions.insert({EDIT_EDGE, std::make_shared<EditEdgeAction>()});
-    _actions.insert({RESIZE_SHAPE, std::make_shared<ResizeShapeAction>()});
     _graphics = std::make_shared<ProcessGraphics>();
 
     setAcceptDrops(true);
     _isEnableMove = false;
     _isEnableAction = false;
+    initTaskAction();
+}
+
+void ProcessEditor::initTaskAction() {
+    auto actions = puppy::common::library::get<Action>("ShapeAction");
+    for (auto a:actions) {
+        LOG(INFO)<<"init action " <<a->getActionType();
+        _actions.insert({a->getActionType(), a});
+    }
 }
 
 void ProcessEditor::paintEvent(QPaintEvent *event) {
@@ -44,7 +43,7 @@ void ProcessEditor::mousePressEvent(QMouseEvent *event) {
         if (_currentSelectShape) {
             QPointF p;
             auto type = _currentSelectShape->checkActionAnchor(event->posF(), p);
-            if (type == INVALID) {
+            if (type == "INVALID") {
                 _isEnableAction = false;
             } else {
                 _actions[type]->_processGraphics = _graphics;
@@ -72,7 +71,7 @@ void ProcessEditor::mouseReleaseEvent(QMouseEvent *event) {
             repaint();
         }
     } else {
-        auto s = _graphics->getShape(event->posF());
+        auto s = _graphics->getShape<Shape>(event->posF());
         if (!s) {
             _currentSelectShape = nullptr;
             _graphics->clearSelection();
@@ -98,7 +97,7 @@ void ProcessEditor::mouseMoveEvent(QMouseEvent *event) {
                 auto d = Point(_pressPoint).distance(Point(event->posF()));
 //                if ( d> 6) {
                 auto type = _currentSelectShape->checkActionAnchor(event->posF(), p);
-                if (type == INVALID) {
+                if (type == "INVALID") {
                     _isEnableAction = false;
                     _isEnableMove = true;
                 }
@@ -136,40 +135,13 @@ void ProcessEditor::dragEnterEvent(QDragEnterEvent *event) {
 
 void ProcessEditor::dropEvent(QDropEvent *event) {
     LOG(INFO) << event->mimeData()->text().toStdString();
-    auto type = event->mimeData()->data("application/shape_icon").at(0);
-    switch (type) {
-        case CIRCLE: {
-            std::shared_ptr<Circle> circle = std::make_shared<Circle>();
-            circle->setBound({(float) event->posF().x(), (float) event->posF().y(), 100, 100});
-            _graphics->addShape(circle);
-            break;
-        }
-        case RECT: {
-            std::shared_ptr<Rectangle> rect = std::make_shared<Rectangle>();
-            rect->setBound({(float) event->posF().x(), (float) event->posF().y(), 100, 100});
-            _graphics->addShape(rect);
-            break;
-        }
-        case ExclusiveGateway: {
-            std::shared_ptr<ExclusiveShape> rect = std::make_shared<ExclusiveShape>();
-            rect->setBound({(float) event->posF().x(), (float) event->posF().y(), 100, 100});
-            _graphics->addShape(rect);
-            break;
-        }
-        case ParallelGateway: {
-            std::shared_ptr<ParallelShape> rect = std::make_shared<ParallelShape>();
-            rect->setBound({(float) event->posF().x(), (float) event->posF().y(), 100, 100});
-            _graphics->addShape(rect);
-            break;
-        }
-        case EventGateway: {
-            std::shared_ptr<EventShape> rect = std::make_shared<EventShape>();
-            rect->setBound({(float) event->posF().x(), (float) event->posF().y(), 100, 100});
-            _graphics->addShape(rect);
-            break;
-        }
+    auto type = event->mimeData()->data("application/shape_icon").toStdString();
+    const rttr::type &shapeType = rttr::type::get_by_name(type + "Shape");
+    if (shapeType.is_valid()) {
+        std::shared_ptr<Shape> shape = shapeType.create().get_value<std::shared_ptr<Shape>>();
+        shape->setBound({(float) event->posF().x(), (float) event->posF().y(), 100, 100});
+        _graphics->addShape(shape);
     }
-
     repaint();
     QWidget::dropEvent(event);
 }

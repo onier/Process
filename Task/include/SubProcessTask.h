@@ -8,11 +8,11 @@
 #include "TaskManager.h"
 #include "Process.h"
 
-class SubProcessTask : public Process::AbstractTask {
+class SubProcessTaskShape : public Process::AbstractTask {
 public:
-    SubProcessTask();
+    SubProcessTaskShape();
 
-    SubProcessTask(std::shared_ptr<Process::Process> subProcess);
+    SubProcessTaskShape(std::shared_ptr<Process::Process> subProcess);
 
     void run(std::shared_ptr<Process::ProcessContext> context) override;
 
@@ -27,6 +27,8 @@ public:
     bool saveDomElement(xercesc::DOMElement *domElement, std::shared_ptr<xercesc::DOMDocument> document);
 
     bool loadDomElement(xercesc::DOMNode *domElement);
+
+    std::string getTaskType() override;
 
     std::string _processFile;
 

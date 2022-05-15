@@ -52,8 +52,8 @@ bool ResizeShapeAction::endAction(QPointF pointF) {
     return false;
 }
 
-ActionType ResizeShapeAction::getActionType() {
-    return EDIT_EDGE;
+std::string ResizeShapeAction::getActionType() {
+    return "ResizeShapeAction";
 }
 
 ControllerPoint::ControllerPoint(int i, const QPointF &pointF) : _i(i), _pointF(pointF) {}

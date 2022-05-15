@@ -11,3 +11,7 @@ ParallelGateway::ParallelGateway() {
 
 void ParallelGateway::run(std::shared_ptr<Process::ProcessContext> context) {
 }
+
+std::string ParallelGateway::getTaskType() {
+    return "ParallelGateway";
+}

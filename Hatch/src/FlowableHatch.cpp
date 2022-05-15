@@ -415,7 +415,7 @@ std::shared_ptr<Process::Process> parseProcess(std::shared_ptr<PrimitiveProcess>
     processContext->_tasks = primitiveProcess->_tasks;
     for(auto & sub:primitiveProcess->_subProcess){
        auto process = parseProcess(sub,threadCount);
-       processContext->_tasks.push_back(std::shared_ptr<Process::Task>(new SubProcessTask(process)));
+       processContext->_tasks.push_back(std::shared_ptr<Process::Task>(new SubProcessTaskShape(process)));
     }
     return std::make_shared<Process::Process>(processContext);
 }

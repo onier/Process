@@ -23,3 +23,7 @@ void WaitForTask::run(std::shared_ptr<Process::ProcessContext> manager) {
         std::this_thread::sleep_for(std::chrono::milliseconds(5));
     }
 }
+
+std::string WaitForTask::getTaskType() {
+    return "UserTask";
+}

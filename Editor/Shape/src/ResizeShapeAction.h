@@ -22,7 +22,7 @@ public:
 
     bool endAction(QPointF pointF) override;
 
-    ActionType getActionType() override;
+    std::string getActionType() override;
 
     std::vector<ControllerPoint> _controllers;
 

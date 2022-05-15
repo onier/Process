@@ -2,14 +2,14 @@
 // Created by ubuntu on 5/14/22.
 //
 
-#ifndef PUPPY_EVENTSHAPE_H
-#define PUPPY_EVENTSHAPE_H
+#ifndef PUPPY_PARALLELGATEWAYSHAPE_H
+#define PUPPY_PARALLELGATEWAYSHAPE_H
 
-#include "Shape.h"
+#include "TaskShape.h"
 
-class EventShape : public Shape {
+class ParallelGatewayShape : public TaskShape {
 public:
-    EventShape();
+    ParallelGatewayShape();
 
     Bound getBound() override;
 
@@ -33,7 +33,7 @@ public:
 
     bool getNearestAnchor(QPointF point, QPointF &value) override;
 
-    ActionType checkActionAnchor(QPointF point, QPointF &target, double value) override;
+    std::string checkActionAnchor(QPointF point, QPointF &target, double value) override;
 
     bool isContained(QPointF pointF) override;
 
@@ -41,4 +41,4 @@ public:
 };
 
 
-#endif //PUPPY_EVENTSHAPE_H
+#endif //PUPPY_PARALLELGATEWAYSHAPE_H

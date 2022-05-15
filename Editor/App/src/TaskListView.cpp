@@ -35,7 +35,7 @@ void TaskListView::mouseMoveEvent(QMouseEvent *e) {
         int row = QListView::selectedIndexes().at(0).row();
         auto item = _taskListModel->_taskItems.at(row);
 //        mimeData->setText(item._text);
-        mimeData->setData("application/shape_icon",QByteArray(1,item._type));
+        mimeData->setData("application/shape_icon",item._text.toUtf8());
         drag->setMimeData(mimeData);
         drag->setPixmap(QPixmap::fromImage(item._image));
         Qt::DropAction dropAction = drag->exec();
@@ -65,7 +65,3 @@ QVariant TaskListModel::data(const QModelIndex &index, int role) const {
 TaskItemIcon::TaskItemIcon(const QImage &image) : _image(image) {}
 
 TaskItemIcon::TaskItemIcon(const QString &text) : _text(text) {}
-
-TaskItemIcon::TaskItemIcon(QString text, int type) : _text(text), _type(type) {
-
-}

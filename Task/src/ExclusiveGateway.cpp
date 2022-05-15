@@ -63,6 +63,10 @@ ExclusiveGateway::ExclusiveGateway() {
 
 }
 
+std::string ExclusiveGateway::getTaskType() {
+    return "ExclusiveGateway";
+}
+
 ExclusiveRule::ExclusiveRule(const std::string &valueName, Operator op, double value, const std::string &taskId)
         : _valueName(valueName), _operator(op),  _taskID(taskId) {}
 

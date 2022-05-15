@@ -11,3 +11,7 @@ void EventGateway::run(std::shared_ptr<Process::ProcessContext> context) {
 bool EventGateway::initTask(Process::ProcessContext *processContext) {
     return true;
 }
+
+std::string EventGateway::getTaskType() {
+    return "EventGateway";
+}

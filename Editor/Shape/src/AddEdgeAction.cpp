@@ -27,7 +27,7 @@ bool AddEdgeAction::doAction(QPointF pointF) {
         _edge->_isShowAncher = true;
         _processGraphics->addShape(_edge);
     } else {
-        const std::shared_ptr<Shape> &target = _processGraphics->getShape(pointF,EDGE);
+        const std::shared_ptr<Shape> &target = _processGraphics->getShape<Edge>(pointF);
         if (target ) {
             _edge->setEndShape(target);
         } else {
@@ -45,6 +45,6 @@ bool AddEdgeAction::endAction(QPointF pointF) {
     return false;
 }
 
-ActionType AddEdgeAction::getActionType() {
-    return ADD_EDGE;
+std::string AddEdgeAction::getActionType() {
+    return "AddEdgeAction";
 }

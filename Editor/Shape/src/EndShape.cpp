@@ -1,22 +1,25 @@
 //
-// Created by ubuntu on 5/14/22.
+// Created by xuzhenhai on 2022/5/12.
 //
 
-#include "EventGatewayShape.h"
+#include "EndTaskShape.h"
+#include "QPen"
+#include "QPainter"
+#include "cmath"
 
-EventGatewayShape::EventGatewayShape() {
+EndTaskShape::EndTaskShape() {
     _bColor = {255, 255, 255};
     _fColor = {0, 0, 0};
     _isSelected = false;
     _isShowAncher = false;
-    _text = "";
+    _text = "End";
 }
 
-Bound EventGatewayShape::getBound() {
+Bound EndTaskShape::getBound() {
     return _bound;
 }
 
-void EventGatewayShape::paint(QPainter *painter) {
+void EndTaskShape::paint(QPainter *painter) {
     auto pb = painter->brush();
     auto pp = painter->pen();
     paintShadow(painter);
@@ -25,18 +28,7 @@ void EventGatewayShape::paint(QPainter *painter) {
     painter->setPen(pen);
     QBrush brush({{_bColor._r, _bColor._g, _bColor._b}});
     painter->setBrush(brush);
-    QPolygonF polygonF;
-    auto ps = getAnchorPoints();
-    for(auto & p : ps){
-        polygonF.push_back(p);
-    }
-    painter->drawPolygon(polygonF);
-    auto center = _bound.center();
-    auto n = _bound._w/8;
-    polygonF.clear();
-    pen.setWidth(6);
-    painter->setPen(pen);
-    painter->drawEllipse(center.x()-2*n,center.y()-2*n,4*n,4*n);
+    painter->drawEllipse(_bound._x + 3, _bound._y + 3, _bound._w - 6, _bound._h - 6);
     paintAnchorPoints(painter);
     paintControllPoints(painter);
     int x = _bound._x;
@@ -50,7 +42,7 @@ void EventGatewayShape::paint(QPainter *painter) {
     painter->setBrush(pb);
 }
 
-void EventGatewayShape::paintShadow(QPainter *painter) {
+void EndTaskShape::paintShadow(QPainter *painter) {
     auto pb = painter->brush();
     auto pp = painter->pen();
     if (_isSelected) {
@@ -63,7 +55,14 @@ void EventGatewayShape::paintShadow(QPainter *painter) {
     painter->setBrush(pb);
 }
 
-void EventGatewayShape::paintAnchorPoints(QPainter *painter) {
+std::vector<QPointF> EndTaskShape::getControlPoints() {
+    return {{_bound._x,             _bound._y},
+            {_bound._x + _bound._w, _bound._y},
+            {_bound._x + _bound._w, _bound._y + _bound._h},
+            {_bound._x,             _bound._y + _bound._h}};
+}
+
+void EndTaskShape::paintAnchorPoints(QPainter *painter) {
     if (_isShowAncher || _isSelected) {
         auto anchors = getAnchorPoints();
         auto pb = painter->brush();
@@ -81,7 +80,27 @@ void EventGatewayShape::paintAnchorPoints(QPainter *painter) {
     }
 }
 
-void EventGatewayShape::paintControllPoints(QPainter *painter) {
+std::vector<QPointF> EndTaskShape::getAnchorPoints() {
+    return {{_bound._x + _bound._w / 2, _bound._y},
+            {_bound._x + _bound._w,     _bound._y + _bound._h / 2},
+            {_bound._x + _bound._w / 2, _bound._y + _bound._h},
+            {_bound._x,                 _bound._y + _bound._h / 2}};
+}
+
+void EndTaskShape::paintAxis(QPainter *painter) {
+
+}
+
+void EndTaskShape::setBound(Bound rectF) {
+    _bound = rectF;
+}
+
+void EndTaskShape::transform(float x, float y) {
+    _bound._x += x;
+    _bound._y += y;
+}
+
+void EndTaskShape::paintControllPoints(QPainter *painter) {
     if (_isSelected) {
         auto anchors = getControlPoints();
         auto pb = painter->brush();
@@ -99,33 +118,7 @@ void EventGatewayShape::paintControllPoints(QPainter *painter) {
     }
 }
 
-std::vector<QPointF> EventGatewayShape::getAnchorPoints() {
-    return {{_bound._x + _bound._w / 2, _bound._y},
-            {_bound._x + _bound._w,     _bound._y + _bound._h / 2},
-            {_bound._x + _bound._w / 2, _bound._y + _bound._h},
-            {_bound._x,                 _bound._y + _bound._h / 2}};
-}
-
-std::vector<QPointF> EventGatewayShape::getControlPoints() {
-    return {{_bound._x,             _bound._y},
-            {_bound._x + _bound._w, _bound._y},
-            {_bound._x + _bound._w, _bound._y + _bound._h},
-            {_bound._x,             _bound._y + _bound._h}};
-}
-
-void EventGatewayShape::paintAxis(QPainter *painter) {
-
-}
-
-void EventGatewayShape::setBound(Bound rectF) {
-    _bound = rectF;
-}
-
-void EventGatewayShape::transform(float x, float y) {
-
-}
-
-bool EventGatewayShape::getNearestAnchor(QPointF point, QPointF &value) {
+bool EndTaskShape::getNearestAnchor(QPointF point, QPointF &value) {
     auto as = getAnchorPoints();
     std::sort(as.begin(), as.end(), [point](QPointF &a1, QPointF &a2) {
         return std::pow(std::pow((a1.x() - point.x()), 2) + std::pow((a1.y() - point.y()), 2), 0.5)
@@ -138,7 +131,7 @@ bool EventGatewayShape::getNearestAnchor(QPointF point, QPointF &value) {
     return true;
 }
 
-std::string EventGatewayShape::checkActionAnchor(QPointF point, QPointF &target, double value) {
+std::string EndTaskShape::checkActionAnchor(QPointF point, QPointF &target, double value) {
     auto as = getAnchorPoints();
     for (auto &a: as) {
         if (std::pow(std::pow((a.x() - point.x()), 2) + std::pow((a.y() - point.y()), 2), 0.5) < value) {
@@ -157,7 +150,7 @@ std::string EventGatewayShape::checkActionAnchor(QPointF point, QPointF &target,
     return "INVALID";
 }
 
-bool EventGatewayShape::isContained(QPointF pointF) {
+bool EndTaskShape::isContained(QPointF pointF) {
     if (QRectF(_bound._x, _bound._y, _bound._w, _bound._h).contains(pointF)) {
         return true;
     }

@@ -10,13 +10,10 @@
 #include <QString>
 #include <QAbstractListModel>
 #include <QListView>
-
+#include "Task.h"
 struct TaskItemIcon {
     QString _text;
     QImage _image;
-    int _type;
-
-    TaskItemIcon(QString text, int type);
 
     TaskItemIcon(const QString &text);
 

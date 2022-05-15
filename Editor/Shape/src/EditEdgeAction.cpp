@@ -17,7 +17,7 @@ bool EditEdgeAction::startAction(QPointF pointF) {
 }
 
 bool EditEdgeAction::doAction(QPointF pointF) {
-    auto shape = _processGraphics->getShape(pointF, EDGE);
+    auto shape = _processGraphics->getShape<Edge>(pointF);
     if (shape) {
         if (_isStart) {
             _edge->setStartShape(shape);
@@ -40,6 +40,6 @@ bool EditEdgeAction::endAction(QPointF pointF) {
     return false;
 }
 
-ActionType EditEdgeAction::getActionType() {
-    return EDIT_EDGE;
+std::string EditEdgeAction::getActionType() {
+    return "EditEdgeAction";
 }

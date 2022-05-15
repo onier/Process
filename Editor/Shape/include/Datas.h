@@ -4,19 +4,20 @@
 
 #ifndef PUPPY_DATAS_H
 #define PUPPY_DATAS_H
-enum ActionType {
-    INVALID,
-    ADD_EDGE,
-    EDIT_EDGE,
-    RESIZE_SHAPE
-};
-enum ShapeType {
-    NO,
-    EDGE,
-    CIRCLE,
-    RECT,
-    ExclusiveGateway,
-    ParallelGateway,
-    EventGateway
-};
+//enum std::string {
+//    INVALID,
+//    AddEdgeAction,
+//    EditEdgeAction,
+//    ResizeShapeAction
+//};
+
+//enum ShapeType {
+//    NO,
+//    EDGE,
+//    CIRCLE,
+//    RECT,
+//    ExclusiveGateway,
+//    ParallelGateway,
+//    EventGateway
+//};
 #endif //PUPPY_DATAS_H

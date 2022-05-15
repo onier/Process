@@ -21,7 +21,7 @@ public:
 
     virtual bool endAction(QPointF pointF);
 
-    ActionType getActionType() override;
+    std::string getActionType() override;
 
     QPointF _startPoint;
     std::shared_ptr<Edge> _edge;

@@ -1,15 +1,15 @@
 //
-// Created by ubuntu on 5/13/22.
+// Created by ubuntu on 5/14/22.
 //
 
-#ifndef PUPPY_RECTANGLE_H
-#define PUPPY_RECTANGLE_H
+#ifndef PUPPY_EXCLUSIVEGATEWAYSHAPE_H
+#define PUPPY_EXCLUSIVEGATEWAYSHAPE_H
 
-#include "Shape.h"
+#include "TaskShape.h"
 
-class Rectangle : public Shape {
+class ExclusiveGatewayShape : public TaskShape {
 public:
-    Rectangle();
+    ExclusiveGatewayShape();
 
     Bound getBound() override;
 
@@ -33,7 +33,7 @@ public:
 
     bool getNearestAnchor(QPointF point, QPointF &value) override;
 
-    ActionType checkActionAnchor(QPointF point, QPointF &target, double value) override;
+    std::string checkActionAnchor(QPointF point, QPointF &target, double value) override;
 
     bool isContained(QPointF pointF) override;
 
@@ -41,4 +41,4 @@ public:
 };
 
 
-#endif //PUPPY_RECTANGLE_H
+#endif //PUPPY_EXCLUSIVEGATEWAYSHAPE_H

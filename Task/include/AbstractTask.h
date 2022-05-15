@@ -35,7 +35,11 @@ namespace Process {
         virtual bool loadDomElement(xercesc::DOMNode *domElement) {
             return false;
         };
+
+        std::string getTaskType() override;
+
     public:
+        std::string _taskType;
         std::string _name;
         std::string _nextTaskID;
         std::string _preTaskID;

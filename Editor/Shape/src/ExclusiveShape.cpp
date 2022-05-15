@@ -2,22 +2,21 @@
 // Created by ubuntu on 5/14/22.
 //
 
-#include "ExclusiveShape.h"
+#include "ExclusiveGatewayShape.h"
 
-ExclusiveShape::ExclusiveShape() {
+ExclusiveGatewayShape::ExclusiveGatewayShape() {
     _bColor = {255, 255, 255};
     _fColor = {0, 0, 0};
     _isSelected = false;
     _isShowAncher = false;
-    _type = CIRCLE;
     _text = "";
 }
 
-Bound ExclusiveShape::getBound() {
+Bound ExclusiveGatewayShape::getBound() {
     return _bound;
 }
 
-void ExclusiveShape::paint(QPainter *painter) {
+void ExclusiveGatewayShape::paint(QPainter *painter) {
     auto pb = painter->brush();
     auto pp = painter->pen();
     paintShadow(painter);
@@ -52,7 +51,7 @@ void ExclusiveShape::paint(QPainter *painter) {
     painter->setBrush(pb);
 }
 
-void ExclusiveShape::paintShadow(QPainter *painter) {
+void ExclusiveGatewayShape::paintShadow(QPainter *painter) {
     auto pb = painter->brush();
     auto pp = painter->pen();
     if (_isSelected) {
@@ -65,7 +64,7 @@ void ExclusiveShape::paintShadow(QPainter *painter) {
     painter->setBrush(pb);
 }
 
-void ExclusiveShape::paintAnchorPoints(QPainter *painter) {
+void ExclusiveGatewayShape::paintAnchorPoints(QPainter *painter) {
     if (_isShowAncher || _isSelected) {
         auto anchors = getAnchorPoints();
         auto pb = painter->brush();
@@ -83,7 +82,7 @@ void ExclusiveShape::paintAnchorPoints(QPainter *painter) {
     }
 }
 
-void ExclusiveShape::paintControllPoints(QPainter *painter) {
+void ExclusiveGatewayShape::paintControllPoints(QPainter *painter) {
     if (_isSelected) {
         auto anchors = getControlPoints();
         auto pb = painter->brush();
@@ -101,33 +100,33 @@ void ExclusiveShape::paintControllPoints(QPainter *painter) {
     }
 }
 
-std::vector<QPointF> ExclusiveShape::getAnchorPoints() {
+std::vector<QPointF> ExclusiveGatewayShape::getAnchorPoints() {
     return {{_bound._x + _bound._w / 2, _bound._y},
             {_bound._x + _bound._w,     _bound._y + _bound._h / 2},
             {_bound._x + _bound._w / 2, _bound._y + _bound._h},
             {_bound._x,                 _bound._y + _bound._h / 2}};
 }
 
-std::vector<QPointF> ExclusiveShape::getControlPoints() {
+std::vector<QPointF> ExclusiveGatewayShape::getControlPoints() {
     return {{_bound._x,             _bound._y},
             {_bound._x + _bound._w, _bound._y},
             {_bound._x + _bound._w, _bound._y + _bound._h},
             {_bound._x,             _bound._y + _bound._h}};
 }
 
-void ExclusiveShape::paintAxis(QPainter *painter) {
+void ExclusiveGatewayShape::paintAxis(QPainter *painter) {
 
 }
 
-void ExclusiveShape::setBound(Bound rectF) {
+void ExclusiveGatewayShape::setBound(Bound rectF) {
     _bound = rectF;
 }
 
-void ExclusiveShape::transform(float x, float y) {
+void ExclusiveGatewayShape::transform(float x, float y) {
 
 }
 
-bool ExclusiveShape::getNearestAnchor(QPointF point, QPointF &value) {
+bool ExclusiveGatewayShape::getNearestAnchor(QPointF point, QPointF &value) {
     auto as = getAnchorPoints();
     std::sort(as.begin(), as.end(), [point](QPointF &a1, QPointF &a2) {
         return std::pow(std::pow((a1.x() - point.x()), 2) + std::pow((a1.y() - point.y()), 2), 0.5)
@@ -140,12 +139,12 @@ bool ExclusiveShape::getNearestAnchor(QPointF point, QPointF &value) {
     return true;
 }
 
-ActionType ExclusiveShape::checkActionAnchor(QPointF point, QPointF &target, double value) {
+std::string ExclusiveGatewayShape::checkActionAnchor(QPointF point, QPointF &target, double value) {
     auto as = getAnchorPoints();
     for (auto &a: as) {
         if (std::pow(std::pow((a.x() - point.x()), 2) + std::pow((a.y() - point.y()), 2), 0.5) < value) {
             target = a;
-            return ADD_EDGE;
+            return "AddEdgeAction";
         }
     }
 
@@ -153,13 +152,13 @@ ActionType ExclusiveShape::checkActionAnchor(QPointF point, QPointF &target, dou
     for (auto &a: as) {
         if (std::pow(std::pow((a.x() - point.x()), 2) + std::pow((a.y() - point.y()), 2), 0.5) < value) {
             target = a;
-            return RESIZE_SHAPE;
+            return "ResizeShapeAction";
         }
     }
-    return INVALID;
+    return "INVALID";
 }
 
-bool ExclusiveShape::isContained(QPointF pointF) {
+bool ExclusiveGatewayShape::isContained(QPointF pointF) {
     if (QRectF(_bound._x, _bound._y, _bound._w, _bound._h).contains(pointF)) {
         return true;
     }

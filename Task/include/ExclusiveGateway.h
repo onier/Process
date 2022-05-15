@@ -43,6 +43,7 @@ public:
 
     void run(std::shared_ptr<Process::ProcessContext> context) override;
 
+    std::string getTaskType() override;
 
     std::map<std::string, std::function<bool(folly::Synchronized<std::map<std::string, boost::any>> &)>> _ruleFunctions;
 

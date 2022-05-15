@@ -6,10 +6,14 @@
 #include "AbstractTask.h"
 #include "ProcessContext.h"
 
-bool StartTask::initTask(Process::ProcessContext* manager) {
+bool StartTask::initTask(Process::ProcessContext *manager) {
     return true;
 }
 
 void StartTask::run(std::shared_ptr<Process::ProcessContext> context) {
-    LOG(INFO) <<  _taskName << "  is start";
+    LOG(INFO) << _taskName << "  is start";
+}
+
+std::string StartTask::getTaskType() {
+    return "StartTask";
 }

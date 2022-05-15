@@ -1,15 +1,15 @@
 //
-// Created by xuzhenhai on 2022/5/12.
+// Created by ubuntu on 5/14/22.
 //
 
-#ifndef PUPPY_EDGE_H
-#define PUPPY_EDGE_H
+#ifndef PUPPY_EVENTGATEWAYSHAPE_H
+#define PUPPY_EVENTGATEWAYSHAPE_H
 
-#include "Shape.h"
+#include "TaskShape.h"
 
-class Edge : public Shape {
+class EventGatewayShape : public TaskShape {
 public:
-    Edge();
+    EventGatewayShape();
 
     Bound getBound() override;
 
@@ -37,17 +37,8 @@ public:
 
     bool isContained(QPointF pointF) override;
 
-    Point _start, _end;
-
-    void setStartShape(std::shared_ptr<Shape> shape);
-
-    void setEndShape(std::shared_ptr<Shape> shape);
-
-private:
-    void recompute();
-
-    std::shared_ptr<Shape> _startShape, _endShape;
+    Bound _bound;
 };
 
 
-#endif //PUPPY_EDGE_H
+#endif //PUPPY_EVENTGATEWAYSHAPE_H

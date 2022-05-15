@@ -35,10 +35,13 @@ protected:
     int _status;
     bool _isEnableAction;
     bool _isEnableMove;
-    QPointF _mousePoint,_pressPoint;
+    QPointF _mousePoint, _pressPoint;
     std::shared_ptr<Shape> _currentSelectShape;
-    std::map<ActionType, std::shared_ptr<Action>> _actions;
+    std::map<std::string, std::shared_ptr<Action>> _actions;
     std::shared_ptr<Action> _currentAction;
+
+private:
+    void initTaskAction();
 };
 
 

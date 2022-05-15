@@ -1,15 +1,15 @@
 //
-// Created by ubuntu on 5/14/22.
+// Created by ubuntu on 5/13/22.
 //
 
-#ifndef PUPPY_EXCLUSIVESHAPE_H
-#define PUPPY_EXCLUSIVESHAPE_H
+#ifndef PUPPY_SubProcessTaskShape_H
+#define PUPPY_SubProcessTaskShape_H
 
-#include "Shape.h"
+#include "TaskShape.h"
 
-class ExclusiveShape : public Shape {
+class SubProcessTaskShape : public TaskShape {
 public:
-    ExclusiveShape();
+    SubProcessTaskShape();
 
     Bound getBound() override;
 
@@ -33,7 +33,7 @@ public:
 
     bool getNearestAnchor(QPointF point, QPointF &value) override;
 
-    ActionType checkActionAnchor(QPointF point, QPointF &target, double value) override;
+    std::string checkActionAnchor(QPointF point, QPointF &target, double value) override;
 
     bool isContained(QPointF pointF) override;
 
@@ -41,4 +41,4 @@ public:
 };
 
 
-#endif //PUPPY_EXCLUSIVESHAPE_H
+#endif //PUPPY_SubProcessTaskShape_H

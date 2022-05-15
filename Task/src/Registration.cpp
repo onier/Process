@@ -46,15 +46,20 @@ RTTR_REGISTRATION {
             .property("TaskID", &ExclusiveRule::_taskID);
 
     rttr::registration::class_<ExclusiveGateway>("ExclusiveGateway")
+            (
+                    rttr::metadata("key", "Task")
+            )
             .
 
                     constructor<>()(
                     rttr::policy::ctor::as_std_shared_ptr
             )
-            .property("SubTasks", &ExclusiveGateway::_subTasks)
-            ;
+            .property("SubTasks", &ExclusiveGateway::_subTasks);
 
     rttr::registration::class_<ParallelGateway>("ParallelGateway")
+            (
+                    rttr::metadata("key", "Task")
+            )
             .
 
                     constructor<>()(
@@ -64,6 +69,9 @@ RTTR_REGISTRATION {
             .property("OutTasks", &ParallelGateway::_outTasks);
 
     rttr::registration::class_<StartTask>("StartTask")
+            (
+                    rttr::metadata("key", "Task")
+            )
             .
 
                     constructor<>()(
@@ -71,37 +79,47 @@ RTTR_REGISTRATION {
             );
 
     rttr::registration::class_<EndTask>("EndTask")
+            (
+                    rttr::metadata("key", "Task")
+            )
             .
 
                     constructor<>()(
                     rttr::policy::ctor::as_std_shared_ptr
             );
 
-    rttr::registration::class_<SubProcessTask>("SubProcessTask")
+    rttr::registration::class_<SubProcessTaskShape>("SubProcessTask")
+            (
+                    rttr::metadata("key", "Task")
+            )
             .
 
                     constructor<>()(
                     rttr::policy::ctor::as_std_shared_ptr
             )
-            .property("ProcessFile",&SubProcessTask::_processFile)
-            ;
+            .property("ProcessFile", &SubProcessTaskShape::_processFile);
 
     rttr::registration::class_<WaitForTask>("WaitForTask")
-            .
-
-                    constructor<>()(
-                    rttr::policy::ctor::as_std_shared_ptr
-                    )
-                    .property("ValueName",&WaitForTask::_valueName)
-                    .property("Value",&WaitForTask::_value)
-            ;
-
-    rttr::registration::class_<EventGateway>("EventGateway")
+            (
+                    rttr::metadata("key", "Task")
+            )
             .
 
                     constructor<>()(
                     rttr::policy::ctor::as_std_shared_ptr
             )
-            .property("EventRules",&EventGateway::_eventRules);
+            .property("ValueName", &WaitForTask::_valueName)
+            .property("Value", &WaitForTask::_value);
+
+    rttr::registration::class_<EventGateway>("EventGateway")
+            (
+                    rttr::metadata("key", "Task")
+            )
+            .
+
+                    constructor<>()(
+                    rttr::policy::ctor::as_std_shared_ptr
+            )
+            .property("EventRules", &EventGateway::_eventRules);
 //            .property("SubTaskProcess", &SubProcessTask::_subTaskProcess);
 }

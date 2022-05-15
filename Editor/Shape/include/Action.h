@@ -19,7 +19,7 @@ struct Action {
 
     virtual bool endAction(QPointF pointF) = 0;
 
-    virtual ActionType getActionType() = 0;
+    virtual std::string getActionType() = 0;
 
     std::shared_ptr<ProcessGraphics>  _processGraphics;
     std::shared_ptr<Shape> _sourceShape;

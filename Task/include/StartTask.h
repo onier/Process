@@ -12,8 +12,9 @@ public:
 
     void run(std::shared_ptr<Process::ProcessContext> context) override;
 
+    std::string getTaskType() override;
 
-    RTTR_ENABLE(AbstractTask)
+RTTR_ENABLE(AbstractTask)
 };
 
 

@@ -11,3 +11,7 @@ bool EndTask::initTask(Process::ProcessContext* manager) {
 void EndTask::run(std::shared_ptr<Process::ProcessContext> context) {
     LOG(INFO) << _taskName << " is end";
 }
+
+std::string EndTask::getTaskType() {
+    return "EndTask";
+}

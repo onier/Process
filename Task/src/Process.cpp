@@ -43,7 +43,7 @@ void Process::Process::processTask(std::shared_ptr<Task> task) {
 }
 
 void Process::Process::processSubProcessTask(std::shared_ptr<Task> task1) {
-    std::shared_ptr<SubProcessTask> task = std::dynamic_pointer_cast<SubProcessTask>(task1);
+    std::shared_ptr<SubProcessTaskShape> task = std::dynamic_pointer_cast<SubProcessTaskShape>(task1);
     task->setTaskFinishFunction([&, task]() {
         auto t = _processContext->getTaskByID(task->getNextTaskID());
         if (t) {
@@ -174,7 +174,7 @@ void Process::Process::restore() {
     setState(State::RUNNING);
     for(auto & t:_processContext->_tasks){
         if(t->get_type().get_name()=="SubProcessTask"){
-            std::shared_ptr<SubProcessTask> subProcess = std::dynamic_pointer_cast<SubProcessTask>(t);
+            std::shared_ptr<SubProcessTaskShape> subProcess = std::dynamic_pointer_cast<SubProcessTaskShape>(t);
             subProcess->_subProcess->restore();
         }
     }

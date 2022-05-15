@@ -16,7 +16,7 @@ public:
 
     bool endAction(QPointF pointF) override;
 
-    ActionType getActionType() override;
+    std::string getActionType() override;
 
     bool _isStart;
     Edge *_edge;

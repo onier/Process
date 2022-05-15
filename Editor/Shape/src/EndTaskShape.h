@@ -1,17 +1,17 @@
 //
-// Created by xuzhenhai on 2022/5/12.
+// Created by ubuntu on 5/15/22.
 //
 
-#ifndef PUPPY_EDGE_H
-#define PUPPY_EDGE_H
+#ifndef PUPPY_ENDTASKSHAPE_H
+#define PUPPY_ENDTASKSHAPE_H
 
-#include "Shape.h"
+#include "TaskShape.h"
 
-class Edge : public Shape {
+class EndTaskShape : public TaskShape {
 public:
-    Edge();
+    EndTaskShape();
 
-    Bound getBound() override;
+    Bound getBound();
 
     void paint(QPainter *painter) override;
 
@@ -37,17 +37,12 @@ public:
 
     bool isContained(QPointF pointF) override;
 
-    Point _start, _end;
-
-    void setStartShape(std::shared_ptr<Shape> shape);
-
-    void setEndShape(std::shared_ptr<Shape> shape);
-
-private:
-    void recompute();
-
-    std::shared_ptr<Shape> _startShape, _endShape;
+    Point _center;
+    float _r;
+    Bound _bound;
+    QPointF _startActionPos;
+    Bound _old_bound;
 };
 
 
-#endif //PUPPY_EDGE_H
+#endif //PUPPY_ENDTASKSHAPE_H

@@ -2,22 +2,21 @@
 // Created by ubuntu on 5/14/22.
 //
 
-#include "ParallelShape.h"
+#include "ParallelGatewayShape.h"
 
-ParallelShape::ParallelShape() {
+ParallelGatewayShape::ParallelGatewayShape() {
     _bColor = {255, 255, 255};
     _fColor = {0, 0, 0};
     _isSelected = false;
     _isShowAncher = false;
-    _type = CIRCLE;
     _text = "";
 }
 
-Bound ParallelShape::getBound() {
+Bound ParallelGatewayShape::getBound() {
     return _bound;
 }
 
-void ParallelShape::paint(QPainter *painter) {
+void ParallelGatewayShape::paint(QPainter *painter) {
     auto pb = painter->brush();
     auto pp = painter->pen();
     paintShadow(painter);
@@ -52,7 +51,7 @@ void ParallelShape::paint(QPainter *painter) {
     painter->setBrush(pb);
 }
 
-void ParallelShape::paintShadow(QPainter *painter) {
+void ParallelGatewayShape::paintShadow(QPainter *painter) {
     auto pb = painter->brush();
     auto pp = painter->pen();
     if (_isSelected) {
@@ -65,7 +64,7 @@ void ParallelShape::paintShadow(QPainter *painter) {
     painter->setBrush(pb);
 }
 
-void ParallelShape::paintAnchorPoints(QPainter *painter) {
+void ParallelGatewayShape::paintAnchorPoints(QPainter *painter) {
     if (_isShowAncher || _isSelected) {
         auto anchors = getAnchorPoints();
         auto pb = painter->brush();
@@ -83,7 +82,7 @@ void ParallelShape::paintAnchorPoints(QPainter *painter) {
     }
 }
 
-void ParallelShape::paintControllPoints(QPainter *painter) {
+void ParallelGatewayShape::paintControllPoints(QPainter *painter) {
     if (_isSelected) {
         auto anchors = getControlPoints();
         auto pb = painter->brush();
@@ -101,33 +100,33 @@ void ParallelShape::paintControllPoints(QPainter *painter) {
     }
 }
 
-std::vector<QPointF> ParallelShape::getAnchorPoints() {
+std::vector<QPointF> ParallelGatewayShape::getAnchorPoints() {
     return {{_bound._x + _bound._w / 2, _bound._y},
             {_bound._x + _bound._w,     _bound._y + _bound._h / 2},
             {_bound._x + _bound._w / 2, _bound._y + _bound._h},
             {_bound._x,                 _bound._y + _bound._h / 2}};
 }
 
-std::vector<QPointF> ParallelShape::getControlPoints() {
+std::vector<QPointF> ParallelGatewayShape::getControlPoints() {
     return {{_bound._x,             _bound._y},
             {_bound._x + _bound._w, _bound._y},
             {_bound._x + _bound._w, _bound._y + _bound._h},
             {_bound._x,             _bound._y + _bound._h}};
 }
 
-void ParallelShape::paintAxis(QPainter *painter) {
+void ParallelGatewayShape::paintAxis(QPainter *painter) {
 
 }
 
-void ParallelShape::setBound(Bound rectF) {
+void ParallelGatewayShape::setBound(Bound rectF) {
     _bound = rectF;
 }
 
-void ParallelShape::transform(float x, float y) {
+void ParallelGatewayShape::transform(float x, float y) {
 
 }
 
-bool ParallelShape::getNearestAnchor(QPointF point, QPointF &value) {
+bool ParallelGatewayShape::getNearestAnchor(QPointF point, QPointF &value) {
     auto as = getAnchorPoints();
     std::sort(as.begin(), as.end(), [point](QPointF &a1, QPointF &a2) {
         return std::pow(std::pow((a1.x() - point.x()), 2) + std::pow((a1.y() - point.y()), 2), 0.5)
@@ -140,12 +139,12 @@ bool ParallelShape::getNearestAnchor(QPointF point, QPointF &value) {
     return true;
 }
 
-ActionType ParallelShape::checkActionAnchor(QPointF point, QPointF &target, double value) {
+std::string ParallelGatewayShape::checkActionAnchor(QPointF point, QPointF &target, double value) {
     auto as = getAnchorPoints();
     for (auto &a: as) {
         if (std::pow(std::pow((a.x() - point.x()), 2) + std::pow((a.y() - point.y()), 2), 0.5) < value) {
             target = a;
-            return ADD_EDGE;
+            return "AddEdgeAction";
         }
     }
 
@@ -153,13 +152,13 @@ ActionType ParallelShape::checkActionAnchor(QPointF point, QPointF &target, doub
     for (auto &a: as) {
         if (std::pow(std::pow((a.x() - point.x()), 2) + std::pow((a.y() - point.y()), 2), 0.5) < value) {
             target = a;
-            return RESIZE_SHAPE;
+            return "ResizeShapeAction";
         }
     }
-    return INVALID;
+    return "INVALID";
 }
 
-bool ParallelShape::isContained(QPointF pointF) {
+bool ParallelGatewayShape::isContained(QPointF pointF) {
     if (QRectF(_bound._x, _bound._y, _bound._w, _bound._h).contains(pointF)) {
         return true;
     }

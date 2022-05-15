@@ -52,7 +52,7 @@ struct Bound {
 
     Bound(float x, float y, float w, float h) : _x(x), _y(y), _w(w), _h(h) {}
 
-RTTR_ENABLE(Bound)
+RTTR_ENABLE()
 };
 
 struct Color {
@@ -64,7 +64,7 @@ struct Color {
 
     Color(int r, int g, int b) : _r(r), _g(g), _b(b) {}
 
-RTTR_ENABLE(Color)
+RTTR_ENABLE()
 };
 
 struct Shape {
@@ -92,7 +92,7 @@ struct Shape {
 
     virtual bool getNearestAnchor(QPointF point, QPointF &value) = 0;
 
-    virtual ActionType checkActionAnchor(QPointF point, QPointF &target, double value = 5) = 0;
+    virtual std::string checkActionAnchor(QPointF point, QPointF &target, double value = 5) = 0;
 
     virtual bool isContained(QPointF pointF) = 0;
 
@@ -111,7 +111,6 @@ struct Shape {
     std::string _text;
     Color _bColor;
     Color _fColor;
-    ShapeType _type;
 protected:
     bool _isSelected;
 

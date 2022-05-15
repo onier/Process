@@ -15,6 +15,8 @@ public:
 
     void run(std::shared_ptr<Process::ProcessContext> context) override;
 
+    std::string getTaskType() override;
+
     /**
      * 行进入的任务，如果为空直接启动outTask
      */

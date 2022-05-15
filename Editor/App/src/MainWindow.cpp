@@ -5,6 +5,8 @@
 #include "glog/logging.h"
 #include "TaskListView.h"
 #include "ProcessEditor.h"
+#include "Library.h"
+#include "Task.h"
 
 MainWindow::MainWindow(QWidget *parent) :
         QMainWindow(parent),
@@ -18,11 +20,15 @@ MainWindow::MainWindow(QWidget *parent) :
 
 TaskListModel *MainWindow::createTaskItemModel() {
     TaskListModel *taskListModel = new TaskListModel();
-    taskListModel->_taskItems.push_back({"Circle",CIRCLE});
-    taskListModel->_taskItems.push_back({"Rect",RECT});
-    taskListModel->_taskItems.push_back({"ExclusiveGateway",ExclusiveGateway});
-    taskListModel->_taskItems.push_back({"ParallelShape",ParallelGateway});
-    taskListModel->_taskItems.push_back({"EventShape",EventGateway});
+    auto tasks = puppy::common::library::get<Process::Task>("Task");
+    for (auto task:tasks) {
+        taskListModel->_taskItems.push_back({task->get_type().get_name().data()});
+    }
+//
+//    taskListModel->_taskItems.push_back({"Rect", RECT});
+//    taskListModel->_taskItems.push_back({"ExclusiveGateway", ExclusiveGateway});
+//    taskListModel->_taskItems.push_back({"ParallelShape", ParallelGateway});
+//    taskListModel->_taskItems.push_back({"EventShape", EventGateway});
     return taskListModel;
 }
 

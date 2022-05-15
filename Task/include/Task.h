@@ -72,7 +72,7 @@ namespace Process {
          * @param manager 任务管理器对象
          * @return 是否初始化成功
          */
-        virtual bool initTask(ProcessContext* processContext) = 0;
+        virtual bool initTask(ProcessContext *processContext) = 0;
 
         /**
          * 每一个task的执行函数。
@@ -108,6 +108,8 @@ namespace Process {
         saveDomElement(xercesc::DOMElement *domElement, std::shared_ptr<xercesc::DOMDocument> document) = 0;
 
         virtual bool loadDomElement(xercesc::DOMNode *domElement) = 0;
+
+        virtual std::string getTaskType() = 0;
 
         std::string _id;
 
