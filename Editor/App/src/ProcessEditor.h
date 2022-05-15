@@ -4,7 +4,7 @@
 
 #ifndef PUPPY_PROCESSEDITOR_H
 #define PUPPY_PROCESSEDITOR_H
-
+#include "Process.h"
 #include "QWidget"
 #include "memory"
 #include "Shape.h"
@@ -39,6 +39,7 @@ protected:
     std::shared_ptr<Shape> _currentSelectShape;
     std::map<std::string, std::shared_ptr<Action>> _actions;
     std::shared_ptr<Action> _currentAction;
+    std::shared_ptr<Process::Process> _process;
 
 private:
     void initTaskAction();

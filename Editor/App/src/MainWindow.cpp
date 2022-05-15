@@ -1,10 +1,10 @@
-#include <QLabel>
+#include "ProcessEditor.h"
 #include "MainWindow.h"
 #include "QListView"
+#include <QLabel>
 #include "ui_MainWindow.h"
 #include "glog/logging.h"
 #include "TaskListView.h"
-#include "ProcessEditor.h"
 #include "Library.h"
 #include "Task.h"
 

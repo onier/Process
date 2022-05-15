@@ -5,10 +5,10 @@
 #ifndef PUPPY_ACTION_H
 #define PUPPY_ACTION_H
 
+#include "ProcessGraphics.h"
 #include "Datas.h"
 #include "QPointF"
 #include "Shape.h"
-#include "ProcessGraphics.h"
 
 struct Action {
     ~Action() {};
@@ -21,7 +21,7 @@ struct Action {
 
     virtual std::string getActionType() = 0;
 
-    std::shared_ptr<ProcessGraphics>  _processGraphics;
+    std::shared_ptr<ProcessGraphics> _processGraphics;
     std::shared_ptr<Shape> _sourceShape;
 };
 

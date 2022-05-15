@@ -10,6 +10,7 @@
 #include "Shape.h"
 #include "Edge.h"
 
+
 enum ShapeStatus {
 
 };
@@ -48,7 +49,6 @@ public:
 
 private:
     std::vector<std::shared_ptr<Shape>> _shapes;
-    std::vector<std::shared_ptr<Edge>> _edges;
     std::vector<ShapeEventHandler> _handlers;
 };
 

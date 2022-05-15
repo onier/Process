@@ -1,8 +1,8 @@
 
-#include <QLabel>
 #include "MainWindow.h"
 #include "QApplication"
 #include "Library.h"
+#include <QLabel>
 int main(int argc, char *argv[]) {
     puppy::common::library::loadDefaultLibrary();
     QApplication a(argc, argv);

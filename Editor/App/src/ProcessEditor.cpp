@@ -1,8 +1,9 @@
 //
 // Created by xuzhenhai on 2022/5/12.
 //
-#include "Action.h"
+
 #include "ProcessEditor.h"
+#include "Action.h"
 #include "QMouseEvent"
 #include "glog/logging.h"
 #include "QMimeData"
@@ -11,7 +12,7 @@
 
 ProcessEditor::ProcessEditor(QWidget *parent, Qt::WindowFlags f) : QWidget(parent, f) {
     _graphics = std::make_shared<ProcessGraphics>();
-
+    _process = std::make_shared<Process::Process>(1);
     setAcceptDrops(true);
     _isEnableMove = false;
     _isEnableAction = false;

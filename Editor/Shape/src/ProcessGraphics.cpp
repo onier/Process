@@ -5,7 +5,6 @@
 #include "ProcessGraphics.h"
 
 ProcessGraphics::ProcessGraphics() {
-
 }
 
 std::vector<std::shared_ptr<Shape>> ProcessGraphics::getShapes() {
@@ -14,10 +13,6 @@ std::vector<std::shared_ptr<Shape>> ProcessGraphics::getShapes() {
 
 void ProcessGraphics::addShape(std::shared_ptr<Shape> shape) {
     _shapes.push_back(shape);
-}
-
-void ProcessGraphics::addEdge(std::shared_ptr<Edge> edge) {
-    _edges.push_back(edge);
 }
 
 void ProcessGraphics::addHandler(ShapeEventHandler handler) {
