@@ -3,11 +3,11 @@
 #include "rttr/registration.h"
 #include "AbstractTask.h"
 #include "ExclusiveGateway.h"
-#include "TaskManager.h"
 #include "StartTask.h"
 #include "EndTask.h"
 #include "EventGateway.h"
 #include "WaitForTask.h"
+#include "SubProcessTask.h"
 
 using namespace Process;
 
@@ -88,7 +88,7 @@ RTTR_REGISTRATION {
                     rttr::policy::ctor::as_std_shared_ptr
             );
 
-    rttr::registration::class_<SubProcessTaskShape>("SubProcessTask")
+    rttr::registration::class_<SubProcessTask>("SubProcessTask")
             (
                     rttr::metadata("key", "Task")
             )
@@ -97,7 +97,7 @@ RTTR_REGISTRATION {
                     constructor<>()(
                     rttr::policy::ctor::as_std_shared_ptr
             )
-            .property("ProcessFile", &SubProcessTaskShape::_processFile);
+            .property("ProcessFile", &SubProcessTask::_processFile);
 
     rttr::registration::class_<WaitForTask>("WaitForTask")
             (

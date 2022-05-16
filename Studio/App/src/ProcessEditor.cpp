@@ -11,17 +11,19 @@
 #include "Library.h"
 
 ProcessEditor::ProcessEditor(QWidget *parent, Qt::WindowFlags f) : QWidget(parent, f) {
-    _graphics = std::make_shared<ProcessGraphics>();
-    _process = std::make_shared<Process::Process>(1);
     setAcceptDrops(true);
     _isEnableMove = false;
     _isEnableAction = false;
     initTaskAction();
 }
 
+void ProcessEditor::setProcessStudio(std::shared_ptr<ProcessStudio> ps) {
+    _processStudio = ps;
+}
+
 void ProcessEditor::initTaskAction() {
     auto actions = puppy::common::library::get<Action>("ShapeAction");
-    for (auto a:actions) {
+    for (auto a: actions) {
         LOG(INFO) << "init action " << a->getActionType();
         _actions.insert({a->getActionType(), a});
     }
@@ -30,7 +32,7 @@ void ProcessEditor::initTaskAction() {
 void ProcessEditor::paintEvent(QPaintEvent *event) {
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing, true);
-    for (auto shape: _graphics->getShapes()) {
+    for (auto shape: _processStudio->getProcessGraphics()->getShapes()) {
         shape->paint(&painter);
     }
     QWidget::paintEvent(event);
@@ -40,7 +42,9 @@ void ProcessEditor::mousePressEvent(QMouseEvent *event) {
     _mousePoint = event->posF();
     _pressPoint = event->posF();
     _status = 1;
+    std::shared_ptr<ProcessGraphics> _graphics = _processStudio->getProcessGraphics();
     {
+        std::shared_ptr<Shape> _currentSelectShape = _processStudio->getCurrentSelectShape();
         if (_currentSelectShape) {
             QPointF p;
             auto type = _currentSelectShape->checkActionAnchor(event->posF(), p);
@@ -69,12 +73,13 @@ void ProcessEditor::mouseReleaseEvent(QMouseEvent *event) {
         if (_currentAction) {
             _currentAction->endAction(event->posF());
             _currentAction = nullptr;
-            repaint();
+            update();
         }
     } else {
+        std::shared_ptr<ProcessGraphics> _graphics = _processStudio->getProcessGraphics();
         auto s = _graphics->getShape<Shape>(event->posF());
         if (!s) {
-            _currentSelectShape = nullptr;
+            _processStudio->setCurrentSelectShape(nullptr);
             _graphics->clearSelection();
         } else {
             if (s->isSelected()) {
@@ -82,15 +87,17 @@ void ProcessEditor::mouseReleaseEvent(QMouseEvent *event) {
             }
             s->setSelected(!s->isSelected());
             if (s->isSelected()) {
-                _currentSelectShape = s;
+                _processStudio->setCurrentSelectShape(s);
             }
         }
-        repaint();
+        update();
     }
     QWidget::mouseReleaseEvent(event);
 }
 
 void ProcessEditor::mouseMoveEvent(QMouseEvent *event) {
+    std::shared_ptr<ProcessGraphics> _graphics = _processStudio->getProcessGraphics();
+    std::shared_ptr<Shape> _currentSelectShape = _processStudio->getCurrentSelectShape();
     {
         if (_status == 1) {
             if (_currentSelectShape) {
@@ -110,7 +117,7 @@ void ProcessEditor::mouseMoveEvent(QMouseEvent *event) {
     if (_isEnableAction) {
         if (_currentSelectShape) {
             _currentAction->doAction(event->posF());
-            repaint();
+            update();
         }
     } else if (_isEnableMove) {
         float x = event->posF().x() - _mousePoint.x();
@@ -122,32 +129,54 @@ void ProcessEditor::mouseMoveEvent(QMouseEvent *event) {
             b._y = b._y + y;
             s->setBound(b);
         }
-        repaint();
+        update();
     }
     _mousePoint = event->posF();
     QWidget::mouseMoveEvent(event);
 }
 
 void ProcessEditor::dragEnterEvent(QDragEnterEvent *event) {
-    if (event->mimeData()->hasFormat("application/shape_icon"))
+    if (event->mimeData()->hasFormat("application/shape_icon")) {
         event->acceptProposedAction();
+        LOG(INFO) << "enable drag";
+    }
     QWidget::dragEnterEvent(event);
 }
 
 void ProcessEditor::dropEvent(QDropEvent *event) {
-    LOG(INFO) << event->mimeData()->text().toStdString();
+    std::shared_ptr<ProcessGraphics> _graphics = _processStudio->getProcessGraphics();
+    std::shared_ptr<Shape> _currentSelectShape = _processStudio->getCurrentSelectShape();
     auto type = event->mimeData()->data("application/shape_icon").toStdString();
-     rttr::type shapeType = rttr::type::get_by_name(type + "Shape");
-    if (shapeType.is_valid()) {
-        std::shared_ptr<Shape> shape = shapeType.create().get_value<std::shared_ptr<Shape>>();
-        shape->setBound({(float) event->posF().x(), (float) event->posF().y(), 100, 100});
-        _graphics->addShape(shape);
-    } else {
-        shapeType = rttr::type::get_by_name("UserTaskShape");
-        std::shared_ptr<Shape> shape = shapeType.create().get_value<std::shared_ptr<Shape>>();
-        shape->setBound({(float) event->posF().x(), (float) event->posF().y(), 100, 100});
-        _graphics->addShape(shape);
+    auto taskType = rttr::type::get_by_name(type);
+    LOG(INFO) << "add task type " << taskType.get_name() << "    " << taskType.get_properties().size();
+    if (taskType.is_valid()) {
+        auto taskVar = taskType.create();
+        std::shared_ptr<Process::Task> task = taskVar.get_value<std::shared_ptr<Process::Task>>();
+        rttr::type shapeType = rttr::type::get_by_name(type + "Shape");
+        if (shapeType.is_valid()) {
+            auto shapeVar = shapeType.create();
+            std::shared_ptr<Shape> shape = shapeVar.get_value<std::shared_ptr<Shape>>();
+            shape->setBound({(float) event->posF().x(), (float) event->posF().y(), 100, 100});
+            _graphics->addShape(shape);
+            _processStudio->addTask(task);
+            _processStudio->addTaskShapePair(
+                    std::make_shared<TaskShapeItem>(task, shape, taskType, shapeType, taskVar, shapeVar));
+        } else {
+            shapeType = rttr::type::get_by_name("UserTaskShape");
+            auto shapeVar = shapeType.create();
+            std::shared_ptr<Shape> shape = shapeVar.get_value<std::shared_ptr<Shape>>();
+            shape->setBound({(float) event->posF().x(), (float) event->posF().y(), 100, 100});
+            _graphics->addShape(shape);
+            _processStudio->addTask(task);
+            _processStudio->addTaskShapePair(
+                    std::make_shared<TaskShapeItem>(task, shape, taskType, shapeType, taskVar, shapeVar));
+        }
+        update();
     }
-    repaint();
     QWidget::dropEvent(event);
 }
+
+void ProcessEditor::mouseDoubleClickEvent(QMouseEvent *event) {
+    QWidget::mouseDoubleClickEvent(event);
+}
+

@@ -44,6 +44,8 @@ namespace Process {
 
         void notifyEvent(std::string eventType, Process::Task *task);
 
+        void addTask(std::shared_ptr<Task> task);
+
     public:
         auto getExecutor() {
             return _executor;
@@ -72,7 +74,7 @@ namespace Process {
         void createElement(rttr::instance obj2, xercesc::DOMElement *domElement, xercesc::DOMDocument *document,
                            std::shared_ptr<Task> task = nullptr);
 
-        std::vector<xercesc::DOMNode *> getSubProcessTasks(xercesc::DOMNode * subProcessNode);
+        std::vector<xercesc::DOMNode *> getSubProcessTasks(xercesc::DOMNode *subProcessNode);
 
         auto getElementsByName(xercesc::DOMNode *parent, std::string name);
 
@@ -82,6 +84,7 @@ namespace Process {
         std::shared_ptr<folly::CPUThreadPoolExecutor> _executor;
         std::shared_ptr<std::map<std::string, std::function<void()>>> _eventHandler;
         std::string _taskName;
+        int _threadCount;
         std::vector<std::shared_ptr<Process::Task>> _tasks;
         std::shared_ptr<SuspendTask> _suspendTasks;
     private:

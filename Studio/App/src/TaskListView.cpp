@@ -26,7 +26,6 @@ void TaskListView::mousePressEvent(QMouseEvent *event) {
 
 void TaskListView::mouseMoveEvent(QMouseEvent *e) {
     if (_isPress) {
-        LOG(INFO) << "enable drug";
         QDrag *drag = new QDrag(this);
         QMimeData *mimeData = new QMimeData;
         if (selectedIndexes().empty()) {

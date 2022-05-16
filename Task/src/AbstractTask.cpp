@@ -5,9 +5,14 @@
 #include "AbstractTask.h"
 #include "glog/logging.h"
 #include "XML.h"
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_generators.hpp>
+#include <boost/uuid/uuid_io.hpp>
+#include "boost/lexical_cast.hpp"
 
 Process::AbstractTask::AbstractTask() {
-
+    boost::uuids::uuid uuid = boost::uuids::random_generator()();
+    _id = boost::lexical_cast<std::string>(uuid);
 }
 
 std::string Process::AbstractTask::getID() {
@@ -27,7 +32,7 @@ std::string Process::AbstractTask::getPreTaskID() {
 }
 
 void Process::AbstractTask::run(std::shared_ptr<Process::ProcessContext> context) {
-    LOG(ERROR)<<"you must overrite the default run";
+    LOG(ERROR) << "you must overrite the default run";
     exit(11);
 }
 

@@ -9,24 +9,36 @@ using namespace Process;
 
 RTTR_REGISTRATION {
     rttr::registration::class_<TestTask1>("TestTask1")
+            (
+                    rttr::metadata("key", "Task")
+            )
             .
 
                     constructor<>()(
                     rttr::policy::ctor::as_std_shared_ptr
             );
     rttr::registration::class_<TestTask2>("TestTask2")
+            (
+                    rttr::metadata("key", "Task")
+            )
             .
 
                     constructor<>()(
                     rttr::policy::ctor::as_std_shared_ptr
             );
     rttr::registration::class_<TestTask3>("TestTask3")
+            (
+                    rttr::metadata("key", "Task")
+            )
             .
 
                     constructor<>()(
                     rttr::policy::ctor::as_std_shared_ptr
             );
     rttr::registration::class_<ExceptionTask>("ExceptionTask")
+            (
+                    rttr::metadata("key", "Task")
+            )
             .
 
                     constructor<>()(
@@ -34,6 +46,9 @@ RTTR_REGISTRATION {
             )
             .property("ExceptionCounter", &ExceptionTask::_runTimeExceptionCounter);
     rttr::registration::class_<FakeTask>("FakeTask")
+            (
+                    rttr::metadata("key", "Task")
+            )
             .
 
                     constructor<>()(

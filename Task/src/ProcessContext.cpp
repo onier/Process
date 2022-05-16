@@ -25,12 +25,13 @@
 #include <xercesc/dom/DOMLSOutput.hpp>
 #include "XML.h"
 #include "glog/logging.h"
+#include "boost/lexical_cast.hpp"
 
 using namespace Process;
 
 ProcessContext::ProcessContext(int threadCount) {
-    _executor = std::make_shared<folly::CPUThreadPoolExecutor>(threadCount);
-    _processValues = std::make_shared<folly::Synchronized < std::map<std::string, boost::any>> > ();
+    _threadCount = threadCount;
+    _processValues = std::make_shared<folly::Synchronized<std::map<std::string, boost::any>>>();
     _eventHandler = std::make_shared<std::map<std::string, std::function<void()>>>();
     _suspendTasks = std::make_shared<SuspendTask>();
 }
@@ -51,7 +52,7 @@ auto ProcessContext::getElementsByName(xercesc::DOMNode *parent, std::string nam
     std::vector<xercesc::DOMNode *> result;
     auto children = parent->getChildNodes();
     for (int i = 0; i < children->getLength(); ++i) {
-        LOG(INFO)<<puppy::common::XML::toStr(children->item(i)->getNodeName());
+        LOG(INFO) << puppy::common::XML::toStr(children->item(i)->getNodeName());
         if (puppy::common::XML::toStr(children->item(i)->getNodeName()) == name) {
             result.push_back(children->item(i));
         }
@@ -59,24 +60,24 @@ auto ProcessContext::getElementsByName(xercesc::DOMNode *parent, std::string nam
     return result;
 }
 
-std::vector<xercesc::DOMNode *>  ProcessContext::getSubProcessTasks(xercesc::DOMNode * subProcessNode) {
-    auto file= subProcessNode->getAttributes()->getNamedItem(XStr("ProcessFile"));
-    if(file){
+std::vector<xercesc::DOMNode *> ProcessContext::getSubProcessTasks(xercesc::DOMNode *subProcessNode) {
+    auto file = subProcessNode->getAttributes()->getNamedItem(XStr("ProcessFile"));
+    if (file) {
         boost::filesystem::path p(_currentFilePath);
-       auto subFilePath = p.parent_path().string()+"/"+puppy::common::XML::toStr(file->getNodeValue());
+        auto subFilePath = p.parent_path().string() + "/" + puppy::common::XML::toStr(file->getNodeValue());
 //       xercesc::XMLPlatformUtils::Initialize();
-       std::shared_ptr< xercesc::XercesDOMParser> xercesDOMParser = std::make_shared< xercesc::XercesDOMParser>();
-       _parseCaches.push_back(xercesDOMParser);
-       xercesDOMParser->parse(subFilePath.data());
-       auto document = xercesDOMParser->getDocument();
-       auto root = document->getDocumentElement();
-       LOG(INFO)<<puppy::common::XML::toStr(root->getNodeName());
-       auto taskManager = getElementsByName(root,"TaskManager");
-       if(taskManager.size()!=1){
-           LOG(FATAL)<<" error taskmanager size "<<taskManager.size();
-       }
-       auto subTaskManager = document->createElement(XStr("SubProcess"));
-       subTaskManager->appendChild(taskManager.at(0));
+        std::shared_ptr<xercesc::XercesDOMParser> xercesDOMParser = std::make_shared<xercesc::XercesDOMParser>();
+        _parseCaches.push_back(xercesDOMParser);
+        xercesDOMParser->parse(subFilePath.data());
+        auto document = xercesDOMParser->getDocument();
+        auto root = document->getDocumentElement();
+        LOG(INFO) << puppy::common::XML::toStr(root->getNodeName());
+        auto taskManager = getElementsByName(root, "TaskManager");
+        if (taskManager.size() != 1) {
+            LOG(FATAL) << " error taskmanager size " << taskManager.size();
+        }
+        auto subTaskManager = document->createElement(XStr("SubProcess"));
+        subTaskManager->appendChild(taskManager.at(0));
 //       auto tasks = getElementsByName(taskManager.at(0),"tasks");
 //       LOG(INFO)<<tasks.size();
         return {subTaskManager};
@@ -87,8 +88,15 @@ std::vector<xercesc::DOMNode *>  ProcessContext::getSubProcessTasks(xercesc::DOM
 bool ProcessContext::loadDomElement(xercesc::DOMNode *domElement) {
     auto taskManagerNode = domElement->getChildNodes();
     auto task = domElement->getAttributes()->getNamedItem(XStr("taskName"));
-    if (task)
+    if (task) {
         _taskName = puppy::common::XML::toStr(task->getNodeValue());
+    }
+    auto threadCount = domElement->getAttributes()->getNamedItem(XStr("threadCount"));
+    if (task) {
+        _threadCount = boost::lexical_cast<int>(puppy::common::XML::toStr(threadCount->getNodeValue()));
+    }else{
+        _threadCount = 4;
+    }
     for (int i = 0; i < taskManagerNode->getLength(); ++i) {
         auto name = puppy::common::XML::toStr(taskManagerNode->item(i)->getNodeName());
         if (name == "tasks") {
@@ -100,15 +108,15 @@ bool ProcessContext::loadDomElement(xercesc::DOMNode *domElement) {
                     auto taskVariant = taskType.create();
                     puppy::common::XML::parseInstance(tasks->item(i), taskVariant);
                     auto absPtr = taskVariant.get_value<std::shared_ptr<Process::Task>>();
-                    if(taskTypeName=="SubProcessTask"){
-                        auto subTasks =getSubProcessTasks(tasks->item(i));
-                        if(subTasks.empty()){
+                    if (taskTypeName == "SubProcessTask") {
+                        auto subTasks = getSubProcessTasks(tasks->item(i));
+                        if (subTasks.empty()) {
                             absPtr->loadDomElement(tasks->item(i));
-                        }else{
+                        } else {
                             sleep(1);
                             absPtr->loadDomElement(subTasks.at(0));
                         }
-                    }else{
+                    } else {
                         absPtr->loadDomElement(tasks->item(i));
                     }
                     _tasks.push_back(absPtr);
@@ -116,6 +124,7 @@ bool ProcessContext::loadDomElement(xercesc::DOMNode *domElement) {
             }
         }
     }
+    _executor = std::make_shared<folly::CPUThreadPoolExecutor>(_threadCount);
     initTasks();
     return true;
 }
@@ -172,6 +181,7 @@ std::string ProcessContext::saveXML() {
     auto rootElement = document->getDocumentElement();
     auto taskManager = document->createElement(XStr("TaskManager"));
     taskManager->setAttribute(XStr("taskName"), XStr(_taskName.data()));
+    taskManager->setAttribute(XStr("threadCount"), XStr(boost::lexical_cast<std::string>(_threadCount).data()));
     rootElement->appendChild(taskManager);
     saveDomElement(taskManager, document);
     document->normalizeDocument();
@@ -181,7 +191,7 @@ std::string ProcessContext::saveXML() {
 
 std::vector<std::shared_ptr<Process::Task>> ProcessContext::getTasksByType(std::string type) {
     std::vector<std::shared_ptr<Process::Task>> result;
-    for (auto &task:_tasks) {
+    for (auto &task: _tasks) {
         if (task->get_type().get_name() == type) {
             result.push_back(task);
         }
@@ -214,7 +224,7 @@ std::shared_ptr<Process::Task> ProcessContext::getTaskByID(std::string id) {
 
 std::vector<std::shared_ptr<Process::Task>> ProcessContext::getPreTaskByID(std::string id) {
     std::vector<std::shared_ptr<Process::Task>> temps;
-    for (auto &task:_tasks) {
+    for (auto &task: _tasks) {
         if (task->getNextTaskID() == id) {
             temps.push_back(task);
         }
@@ -234,7 +244,7 @@ std::vector<std::shared_ptr<Process::Task>> ProcessContext::getEndTask() {
 
 bool ProcessContext::initTasks() {
     checkProcessTasks();
-    for (auto &item:_tasks) {
+    for (auto &item: _tasks) {
         item->initTask(this);
         item->_taskName = _taskName;
     }
@@ -250,21 +260,22 @@ bool ProcessContext::checkProcessTasks() {
     if (endTasks.empty()) {
         LOG(FATAL) << " the process is not define end task";
     }
-    for (auto task:endTasks) {
+    for (auto task: endTasks) {
         if (getPreTaskByID(task->getID()).empty()) {
 //            LOG(FATAL) << " the process end task is invalid " << task->getName() << "  " << task->getID();
         }
     }
+    return true;
 }
 
 void ProcessContext::createElement(rttr::instance obj2, xercesc::DOMElement *domElement, xercesc::DOMDocument *document,
                                    std::shared_ptr<Task> task) {
     rttr::instance variant = obj2.get_type().get_raw_type().is_wrapper() ? obj2.get_wrapped_instance() : obj2;
-    auto props = std::make_shared<rttr::array_range < rttr::property> > (variant.get_type().get_properties());
+    auto props = std::make_shared<rttr::array_range<rttr::property> >(variant.get_type().get_properties());
     if (task) {
-        props = std::make_shared<rttr::array_range < rttr::property> > (task->get_type().get_properties());
+        props = std::make_shared<rttr::array_range<rttr::property> >(task->get_type().get_properties());
     }
-    for (auto prop:*props) {
+    for (auto prop: *props) {
         auto propName = prop.get_name();
         if (prop.get_type().is_sequential_container()) {
             auto vars = prop.get_value(variant);
@@ -302,7 +313,7 @@ void ProcessContext::createElement(rttr::instance obj2, xercesc::DOMElement *dom
                 mapElement->setAttribute(XStr("valueType"),
                                          XStr(it.get_value().extract_wrapped_value().get_type().get_name().data()));
                 domElement->appendChild(mapElement);
-                for (auto item:view) {
+                for (auto item: view) {
 //                    LOG(INFO) << prop.get_name() << "  " << item.first.extract_wrapped_value().get_type().get_name()
 //                              << "  " << item.first.to_string() << "  "
 //                              << item.second.extract_wrapped_value().get_type().get_name() << "  "
@@ -354,9 +365,13 @@ void ProcessContext::createElement(rttr::instance obj2, xercesc::DOMElement *dom
 }
 
 void ProcessContext::notifyEvent(std::string eventType, Process::Task *task) {
-    for (auto &iteer:*_eventHandler) {
+    for (auto &iteer: *_eventHandler) {
         if (eventType == iteer.first) {
             iteer.second();
         }
     }
+}
+
+void ProcessContext::addTask(std::shared_ptr<Task> task) {
+    _tasks.push_back(task);
 }

@@ -1,13 +1,17 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
+
 #include "Process.h"
+#include "ProcessEditor.h"
 #include <QMainWindow>
 #include <QGraphicsView>
 #include <QAbstractItemModel>
 #include <QStandardItemModel>
+#include <QTableView>
 #include "QDockWidget"
 #include "tuple"
 #include "TaskListView.h"
+#include "QRTTRTableModel.h"
 
 namespace Ui {
     class MainWindow;
@@ -30,6 +34,10 @@ private:
     Ui::MainWindow *ui;
     QDockWidget *_taskDockerWidget;
     QDockWidget *_propertiesDockerWidget;
+    std::shared_ptr<ProcessStudio> _processStudio;
+    ProcessEditor *_processEditor;
+    QTableView *_propertTableView;
+    puppy::common::QRTTRTableModel *_tableModel;
 };
 
 #endif // MAINWINDOW_H

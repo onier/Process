@@ -5,14 +5,13 @@
 #pragma once
 
 #include "AbstractTask.h"
-#include "TaskManager.h"
 #include "Process.h"
 
-class SubProcessTaskShape : public Process::AbstractTask {
+class SubProcessTask : public Process::AbstractTask {
 public:
-    SubProcessTaskShape();
+    SubProcessTask();
 
-    SubProcessTaskShape(std::shared_ptr<Process::Process> subProcess);
+    SubProcessTask(std::shared_ptr<Process::Process> subProcess);
 
     void run(std::shared_ptr<Process::ProcessContext> context) override;
 

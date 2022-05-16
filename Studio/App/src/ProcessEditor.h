@@ -4,29 +4,28 @@
 
 #ifndef PUPPY_PROCESSEDITOR_H
 #define PUPPY_PROCESSEDITOR_H
-#include "Process.h"
+
+#include "ProcessStudio.h"
 #include "QWidget"
-#include "memory"
-#include "Shape.h"
-#include "ProcessGraphics.h"
-#include "Edge.h"
-#include "Action.h"
+#include "rttr/registration.h"
 
 class ProcessEditor : public QWidget {
 Q_OBJECT
 public:
     ProcessEditor(QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
 
+    void setProcessStudio(std::shared_ptr<ProcessStudio> ps);
+
 protected:
     void paintEvent(QPaintEvent *event) override;
 
     void mousePressEvent(QMouseEvent *event) override;
 
+    void mouseDoubleClickEvent(QMouseEvent *event) override;
+
     void mouseReleaseEvent(QMouseEvent *event) override;
 
     void mouseMoveEvent(QMouseEvent *event) override;
-
-    std::shared_ptr<ProcessGraphics> _graphics;
 
     void dragEnterEvent(QDragEnterEvent *event) override;
 
@@ -35,12 +34,10 @@ protected:
     int _status;
     bool _isEnableAction;
     bool _isEnableMove;
-    QPointF _mousePoint, _pressPoint;
-    std::shared_ptr<Shape> _currentSelectShape;
-    std::map<std::string, std::shared_ptr<Action>> _actions;
     std::shared_ptr<Action> _currentAction;
-    std::shared_ptr<Process::Process> _process;
-
+    QPointF _mousePoint, _pressPoint;
+    std::shared_ptr<ProcessStudio> _processStudio;
+    std::map<std::string, std::shared_ptr<Action>> _actions;
 private:
     void initTaskAction();
 };

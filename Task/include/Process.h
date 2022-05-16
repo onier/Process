@@ -16,13 +16,14 @@
 
 namespace Process {
 
-    enum class State{
+    enum class State {
         RUNNING,
         STOPED,
         SUSPEND,
         RESTORE,
         UNKNOW
     };
+
     class Process {
     public:
         Process(int threadCount);
@@ -35,6 +36,8 @@ namespace Process {
 
         void processTask(std::shared_ptr<Task> task);
 
+        void addTask(std::shared_ptr<Task> task);
+
         std::shared_ptr<ProcessContext> getProcessContext();
 
         void loadXML(std::string xml);
@@ -43,7 +46,7 @@ namespace Process {
 
         std::string saveXML();
 
-        void initProcessValues(std::map<std::string,boost::any> values);
+        void initProcessValues(std::map<std::string, boost::any> values);
 
         void stopProcess();
 
@@ -54,6 +57,7 @@ namespace Process {
         void setState(State state);
 
         State getState();
+
     private:
         void processDefaultTask(std::shared_ptr<Task> task);
 
