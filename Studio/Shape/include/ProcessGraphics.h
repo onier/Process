@@ -11,10 +11,7 @@
 #include "Edge.h"
 
 
-enum ShapeStatus {
-
-};
-typedef std::function<void(std::shared_ptr<Shape>, ShapeStatus)> ShapeEventHandler;
+typedef std::function<void(std::shared_ptr<Shape>, std::string)> ShapeEventHandler;
 
 class ProcessGraphics {
 public:
@@ -24,11 +21,11 @@ public:
 
     void addShape(std::shared_ptr<Shape> shape);
 
-    void addEdge(std::shared_ptr<Edge> edge);
+    void removeShape(std::shared_ptr<Shape> shape);
 
     void addHandler(ShapeEventHandler handler);
 
-    void notify(std::shared_ptr<Shape> shape, ShapeStatus status);
+    void notify(std::shared_ptr<Shape> shape, std::string msg);
 
     void clearSelection();
 

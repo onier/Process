@@ -29,7 +29,7 @@ bool AddEdgeAction::doAction(QPointF pointF) {
         _processGraphics->addShape(_edge);
     } else {
         const std::shared_ptr<Shape> &target = _processGraphics->getShape<TaskShape>(pointF);
-        if (target ) {
+        if (target && target!=_edge->getStartShape()) {
             _edge->setEndShape(target);
         } else {
             _edge->_end = {(float) pointF.x(), (float) pointF.y()};
@@ -40,9 +40,9 @@ bool AddEdgeAction::doAction(QPointF pointF) {
 }
 
 bool AddEdgeAction::endAction(QPointF pointF) {
+    _edge->notifyPropertyEvents("EdgeStartShapeChange");
     _edge->_isShowAncher = false;
     _edge = nullptr;
-    LOG(INFO) << " AddEdgeAction::endAction ";
     return false;
 }
 

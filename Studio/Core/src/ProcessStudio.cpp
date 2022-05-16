@@ -6,6 +6,46 @@
 
 ProcessStudio::ProcessStudio() {
     _graphics = std::make_shared<ProcessGraphics>();
+    _graphics->addHandler([&](std::shared_ptr<Shape> shape, std::string msg) {
+        _shapeMessageHandlers[msg](shape);
+    });
+    _shapeMessageHandlers.insert({"EdgeStartShapeChange", [&](std::shared_ptr<Shape> shape) {
+        std::shared_ptr<Edge> edge = std::dynamic_pointer_cast<Edge>(shape);
+        if (edge->getStartShape() == edge->getEndShape() && edge->getStartShape()) {
+            _graphics->removeShape(shape);
+        } else {
+            updateTaskConnect(edge->getStartShape(), edge->getEndShape());
+        }
+    }});
+    _shapeMessageHandlers.insert({"EdgeEndShapeChange", [&](std::shared_ptr<Shape> shape) {
+        std::shared_ptr<Edge> edge = std::dynamic_pointer_cast<Edge>(shape);
+        if (edge->getStartShape() == edge->getEndShape() && edge->getStartShape()) {
+            _graphics->removeShape(shape);
+        } else {
+            updateTaskConnect(edge->getStartShape(), edge->getEndShape());
+        }
+    }});
+}
+
+void ProcessStudio::updateTaskConnect(std::shared_ptr<Shape> start, std::shared_ptr<Shape> end) {
+    if (start && end) {
+        auto startTask = getTaskByShape(start);
+        auto endTask = getTaskByShape(end);
+        if (startTask.size() == 1 && endTask.size() == 1) {
+            startTask[0]->_nextTaskID = endTask[0]->_id;
+            endTask[0]->_preTaskID = startTask[0]->_id;
+        }
+        if (startTask.size() == 1 && endTask.size() != 1) {
+            startTask[0]->_nextTaskID = "";
+        }
+
+        if (startTask.size() != 1 && endTask.size() == 1) {
+            startTask[0]->_nextTaskID = "";
+            endTask[0]->_preTaskID = "";
+        }
+    } else {
+        LOG(ERROR) << " the shape must not null";
+    }
 }
 
 std::vector<std::shared_ptr<Process::Task>> ProcessStudio::getTaskByShape(std::shared_ptr<Shape> shape) {
@@ -28,7 +68,7 @@ std::vector<std::shared_ptr<Shape>> ProcessStudio::getShapeByTask(std::shared_pt
     return result;
 }
 
-void ProcessStudio::addTaskShapePair(std::shared_ptr<TaskShapeItem> item) {
+void ProcessStudio::addTaskShapeItem(std::shared_ptr<TaskShapeItem> item) {
     _taskShapes.push_back(item);
 }
 

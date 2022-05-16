@@ -114,6 +114,10 @@ namespace Process {
         std::string _id;
 
         std::string _taskName;
+        std::string _taskType;
+        std::string _name;
+        std::string _nextTaskID;
+        std::string _preTaskID;
     RTTR_ENABLE()
     };
 }

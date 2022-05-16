@@ -159,7 +159,7 @@ void ProcessEditor::dropEvent(QDropEvent *event) {
             shape->setBound({(float) event->posF().x(), (float) event->posF().y(), 100, 100});
             _graphics->addShape(shape);
             _processStudio->addTask(task);
-            _processStudio->addTaskShapePair(
+            _processStudio->addTaskShapeItem(
                     std::make_shared<TaskShapeItem>(task, shape, taskType, shapeType, taskVar, shapeVar));
         } else {
             shapeType = rttr::type::get_by_name("UserTaskShape");
@@ -168,7 +168,7 @@ void ProcessEditor::dropEvent(QDropEvent *event) {
             shape->setBound({(float) event->posF().x(), (float) event->posF().y(), 100, 100});
             _graphics->addShape(shape);
             _processStudio->addTask(task);
-            _processStudio->addTaskShapePair(
+            _processStudio->addTaskShapeItem(
                     std::make_shared<TaskShapeItem>(task, shape, taskType, shapeType, taskVar, shapeVar));
         }
         update();

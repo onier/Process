@@ -192,3 +192,11 @@ void Edge::setStartShape(std::shared_ptr<Shape> shape) {
 void Edge::setEndShape(std::shared_ptr<Shape> shape) {
     _endShape = shape;
 }
+
+std::shared_ptr<Shape> Edge::getStartShape() {
+    return _startShape;
+}
+
+std::shared_ptr<Shape> Edge::getEndShape() {
+    return _endShape;
+}

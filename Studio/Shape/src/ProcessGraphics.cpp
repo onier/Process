@@ -3,6 +3,7 @@
 //
 
 #include "ProcessGraphics.h"
+#include "glog/logging.h"
 
 ProcessGraphics::ProcessGraphics() {
 }
@@ -13,13 +14,26 @@ std::vector<std::shared_ptr<Shape>> ProcessGraphics::getShapes() {
 
 void ProcessGraphics::addShape(std::shared_ptr<Shape> shape) {
     _shapes.push_back(shape);
+    shape->addPropertyEventHanlder([&, shape](std::string msg) {
+        notify(shape, msg);
+    });
+}
+
+void ProcessGraphics::removeShape(std::shared_ptr<Shape> shape) {
+    auto iter = std::remove_if(_shapes.begin(), _shapes.end(), [shape](std::shared_ptr<Shape> s) {
+        return s == shape;
+    });
+    if (iter != _shapes.end())
+        _shapes.erase(iter);
+    LOG(INFO) << "xxx" << _shapes.size();
+    LOG(INFO) << "xxx" << _shapes.size();
 }
 
 void ProcessGraphics::addHandler(ShapeEventHandler handler) {
     _handlers.push_back(handler);
 }
 
-void ProcessGraphics::notify(std::shared_ptr<Shape> shape, ShapeStatus status) {
+void ProcessGraphics::notify(std::shared_ptr<Shape> shape, std::string status) {
     for (auto &h: _handlers) {
         h(shape, status);
     }

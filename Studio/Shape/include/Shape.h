@@ -68,6 +68,8 @@ RTTR_ENABLE()
 };
 
 struct Shape {
+    typedef std::function<void(std::string)> PropertyEventHanlder;
+
     virtual ~Shape() {};
 
     virtual Bound getBound() = 0;
@@ -96,13 +98,23 @@ struct Shape {
 
     virtual bool isContained(QPointF pointF) = 0;
 
+    virtual void addPropertyEventHanlder(PropertyEventHanlder handler) {
+        _propertyEventHanlders.push_back(handler);
+    };
+
     virtual bool isSelected() {
         return _isSelected;
-    }
+    };
 
     virtual void setSelected(bool selected) {
         _isSelected = selected;
-    }
+    };
+
+    virtual void notifyPropertyEvents(std::string propertyName) {
+        for (auto &h :_propertyEventHanlders) {
+            h(propertyName);
+        }
+    };
 
     bool _isShowAncher;
     std::string _id;
@@ -113,7 +125,7 @@ struct Shape {
     Color _fColor;
 protected:
     bool _isSelected;
-
+    std::vector<PropertyEventHanlder> _propertyEventHanlders;
 };
 
 

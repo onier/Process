@@ -34,7 +34,7 @@ struct TaskShapeItem {
                   const rttr::variant &shapeVar);
 };
 
-typedef std::vector<std::shared_ptr<TaskShapeItem>> TaskShpePairs;
+typedef std::vector<std::shared_ptr<TaskShapeItem>> TaskShpeItems;
 
 class ProcessStudio {
 public:
@@ -48,7 +48,7 @@ public:
 
     std::shared_ptr<TaskShapeItem> getTaskShapeItemByShape(std::shared_ptr<Shape> shape);
 
-    void addTaskShapePair(std::shared_ptr<TaskShapeItem> item);
+    void addTaskShapeItem(std::shared_ptr<TaskShapeItem> item);
 
     void setProcess(std::shared_ptr<Process::Process> process);
 
@@ -66,11 +66,14 @@ public:
 protected:
     void notifySelectShape(ProcessStudio *processStudio, std::shared_ptr<Shape> shape);
 
+    void updateTaskConnect(std::shared_ptr<Shape> start, std::shared_ptr<Shape> end);
+
 private:
+    std::map<std::string, std::function<void(std::shared_ptr<Shape>)>> _shapeMessageHandlers;
     std::shared_ptr<Shape> _currentSelectShape;
     std::shared_ptr<Process::Process> _process;
     std::shared_ptr<ProcessGraphics> _graphics;
-    TaskShpePairs _taskShapes;
+    TaskShpeItems _taskShapes;
     std::vector<SelectEventHanlder> _selectEventHanlders;
 };
 
