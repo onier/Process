@@ -10,7 +10,6 @@
 #include "glog/logging.h"
 #include "Process.h"
 #include "ParallelGateway.h"
-#include "TaskManager.h"
 #include "rttr/registration.h"
 #include "TestTask1.h"
 std::string uuid() {
@@ -276,16 +275,16 @@ int main(){
     Process::Process process(10);
 //    process.loadXML(text);
     FakeTask fakeTask1;
-    process.loadFile("/home/xuzhenhai/src/puppy/Process/TaskJSON/src/demo.xml");
+    process.loadFile("/home/ubuntu/puppy/Process/TaskJSON/src/demo.xml");
     process.initProcessValues({{"taskValue", 2.0}});
     //    folly::Synchronized<std::map<std::string, boost::any>> values;
     //    values.wlock()->insert({"taskValue", 2.0});
     process.startProcess(nullptr);
 //    sleep(1);
 //    process.stopProcess();
-    process.suspend();
-    sleep(2);
-    process.restore();
+//    process.suspend();
+//    sleep(2);
+//    process.restore();
     //    LOG(INFO)<<process.saveXML();
     //    auto t = rttr::type::get_by_name("TestTask1");
     //    LOG(INFO) << puppy::common::XML::toXMLString(t);

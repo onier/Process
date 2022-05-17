@@ -40,6 +40,7 @@ RTTR_REGISTRATION {
                     rttr::policy::ctor::as_object
             )
             .property("ValueName", &ExclusiveRule::_valueName)
+            .property("Text", &ExclusiveRule::_text)
             .property("Operator", &ExclusiveRule::_operator)
             .property("Value", &ExclusiveRule::_value)
             .property("Type", &ExclusiveRule::_type)

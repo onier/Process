@@ -18,6 +18,7 @@ enum class Operator {
 };
 
 struct ExclusiveRule {
+    std::string _text;
     std::string _valueName;
     Operator _operator;
     std::string _value;
@@ -48,6 +49,10 @@ public:
     std::map<std::string, std::function<bool(folly::Synchronized<std::map<std::string, boost::any>> &)>> _ruleFunctions;
 
     std::vector<ExclusiveRule> _subTasks;
+
+    void setNextTaskID(std::string id, bool f) override;
+
+    void setPreTaskID(std::string id, bool f) override;
 
 RTTR_ENABLE(AbstractTask)
 };

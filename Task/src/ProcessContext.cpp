@@ -92,7 +92,7 @@ bool ProcessContext::loadDomElement(xercesc::DOMNode *domElement) {
         _taskName = puppy::common::XML::toStr(task->getNodeValue());
     }
     auto threadCount = domElement->getAttributes()->getNamedItem(XStr("threadCount"));
-    if (task) {
+    if (threadCount) {
         _threadCount = boost::lexical_cast<int>(puppy::common::XML::toStr(threadCount->getNodeValue()));
     }else{
         _threadCount = 4;

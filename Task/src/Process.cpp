@@ -70,7 +70,7 @@ void Process::Process::processParallelTask(std::shared_ptr<Task> task1) {
 //                    processTask(t);
 //                }
 //            } else
-            if (task->_taskCount == task->_inTasks.size()) {//并发的任务已经全部结束继续往下执行
+            if (task->_taskCount >= task->_inTasks.size()) {//并发的任务已经全部结束继续往下执行
                 task->_taskCount = 0;
                 for (auto subTask: task->_outTasks) {
                     auto t = _processContext->getTaskByID(subTask);

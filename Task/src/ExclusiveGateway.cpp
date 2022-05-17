@@ -67,6 +67,14 @@ std::string ExclusiveGateway::getTaskType() {
     return "ExclusiveGateway";
 }
 
+void ExclusiveGateway::setNextTaskID(std::string id, bool f) {
+    AbstractTask::setNextTaskID(id, f);
+}
+
+void ExclusiveGateway::setPreTaskID(std::string id, bool f) {
+    AbstractTask::setPreTaskID(id, f);
+}
+
 ExclusiveRule::ExclusiveRule(const std::string &valueName, Operator op, double value, const std::string &taskId)
         : _valueName(valueName), _operator(op),  _taskID(taskId) {}
 

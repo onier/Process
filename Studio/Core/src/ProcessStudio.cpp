@@ -15,7 +15,7 @@ ProcessStudio::ProcessStudio() {
             auto startShape = edge->getStartShape();
             auto startTask = getTaskByShape(startShape);
             if (startTask.size() == 1) {
-                startTask[0]->setNextTaskID(shape->_id);
+                startTask[0]->setNextTaskID(shape->_id,true);
             }
         }
     }});
@@ -25,7 +25,7 @@ ProcessStudio::ProcessStudio() {
             auto endShape = edge->getEndShape();
             auto endTask = getTaskByShape(endShape);
             if (endTask.size() == 1) {
-                endTask[0]->setNextTaskID(shape->_id);
+                endTask[0]->setNextTaskID(shape->_id,true);
             }
         }
     }});
