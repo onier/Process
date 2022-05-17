@@ -16,9 +16,22 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     _processEditor = new ProcessEditor;
     _processStudio = std::make_shared<ProcessStudio>();
-    _processStudio->setProcess(std::make_shared<Process::Process>(3));
+    _processStudio->addProperyMessageHandler("Text",[&](auto task){
+        _processEditor->update();
+    });
     _processEditor->setProcessStudio(_processStudio);
     init();
+    ui->toolBar->addAction("Start", [&]() {
+        _processEditor->setEnableEdit(false);
+        _processStudio->startProcess();
+    });
+    ui->toolBar->addAction("Stop", [&]() {
+        _processEditor->setEnableEdit(true);
+        _processStudio->stopProcess();
+    });
+    ui->toolBar->addAction("Pause", []() {
+
+    });
 }
 
 TaskListModel *MainWindow::createTaskItemModel() {
@@ -52,6 +65,9 @@ void MainWindow::init() {
                     delete _tableModel;
                 }
                 _tableModel = new puppy::common::QRTTRTableModel(item->_taskVar);
+                _tableModel->addValueChangeEvents([&, item](int r, int c) {
+                    item->_shape->setText(item->_task->_name);
+                });
                 _tableModel->setType(item->_taskType);
                 _propertTableView->setModel(_tableModel);
             }

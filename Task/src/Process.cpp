@@ -25,10 +25,10 @@ void Process::Process::processTask(std::shared_ptr<Task> task) {
     auto state = getState();
     switch (state) {
         case State::STOPED:
-            LOG(ERROR)<<"process is stop";
+            LOG(ERROR) << "process is stop";
             return;
         case State::SUSPEND:
-            LOG(ERROR)<<"process is suspend";
+            LOG(ERROR) << "process is suspend";
             _processContext->_suspendTasks->wlock()->push_back(task);
             return;
     }
@@ -64,20 +64,22 @@ void Process::Process::processParallelTask(std::shared_ptr<Task> task1) {
         std::lock_guard<std::mutex> gurad{task->_mutex};
         {
             task->_taskCount++;
-//            LOG(INFO) << "processParallelTask  then " << task->_name << "  " << task->_taskCount << " intask "
-//                      << task->_inTasks.size();
-            if (task->_inTasks.empty()) {//作为开始并发的任务直接启动并发任务
+//            if (task->_inTasks.size()<2) {//作为开始并发的任务直接启动并发任务
+//                for (auto subTask: task->_outTasks) {
+//                    auto t = _processContext->getTaskByID(subTask);
+//                    processTask(t);
+//                }
+//            } else
+            if (task->_taskCount == task->_inTasks.size()) {//并发的任务已经全部结束继续往下执行
+                task->_taskCount = 0;
                 for (auto subTask: task->_outTasks) {
                     auto t = _processContext->getTaskByID(subTask);
                     processTask(t);
                 }
-            } else if (task->_taskCount == task->_inTasks.size()) {//并发的任务已经全部结束继续往下执行
                 auto t = _processContext->getTaskByID(task->getNextTaskID());
-//                LOG(INFO) << "start ParallelGateway next task  " << task->_name << " " << task->_taskCount;
                 if (t) {
                     processTask(t);
                 } else {
-                    LOG(INFO) << "  ParallelGateway can not find next task";
                     if (_processContext->_taskFinishFunction) {
                         _processContext->_taskFinishFunction();
                     }
@@ -172,8 +174,8 @@ void Process::Process::suspend() {
 
 void Process::Process::restore() {
     setState(State::RUNNING);
-    for(auto & t:_processContext->_tasks){
-        if(t->get_type().get_name()=="SubProcessTask"){
+    for (auto &t: _processContext->_tasks) {
+        if (t->get_type().get_name() == "SubProcessTask") {
             std::shared_ptr<SubProcessTask> subProcess = std::dynamic_pointer_cast<SubProcessTask>(t);
             subProcess->_subProcess->restore();
         }
@@ -186,7 +188,7 @@ void Process::Process::restore() {
 }
 
 void Process::Process::setState(State state) {
-    _processContext->getProcessValues()->wlock()->operator[]("ProcessRunState")= state;
+    _processContext->getProcessValues()->wlock()->operator[]("ProcessRunState") = state;
 }
 
 Process::State Process::Process::getState() {
@@ -199,17 +201,17 @@ Process::State Process::Process::getState() {
 
 void Process::Process::initProcessValues(std::map<std::string, boost::any> values) {
     auto lock = _processContext->getProcessValues()->wlock();
-    for (auto &pair:values) {
+    for (auto &pair: values) {
         lock->insert(pair);
     }
 }
 
 void Process::Process::initEventHandlers() {
     auto events = _processContext->getTasksByType("EventGateway");
-    for (auto &event:events) {
+    for (auto &event: events) {
         auto eventGateway = std::dynamic_pointer_cast<EventGateway>(event);
         auto eventTyes = eventGateway->_eventRules;
-        for (auto &et:eventTyes) {
+        for (auto &et: eventTyes) {
             auto task = _processContext->getTaskByID(et.second);
             _processContext->_eventHandler->insert({et.first, [&, task]() {
                 folly::via(_processContext->_executor.get(), [&, task]() { processDefaultTask(task); });
@@ -220,4 +222,10 @@ void Process::Process::initEventHandlers() {
 
 void Process::Process::addTask(std::shared_ptr<Task> task) {
     getProcessContext()->addTask(task);
+}
+
+void Process::Process::setName(std::string name) {
+    if (_processContext) {
+        _processContext->setTaskName(name);
+    }
 }

@@ -46,6 +46,13 @@ namespace Process {
 
         void addTask(std::shared_ptr<Task> task);
 
+        void setTaskName(std::string taskName) {
+            _taskName = taskName;
+            for (auto &t: _tasks) {
+                t->_taskName = taskName;
+            }
+        };
+
     public:
         auto getExecutor() {
             return _executor;
@@ -83,12 +90,12 @@ namespace Process {
         std::shared_ptr<folly::Synchronized<std::map<std::string, boost::any>>> _processValues;
         std::shared_ptr<folly::CPUThreadPoolExecutor> _executor;
         std::shared_ptr<std::map<std::string, std::function<void()>>> _eventHandler;
-        std::string _taskName;
         int _threadCount;
         std::vector<std::shared_ptr<Process::Task>> _tasks;
         std::shared_ptr<SuspendTask> _suspendTasks;
     private:
         std::vector<std::shared_ptr<xercesc::XercesDOMParser>> _parseCaches;
+        std::string _taskName;
     };
 }
 

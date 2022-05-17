@@ -40,7 +40,6 @@ bool AddEdgeAction::doAction(QPointF pointF) {
 }
 
 bool AddEdgeAction::endAction(QPointF pointF) {
-    _edge->notifyPropertyEvents("EdgeStartShapeChange");
     _edge->_isShowAncher = false;
     _edge = nullptr;
     return false;

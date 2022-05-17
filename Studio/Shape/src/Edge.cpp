@@ -12,7 +12,6 @@ static double TwoPi = 2.0 * Pi;
 Edge::Edge() {
     _bColor = {255, 255, 255};
     _fColor = {0, 0, 0};
-    _text = "YES";
 }
 
 Bound Edge::getBound() {
@@ -183,14 +182,23 @@ bool Edge::isContained(QPointF pointF) {
 }
 
 void Edge::setStartShape(std::shared_ptr<Shape> shape) {
-    if (!shape) {
-        LOG(INFO) << "aaaa";
+    if(!shape){
+        notifyPropertyEvents("EdgeStartShapeRemove");
     }
     _startShape = shape;
+    if(shape){
+        notifyPropertyEvents("EdgeStartShapeChange");
+    }
 }
 
 void Edge::setEndShape(std::shared_ptr<Shape> shape) {
+    if(!shape){
+        notifyPropertyEvents("EdgeEndShapeRemove");
+    }
     _endShape = shape;
+    if(shape){
+        notifyPropertyEvents("EdgeEndShapeChange");
+    }
 }
 
 std::shared_ptr<Shape> Edge::getStartShape() {

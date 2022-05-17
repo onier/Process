@@ -21,6 +21,10 @@ namespace Process {
 
         std::string getPreTaskID() override;
 
+        void setNextTaskID(std::string id, bool f) override;
+
+        void setPreTaskID(std::string id, bool f) override;
+
         //must
         void run(std::shared_ptr<ProcessContext> context) override;
 
@@ -37,6 +41,7 @@ namespace Process {
         };
 
         std::string getTaskType() override;
+
     RTTR_ENABLE(Task)
     };
 }

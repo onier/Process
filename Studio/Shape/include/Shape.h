@@ -111,19 +111,28 @@ struct Shape {
     };
 
     virtual void notifyPropertyEvents(std::string propertyName) {
-        for (auto &h :_propertyEventHanlders) {
+        for (auto &h: _propertyEventHanlders) {
             h(propertyName);
         }
+    };
+
+    virtual std::string getText() {
+        return _text;
+    };
+
+    virtual void setText(std::string text) {
+        _text = text;
+        notifyPropertyEvents("Text");
     };
 
     bool _isShowAncher;
     std::string _id;
     std::string _preID;
     std::string _nextID;
-    std::string _text;
     Color _bColor;
     Color _fColor;
 protected:
+    std::string _text;
     bool _isSelected;
     std::vector<PropertyEventHanlder> _propertyEventHanlders;
 };

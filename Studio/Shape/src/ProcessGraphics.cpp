@@ -25,8 +25,6 @@ void ProcessGraphics::removeShape(std::shared_ptr<Shape> shape) {
     });
     if (iter != _shapes.end())
         _shapes.erase(iter);
-    LOG(INFO) << "xxx" << _shapes.size();
-    LOG(INFO) << "xxx" << _shapes.size();
 }
 
 void ProcessGraphics::addHandler(ShapeEventHandler handler) {
@@ -52,5 +50,11 @@ std::vector<std::shared_ptr<Shape>> ProcessGraphics::getSelectShapes() {
 void ProcessGraphics::clearSelection() {
     for (auto &s: _shapes) {
         s->setSelected(false);
+    }
+}
+
+void ProcessGraphics::selectAll() {
+    for (auto &s: _shapes) {
+        s->setSelected(true);
     }
 }

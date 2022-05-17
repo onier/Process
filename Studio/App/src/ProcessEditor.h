@@ -16,6 +16,10 @@ public:
 
     void setProcessStudio(std::shared_ptr<ProcessStudio> ps);
 
+    void setEnableEdit(bool enable);
+
+    bool isEnableEdit();
+
 protected:
     void paintEvent(QPaintEvent *event) override;
 
@@ -40,6 +44,8 @@ protected:
     std::map<std::string, std::shared_ptr<Action>> _actions;
 private:
     void initTaskAction();
+
+    bool _enableEdit;
 };
 
 

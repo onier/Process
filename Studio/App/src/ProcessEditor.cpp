@@ -7,6 +7,7 @@
 #include "QMouseEvent"
 #include "glog/logging.h"
 #include "QMimeData"
+#include "QShortcut"
 #include "Edge.h"
 #include "Library.h"
 
@@ -14,7 +15,25 @@ ProcessEditor::ProcessEditor(QWidget *parent, Qt::WindowFlags f) : QWidget(paren
     setAcceptDrops(true);
     _isEnableMove = false;
     _isEnableAction = false;
+    _enableEdit = true;
     initTaskAction();
+    QShortcut *selectAll = new QShortcut(QKeySequence("Ctrl+a"), this);
+//    shortcut->setContext(Qt::ApplicationShortcut);
+    QObject::connect(selectAll, &QShortcut::activated, [&]() {
+        _processStudio->getProcessGraphics()->selectAll();
+        update();
+    });
+
+    QShortcut *deleteShape = new QShortcut(this);
+    deleteShape->setKey(Qt::Key_Delete);
+//    shortcut->setContext(Qt::ApplicationShortcut);
+    QObject::connect(deleteShape, &QShortcut::activated, [&]() {
+        const std::vector<std::shared_ptr<Shape>> &shapes = _processStudio->getProcessGraphics()->getSelectShapes();
+        for (auto &s: shapes) {
+            _processStudio->removeShape(s);
+        }
+        update();
+    });
 }
 
 void ProcessEditor::setProcessStudio(std::shared_ptr<ProcessStudio> ps) {
@@ -39,6 +58,9 @@ void ProcessEditor::paintEvent(QPaintEvent *event) {
 }
 
 void ProcessEditor::mousePressEvent(QMouseEvent *event) {
+    if (!_enableEdit) {
+        return;
+    }
     _mousePoint = event->posF();
     _pressPoint = event->posF();
     _status = 1;
@@ -64,6 +86,9 @@ void ProcessEditor::mousePressEvent(QMouseEvent *event) {
 }
 
 void ProcessEditor::mouseReleaseEvent(QMouseEvent *event) {
+    if (!_enableEdit) {
+        return;
+    }
     _status = 3;
     if (_isEnableMove) {
         _isEnableMove = false;
@@ -85,6 +110,9 @@ void ProcessEditor::mouseReleaseEvent(QMouseEvent *event) {
             if (s->isSelected()) {
                 s->_isShowAncher = false;
             }
+            if (!s->isSelected()) {
+                _graphics->clearSelection();
+            }
             s->setSelected(!s->isSelected());
             if (s->isSelected()) {
                 _processStudio->setCurrentSelectShape(s);
@@ -96,6 +124,9 @@ void ProcessEditor::mouseReleaseEvent(QMouseEvent *event) {
 }
 
 void ProcessEditor::mouseMoveEvent(QMouseEvent *event) {
+    if (!_enableEdit) {
+        return;
+    }
     std::shared_ptr<ProcessGraphics> _graphics = _processStudio->getProcessGraphics();
     std::shared_ptr<Shape> _currentSelectShape = _processStudio->getCurrentSelectShape();
     {
@@ -136,6 +167,9 @@ void ProcessEditor::mouseMoveEvent(QMouseEvent *event) {
 }
 
 void ProcessEditor::dragEnterEvent(QDragEnterEvent *event) {
+    if (!_enableEdit) {
+        return;
+    }
     if (event->mimeData()->hasFormat("application/shape_icon")) {
         event->acceptProposedAction();
         LOG(INFO) << "enable drag";
@@ -144,6 +178,9 @@ void ProcessEditor::dragEnterEvent(QDragEnterEvent *event) {
 }
 
 void ProcessEditor::dropEvent(QDropEvent *event) {
+    if (!_enableEdit) {
+        return;
+    }
     std::shared_ptr<ProcessGraphics> _graphics = _processStudio->getProcessGraphics();
     std::shared_ptr<Shape> _currentSelectShape = _processStudio->getCurrentSelectShape();
     auto type = event->mimeData()->data("application/shape_icon").toStdString();
@@ -156,7 +193,7 @@ void ProcessEditor::dropEvent(QDropEvent *event) {
         if (shapeType.is_valid()) {
             auto shapeVar = shapeType.create();
             std::shared_ptr<Shape> shape = shapeVar.get_value<std::shared_ptr<Shape>>();
-            shape->setBound({(float) event->posF().x(), (float) event->posF().y(), 100, 100});
+            shape->setBound({(float) event->posF().x(), (float) event->posF().y(), 60, 50});
             _graphics->addShape(shape);
             _processStudio->addTask(task);
             _processStudio->addTaskShapeItem(
@@ -165,7 +202,7 @@ void ProcessEditor::dropEvent(QDropEvent *event) {
             shapeType = rttr::type::get_by_name("UserTaskShape");
             auto shapeVar = shapeType.create();
             std::shared_ptr<Shape> shape = shapeVar.get_value<std::shared_ptr<Shape>>();
-            shape->setBound({(float) event->posF().x(), (float) event->posF().y(), 100, 100});
+            shape->setBound({(float) event->posF().x(), (float) event->posF().y(), 60, 50});
             _graphics->addShape(shape);
             _processStudio->addTask(task);
             _processStudio->addTaskShapeItem(
@@ -180,3 +217,10 @@ void ProcessEditor::mouseDoubleClickEvent(QMouseEvent *event) {
     QWidget::mouseDoubleClickEvent(event);
 }
 
+void ProcessEditor::setEnableEdit(bool enable) {
+    _enableEdit = enable;
+}
+
+bool ProcessEditor::isEnableEdit() {
+    return _enableEdit;
+}

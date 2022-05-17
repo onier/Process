@@ -50,9 +50,11 @@ public:
 
     void addTaskShapeItem(std::shared_ptr<TaskShapeItem> item);
 
-    void setProcess(std::shared_ptr<Process::Process> process);
-
     void addTask(std::shared_ptr<Process::Task> task);
+
+    void removeTask(std::shared_ptr<Process::Task> task);
+
+    void removeShape(std::shared_ptr<Shape> shape);
 
     std::shared_ptr<ProcessGraphics> getProcessGraphics();
 
@@ -62,6 +64,12 @@ public:
 
     void addSelectEventHanlder(SelectEventHanlder hanlder);
 
+    void addProperyMessageHandler(std::string message, std::function<void(std::shared_ptr<Shape>)> h);
+
+    void startProcess();
+
+    void stopProcess();
+
     ProcesInfo _processInfo;
 protected:
     void notifySelectShape(ProcessStudio *processStudio, std::shared_ptr<Shape> shape);
@@ -69,8 +77,9 @@ protected:
     void updateTaskConnect(std::shared_ptr<Shape> start, std::shared_ptr<Shape> end);
 
 private:
-    std::map<std::string, std::function<void(std::shared_ptr<Shape>)>> _shapeMessageHandlers;
+    std::map<std::string, std::function<void(std::shared_ptr<Shape>)>> _propertyMessageHandlers;
     std::shared_ptr<Shape> _currentSelectShape;
+    std::vector<std::shared_ptr<Process::Task>> _tasks;
     std::shared_ptr<Process::Process> _process;
     std::shared_ptr<ProcessGraphics> _graphics;
     TaskShpeItems _taskShapes;

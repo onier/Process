@@ -29,6 +29,8 @@ public:
 
     void clearSelection();
 
+    void selectAll();
+
     template<class T>
     std::shared_ptr<T> getShape(QPointF pointF) {
         for (auto &s: _shapes) {

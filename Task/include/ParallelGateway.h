@@ -17,6 +17,10 @@ public:
 
     std::string getTaskType() override;
 
+    void setNextTaskID(std::string id, bool f) override;
+
+    void setPreTaskID(std::string id, bool f) override;
+
     /**
      * 行进入的任务，如果为空直接启动outTask
      */

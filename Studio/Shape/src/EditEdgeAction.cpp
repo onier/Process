@@ -4,6 +4,7 @@
 
 #include "EditEdgeAction.h"
 #include "Edge.h"
+#include "TaskShape.h"
 
 bool EditEdgeAction::startAction(QPointF pointF) {
     _edge = dynamic_cast<Edge *>(_sourceShape.get());
@@ -17,7 +18,7 @@ bool EditEdgeAction::startAction(QPointF pointF) {
 }
 
 bool EditEdgeAction::doAction(QPointF pointF) {
-    auto shape = _processGraphics->getShape<Edge>(pointF);
+    auto shape = _processGraphics->getShape<TaskShape>(pointF);
     if (shape) {
         if (_isStart) {
             _edge->setStartShape(shape);

@@ -39,3 +39,11 @@ void Process::AbstractTask::run(std::shared_ptr<Process::ProcessContext> context
 std::string Process::AbstractTask::getTaskType() {
     return _taskType;
 }
+
+void Process::AbstractTask::setNextTaskID(std::string id, bool f) {
+    _nextTaskID = id;
+}
+
+void Process::AbstractTask::setPreTaskID(std::string id, bool f) {
+    _preTaskID = id;
+}

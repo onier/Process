@@ -98,11 +98,15 @@ namespace Process {
          */
         virtual std::string getNextTaskID() = 0;
 
+        virtual void setNextTaskID(std::string id, bool f = false) = 0;
+
         /**
          * 上一个task,目前只用于判断第一个startTask
          * @return 字符串
          */
         virtual std::string getPreTaskID() = 0;
+
+        virtual void setPreTaskID(std::string id, bool f = false) = 0;
 
         virtual bool
         saveDomElement(xercesc::DOMElement *domElement, std::shared_ptr<xercesc::DOMDocument> document) = 0;

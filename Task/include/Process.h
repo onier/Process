@@ -58,6 +58,8 @@ namespace Process {
 
         State getState();
 
+        void setName(std::string name);
+
     private:
         void processDefaultTask(std::shared_ptr<Task> task);
 
