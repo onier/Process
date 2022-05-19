@@ -40,8 +40,13 @@ namespace Process {
             return false;
         };
 
+        void addMessageEvent(MessageEvent event) override;
+
+        void notify(std::string message, boost::any any) override;
+
         std::string getTaskType() override;
 
+        std::vector<MessageEvent> _messageEvents;
     RTTR_ENABLE(Task)
     };
 }

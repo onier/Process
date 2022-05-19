@@ -9,7 +9,7 @@
 #include "folly/Synchronized.h"
 #include "boost/any.hpp"
 
-enum class Operator {
+enum class ExclusiveRuleOperator {
     GREATER = 0x0001,
     LESS = 0x0002,
     EQUAL = 0x0003,
@@ -17,23 +17,33 @@ enum class Operator {
     LESS_EUQAL = 0x0005
 };
 
+enum class ExclusiveRuleType {
+    DOUBLE,
+    STRING
+};
+
 struct ExclusiveRule {
     std::string _text;
     std::string _valueName;
-    Operator _operator;
+    ExclusiveRuleOperator _operator;
     std::string _value;
     std::string _taskID;
-    std::string _type;
+    ExclusiveRuleType _type;
 
-    ExclusiveRule(const std::string &valueName, Operator op, double value, const std::string &taskId);
+    ExclusiveRule(const std::string &valueName, ExclusiveRuleOperator op, double value, const std::string &taskId);
 
-    ExclusiveRule(const std::string &valueName, Operator op, int value, const std::string &taskId);
+    ExclusiveRule(const std::string &valueName, ExclusiveRuleOperator op, int value, const std::string &taskId);
 
     bool checkRule(std::shared_ptr<folly::Synchronized<std::map<std::string, boost::any>>> values);
 
     ExclusiveRule();
 
 RTTR_ENABLE()
+};
+
+struct VariantRule {
+    std::string _id;
+    std::shared_ptr<rttr::variant> _variant;
 };
 
 class ExclusiveGateway : public Process::AbstractTask {
@@ -54,6 +64,8 @@ public:
 
     void setPreTaskID(std::string id, bool f) override;
 
+private:
+    std::vector<VariantRule> _subTaskVariant;
 RTTR_ENABLE(AbstractTask)
 };
 

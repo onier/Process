@@ -47,3 +47,13 @@ void Process::AbstractTask::setNextTaskID(std::string id, bool f) {
 void Process::AbstractTask::setPreTaskID(std::string id, bool f) {
     _preTaskID = id;
 }
+
+void Process::AbstractTask::addMessageEvent(Process::Task::MessageEvent event) {
+    _messageEvents.push_back(event);
+}
+
+void Process::AbstractTask::notify(std::string message, boost::any any) {
+    for (auto &e: _messageEvents) {
+        e(message, any);
+    }
+}

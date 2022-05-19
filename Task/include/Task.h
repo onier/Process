@@ -63,6 +63,8 @@ namespace Process {
     };
 
     struct Task {
+        typedef std::function<void(std::string, boost::any)> MessageEvent;
+
         Task();
 
         virtual ~Task();
@@ -114,6 +116,10 @@ namespace Process {
         virtual bool loadDomElement(xercesc::DOMNode *domElement) = 0;
 
         virtual std::string getTaskType() = 0;
+
+        virtual void addMessageEvent(MessageEvent event) = 0;
+
+        virtual void notify(std::string message, boost::any any) = 0;
 
         std::string _id;
 

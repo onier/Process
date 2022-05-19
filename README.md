@@ -18,9 +18,9 @@ TaskTest以代码方式构建流程，并保存为字符。
             <TestTask1 NextTaskID="aba55168-f43f-41e1-87ae-576e3f527962" id="13fc91df-db76-4b9c-9179-3fde6c062aa0" name="startTask"/>
             <ExclusiveTask PreTaskID="13fc91df-db76-4b9c-9179-3fde6c062aa0" id="aba55168-f43f-41e1-87ae-576e3f527962" name="startExclusiveTask">
                 <list name="SubTasks" type="ExclusiveRule">
-                    <ExclusiveRule Operator="=" TaskID="9bd60356-23be-4604-89fd-cd82ba0c3bc1" Value="1" ValueName="taskValue"/>
-                    <ExclusiveRule Operator="=" TaskID="79cc50ef-cda5-427c-b635-42987fcaf9ef" Value="2" ValueName="taskValue"/>
-                    <ExclusiveRule Operator="=" TaskID="3adf4316-2679-4311-bd18-2e1d6582c4ef" Value="3" ValueName="taskValue"/>
+                    <ExclusiveRule ExclusiveRuleOperator="=" TaskID="9bd60356-23be-4604-89fd-cd82ba0c3bc1" Value="1" ValueName="taskValue"/>
+                    <ExclusiveRule ExclusiveRuleOperator="=" TaskID="79cc50ef-cda5-427c-b635-42987fcaf9ef" Value="2" ValueName="taskValue"/>
+                    <ExclusiveRule ExclusiveRuleOperator="=" TaskID="3adf4316-2679-4311-bd18-2e1d6582c4ef" Value="3" ValueName="taskValue"/>
                 </list>
             </ExclusiveTask>
             <ExclusiveTask NextTaskID="d88d4ad6-fb5f-4122-8ede-504481bc09d9" PreTaskID="13fc91df-db76-4b9c-9179-3fde6c062aa0" id="f0d24bb9-336f-4026-96ee-fffcc2146eda" name="endExclusiveTask"/>

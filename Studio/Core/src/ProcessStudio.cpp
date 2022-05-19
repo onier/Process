@@ -4,6 +4,8 @@
 
 #include "ProcessStudio.h"
 
+thread_local std::shared_ptr<Shape> currentShape;
+
 ProcessStudio::ProcessStudio() {
     _graphics = std::make_shared<ProcessGraphics>();
     _graphics->addHandler([&](std::shared_ptr<Shape> shape, std::string msg) {
@@ -11,26 +13,29 @@ ProcessStudio::ProcessStudio() {
     });
     _propertyMessageHandlers.insert({"EdgeStartShapeRemove", [&](std::shared_ptr<Shape> shape) {
         std::shared_ptr<Edge> edge = std::dynamic_pointer_cast<Edge>(shape);
+        currentShape = edge;
         if (edge) {
             auto startShape = edge->getStartShape();
             auto startTask = getTaskByShape(startShape);
             if (startTask.size() == 1) {
-                startTask[0]->setNextTaskID(shape->_id,true);
+                startTask[0]->setNextTaskID(shape->_id, true);
             }
         }
     }});
     _propertyMessageHandlers.insert({"EdgeEndShapeRemove", [&](std::shared_ptr<Shape> shape) {
         std::shared_ptr<Edge> edge = std::dynamic_pointer_cast<Edge>(shape);
+        currentShape = edge;
         if (edge) {
             auto endShape = edge->getEndShape();
             auto endTask = getTaskByShape(endShape);
             if (endTask.size() == 1) {
-                endTask[0]->setNextTaskID(shape->_id,true);
+                endTask[0]->setNextTaskID(shape->_id, true);
             }
         }
     }});
     _propertyMessageHandlers.insert({"EdgeStartShapeChange", [&](std::shared_ptr<Shape> shape) {
         std::shared_ptr<Edge> edge = std::dynamic_pointer_cast<Edge>(shape);
+        currentShape = edge;
         if (edge->getStartShape() == edge->getEndShape() && edge->getStartShape()) {
             _graphics->removeShape(shape);
         } else {
@@ -39,6 +44,7 @@ ProcessStudio::ProcessStudio() {
     }});
     _propertyMessageHandlers.insert({"EdgeEndShapeChange", [&](std::shared_ptr<Shape> shape) {
         std::shared_ptr<Edge> edge = std::dynamic_pointer_cast<Edge>(shape);
+        currentShape = edge;
         if (edge->getStartShape() == edge->getEndShape() && edge->getStartShape()) {
             _graphics->removeShape(shape);
         } else {
@@ -126,15 +132,29 @@ std::shared_ptr<Shape> ProcessStudio::getCurrentSelectShape() {
 
 void ProcessStudio::setCurrentSelectShape(std::shared_ptr<Shape> shape) {
     _currentSelectShape = shape;
-    notifySelectShape(this, shape);
+    notifyTaskShapeItemSlectChange(this, shape);
+    notifyRuleShapeItemSlectChange(this, shape);
 }
 
 void ProcessStudio::addTask(std::shared_ptr<Process::Task> task) {
     _tasks.push_back(task);
+    task->addMessageEvent([&](std::string msg, boost::any any) {
+        if (msg == "addExclusiveRule") {
+            RuleShapeItem ruleShapeItem;
+            ruleShapeItem._shape = currentShape;
+            ruleShapeItem._rule = boost::any_cast<std::shared_ptr<rttr::variant>>(any);
+            _ruleShapeItems.push_back(std::make_shared<RuleShapeItem>(ruleShapeItem));
+            currentShape = nullptr;
+        }
+    });
 }
 
-void ProcessStudio::addSelectEventHanlder(ProcessStudio::SelectEventHanlder hanlder) {
-    _selectEventHanlders.push_back(hanlder);
+void ProcessStudio::addTaskShapeItemSelectEventHanlder(ProcessStudio::SelectTaskShapeItemEventHanlder hanlder) {
+    _selectTaskShapeItemEventHanlders.push_back(hanlder);
+}
+
+void ProcessStudio::addRuleShapeItemSelectEventHanlder(ProcessStudio::SelectRuleShapeItemEventHanlder hanlder) {
+    _selectRuleShapeItemEventHanlders.push_back(hanlder);
 }
 
 std::shared_ptr<TaskShapeItem> ProcessStudio::getTaskShapeItemByShape(std::shared_ptr<Shape> shape) {
@@ -146,9 +166,25 @@ std::shared_ptr<TaskShapeItem> ProcessStudio::getTaskShapeItemByShape(std::share
     return {};
 }
 
-void ProcessStudio::notifySelectShape(ProcessStudio *processStudio, std::shared_ptr<Shape> shape) {
+std::shared_ptr<RuleShapeItem> ProcessStudio::getRuleShapeItems(std::shared_ptr<Shape> shape) {
+    for (auto &i: _ruleShapeItems) {
+        if (i->_shape == shape) {
+            return i;
+        }
+    }
+    return {};
+}
+
+void ProcessStudio::notifyTaskShapeItemSlectChange(ProcessStudio *processStudio, std::shared_ptr<Shape> shape) {
     auto item = getTaskShapeItemByShape(shape);
-    for (auto &h: _selectEventHanlders) {
+    for (auto &h: _selectTaskShapeItemEventHanlders) {
+        h(processStudio, item);
+    }
+}
+
+void ProcessStudio::notifyRuleShapeItemSlectChange(ProcessStudio *processStudio, std::shared_ptr<Shape> shape) {
+    auto item = getRuleShapeItems(shape);
+    for (auto &h: _selectRuleShapeItemEventHanlders) {
         h(processStudio, item);
     }
 }
@@ -161,6 +197,10 @@ TaskShapeItem::TaskShapeItem(const std::shared_ptr<Process::Task> &task, const s
 
 ProcesInfo::ProcesInfo() {
     _threadCount = 4;
+    _parameters.push_back({});
+    _parameters.push_back({});
+    _parameters.push_back({});
+    _parameters.push_back({});
 }
 
 void ProcessStudio::startProcess() {

@@ -24,14 +24,21 @@ RTTR_REGISTRATION {
             .property("NextTaskID", &AbstractTask::_nextTaskID)
             .property("PreTaskID", &AbstractTask::_preTaskID);
 
-    rttr::registration::enumeration<Operator>("Operator")
+    rttr::registration::enumeration<ExclusiveRuleOperator>("Operator")
             (
-                    rttr::value(">", Operator::GREATER),
-                    rttr::value("<", Operator::LESS),
-                    rttr::value("=", Operator::EQUAL),
-                    rttr::value(">=", Operator::GREATER_EUQAL),
-                    rttr::value("<=", Operator::LESS_EUQAL)
+                    rttr::value(">", ExclusiveRuleOperator::GREATER),
+                    rttr::value("<", ExclusiveRuleOperator::LESS),
+                    rttr::value("=", ExclusiveRuleOperator::EQUAL),
+                    rttr::value(">=", ExclusiveRuleOperator::GREATER_EUQAL),
+                    rttr::value("<=", ExclusiveRuleOperator::LESS_EUQAL)
             );
+
+    rttr::registration::enumeration<ExclusiveRuleType>("ExclusiveRuleType")
+            (
+                    rttr::value("Double", ExclusiveRuleType::DOUBLE),
+                    rttr::value("String", ExclusiveRuleType::STRING)
+            );
+
 
     rttr::registration::class_<ExclusiveRule>("ExclusiveRule")
             .

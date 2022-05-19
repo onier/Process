@@ -12,13 +12,27 @@
 #include "Edge.h"
 #include "Action.h"
 
+struct Parameter {
+    std::string _name;
+    std::string _value;
+    std::string _type;
+    std::string _description;
+};
+
 struct ProcesInfo {
     std::string _name;
     int _threadCount;
 
+    std::vector<Parameter> _parameters;
+
     ProcesInfo();
 
 RTTR_ENABLE()
+};
+
+struct RuleShapeItem {
+    std::shared_ptr<Shape> _shape;
+    std::shared_ptr<rttr::variant> _rule;
 };
 
 struct TaskShapeItem {
@@ -35,10 +49,12 @@ struct TaskShapeItem {
 };
 
 typedef std::vector<std::shared_ptr<TaskShapeItem>> TaskShpeItems;
+typedef std::vector<std::shared_ptr<RuleShapeItem>> RuleShapeItems;
 
 class ProcessStudio {
 public:
-    typedef std::function<void(ProcessStudio *, std::shared_ptr<TaskShapeItem>)> SelectEventHanlder;
+    typedef std::function<void(ProcessStudio *, std::shared_ptr<TaskShapeItem>)> SelectTaskShapeItemEventHanlder;
+    typedef std::function<void(ProcessStudio *, std::shared_ptr<RuleShapeItem>)> SelectRuleShapeItemEventHanlder;
 
     ProcessStudio();
 
@@ -47,6 +63,8 @@ public:
     std::vector<std::shared_ptr<Shape>> getShapeByTask(std::shared_ptr<Process::Task> task);
 
     std::shared_ptr<TaskShapeItem> getTaskShapeItemByShape(std::shared_ptr<Shape> shape);
+
+    std::shared_ptr<RuleShapeItem> getRuleShapeItems(std::shared_ptr<Shape> shape);
 
     void addTaskShapeItem(std::shared_ptr<TaskShapeItem> item);
 
@@ -62,7 +80,9 @@ public:
 
     void setCurrentSelectShape(std::shared_ptr<Shape> shape);
 
-    void addSelectEventHanlder(SelectEventHanlder hanlder);
+    void addTaskShapeItemSelectEventHanlder(SelectTaskShapeItemEventHanlder hanlder);
+
+    void addRuleShapeItemSelectEventHanlder(SelectRuleShapeItemEventHanlder hanlder);
 
     void addProperyMessageHandler(std::string message, std::function<void(std::shared_ptr<Shape>)> h);
 
@@ -72,7 +92,9 @@ public:
 
     ProcesInfo _processInfo;
 protected:
-    void notifySelectShape(ProcessStudio *processStudio, std::shared_ptr<Shape> shape);
+    void notifyTaskShapeItemSlectChange(ProcessStudio *processStudio, std::shared_ptr<Shape> shape);
+
+    void notifyRuleShapeItemSlectChange(ProcessStudio *processStudio, std::shared_ptr<Shape> shape);
 
     void updateTaskConnect(std::shared_ptr<Shape> start, std::shared_ptr<Shape> end);
 
@@ -83,7 +105,9 @@ private:
     std::shared_ptr<Process::Process> _process;
     std::shared_ptr<ProcessGraphics> _graphics;
     TaskShpeItems _taskShapes;
-    std::vector<SelectEventHanlder> _selectEventHanlders;
+    RuleShapeItems _ruleShapeItems;
+    std::vector<SelectTaskShapeItemEventHanlder> _selectTaskShapeItemEventHanlders;
+    std::vector<SelectRuleShapeItemEventHanlder> _selectRuleShapeItemEventHanlders;
 };
 
 

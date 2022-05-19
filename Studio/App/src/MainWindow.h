@@ -12,6 +12,8 @@
 #include "tuple"
 #include "TaskListView.h"
 #include "QRTTRTableModel.h"
+#include "QRTTRVectorTableModel.h"
+#include "PropertyViewer.h"
 
 namespace Ui {
     class MainWindow;
@@ -37,7 +39,12 @@ private:
     std::shared_ptr<ProcessStudio> _processStudio;
     ProcessEditor *_processEditor;
     QTableView *_propertTableView;
+    QTableView *_detailTableView;
     puppy::common::QRTTRTableModel *_tableModel;
+    puppy::common::RTTRItemDelegate *_delegate;
+    puppy::common::QRTTRVectorTableModel *_detailTableModel;
+    puppy::common::RTTRVectorItemDelegate *_detailTableDelegate;
+    PropertyViewer *_propertyViewer;
 };
 
 #endif // MAINWINDOW_H
