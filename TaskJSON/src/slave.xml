@@ -31,8 +31,8 @@
             <ExclusiveGateway id="checkSlaveCalibrationGateway">
                 <list name="SubTasks" type="ExclusiveRule">
                     <ExclusiveRule ExclusiveRuleOperator="=" TaskID="slave_motor_calibration" Value="YES"
-                                   Type="string" ValueName="CheckSlateMotroCalibrationState"/>
-                    <ExclusiveRule ExclusiveRuleOperator="=" TaskID="slaveMoveToThirdPosition" Value="NO" Type="string"
+                                   Type="String" ValueName="CheckSlateMotroCalibrationState"/>
+                    <ExclusiveRule ExclusiveRuleOperator="=" TaskID="slaveMoveToThirdPosition" Value="NO" Type="String"
                                    ValueName="CheckSlateMotroCalibrationState"/>
                 </list>
             </ExclusiveGateway>
@@ -57,8 +57,8 @@
                         <ExclusiveGateway id="checkSlaveCalibrationResultGateway">
                             <list name="SubTasks" type="ExclusiveRule">
                                 <ExclusiveRule ExclusiveRuleOperator="=" TaskID="slaveMotorCalibrationSucee" Value="YES"
-                                               Type="string" ValueName="CheckSlaveCalibrationResult"/>
-                                <ExclusiveRule ExclusiveRuleOperator="=" TaskID="slaveMotorCalibrationFail" Value="NO" Type="string"
+                                               Type="String" ValueName="CheckSlaveCalibrationResult"/>
+                                <ExclusiveRule ExclusiveRuleOperator="=" TaskID="slaveMotorCalibrationFail" Value="NO" Type="String"
                                                ValueName="CheckSlaveCalibrationResult"/>
                             </list>
                         </ExclusiveGateway>
@@ -73,8 +73,8 @@
             <ExclusiveGateway id="checkMasterVisionResult">
                 <list name="SubTasks" type="ExclusiveRule">
                     <ExclusiveRule ExclusiveRuleOperator="=" TaskID="slave_side_check_process" Value="YES"
-                                   Type="string" ValueName="CheckMasterVisionResult"/>
-                    <ExclusiveRule ExclusiveRuleOperator="=" TaskID="slavePickForVisionFail" Value="NO" Type="string"
+                                   Type="String" ValueName="CheckMasterVisionResult"/>
+                    <ExclusiveRule ExclusiveRuleOperator="=" TaskID="slavePickForVisionFail" Value="NO" Type="String"
                                    ValueName="CheckMasterVisionResult"/>
                 </list>
             </ExclusiveGateway>
@@ -101,8 +101,8 @@
             <ExclusiveGateway id="checkSlaveVisionResult">
                 <list name="SubTasks" type="ExclusiveRule">
                     <ExclusiveRule ExclusiveRuleOperator="=" TaskID="slavePickForVisionSucess" Value="YES"
-                                   Type="string" ValueName="CheckSlaveVisionResult"/>
-                    <ExclusiveRule ExclusiveRuleOperator="=" TaskID="slavePickForVisionFail" Value="NO" Type="string"
+                                   Type="String" ValueName="CheckSlaveVisionResult"/>
+                    <ExclusiveRule ExclusiveRuleOperator="=" TaskID="slavePickForVisionFail" Value="NO" Type="String"
                                    ValueName="CheckSlaveVisionResult"/>
                 </list>
             </ExclusiveGateway>

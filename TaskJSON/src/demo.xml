@@ -33,8 +33,8 @@
                         <ExclusiveGateway id="checkMasterCalibrationGateway">
                             <list name="SubTasks" type="ExclusiveRule">
                                 <ExclusiveRule ExclusiveRuleOperator="=" TaskID="checkMasterMotorStateSucess" Value="YES"
-                                               Type="string" ValueName="MasterMotroCalibrationState"/>
-                                <ExclusiveRule ExclusiveRuleOperator="=" TaskID="checkMasterMotorStateFail" Value="NO" Type="string"
+                                               Type="String" ValueName="MasterMotroCalibrationState"/>
+                                <ExclusiveRule ExclusiveRuleOperator="=" TaskID="checkMasterMotorStateFail" Value="NO" Type="String"
                                                ValueName="MasterMotroCalibrationState"/>
                             </list>
                         </ExclusiveGateway>
@@ -120,12 +120,12 @@
             <ExclusiveGateway id="checkMasterCalibrationGateway">
                 <list name="SubTasks" type="ExclusiveRule">
 <!--                    <ExclusiveRule Operator="=" TaskID="master_clibration_process" Value="YES"-->
-<!--                                   Type="string" ValueName="MasterMotroCalibrationStateEnable"/>-->
-<!--                    <ExclusiveRule Operator="=" TaskID="masterMotroMoveToPrimaryPostion" Value="NO" Type="string"-->
+<!--                                   Type="String" ValueName="MasterMotroCalibrationStateEnable"/>-->
+<!--                    <ExclusiveRule Operator="=" TaskID="masterMotroMoveToPrimaryPostion" Value="NO" Type="String"-->
 <!--                                   ValueName="MasterMotroCalibrationStateEnable"/>-->
                     <ExclusiveRule ExclusiveRuleOperator="=" TaskID="master_motor_end_task" Value="YES"
-                                   Type="string" ValueName="MasterMotroCalibrationStateEnable"/>
-                    <ExclusiveRule ExclusiveRuleOperator="=" TaskID="master_motor_end_task" Value="NO" Type="string"
+                                   Type="String" ValueName="MasterMotroCalibrationStateEnable"/>
+                    <ExclusiveRule ExclusiveRuleOperator="=" TaskID="master_motor_end_task" Value="NO" Type="String"
                                    ValueName="MasterMotroCalibrationStateEnable"/>
                 </list>
             </ExclusiveGateway>
