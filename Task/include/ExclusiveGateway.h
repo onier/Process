@@ -22,6 +22,21 @@ enum class ExclusiveRuleType {
     STRING
 };
 
+struct ExclusiveRulePtr {
+    std::string _text;
+    std::string _valueName;
+    ExclusiveRuleOperator _operator;
+    std::string _value;
+    std::string _taskID;
+    ExclusiveRuleType _type;
+
+    bool checkRule(std::shared_ptr<folly::Synchronized<std::map<std::string, boost::any>>> values);
+
+    ExclusiveRulePtr();
+
+RTTR_ENABLE()
+};
+
 struct ExclusiveRule {
     std::string _text;
     std::string _valueName;
@@ -43,7 +58,7 @@ RTTR_ENABLE()
 
 struct VariantRule {
     std::string _id;
-    std::shared_ptr<rttr::variant> _variant;
+    rttr::variant _variant;
 };
 
 class ExclusiveGateway : public Process::AbstractTask {

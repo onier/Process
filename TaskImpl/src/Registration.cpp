@@ -17,24 +17,24 @@ RTTR_REGISTRATION {
                     constructor<>()(
                     rttr::policy::ctor::as_std_shared_ptr
             );
-    rttr::registration::class_<TestTask2>("TestTask2")
-            (
-                    rttr::metadata("key", "Task")
-            )
-            .
-
-                    constructor<>()(
-                    rttr::policy::ctor::as_std_shared_ptr
-            );
-    rttr::registration::class_<TestTask3>("TestTask3")
-            (
-                    rttr::metadata("key", "Task")
-            )
-            .
-
-                    constructor<>()(
-                    rttr::policy::ctor::as_std_shared_ptr
-            );
+//    rttr::registration::class_<TestTask2>("TestTask2")
+//            (
+//                    rttr::metadata("key", "Task")
+//            )
+//            .
+//
+//                    constructor<>()(
+//                    rttr::policy::ctor::as_std_shared_ptr
+//            );
+//    rttr::registration::class_<TestTask3>("TestTask3")
+//            (
+//                    rttr::metadata("key", "Task")
+//            )
+//            .
+//
+//                    constructor<>()(
+//                    rttr::policy::ctor::as_std_shared_ptr
+//            );
     rttr::registration::class_<ExceptionTask>("ExceptionTask")
             (
                     rttr::metadata("key", "Task")

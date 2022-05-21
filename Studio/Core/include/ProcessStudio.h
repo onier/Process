@@ -5,6 +5,7 @@
 #ifndef PUPPY_PROCESSSTUDIO_H
 #define PUPPY_PROCESSSTUDIO_H
 
+#include <ostream>
 #include "Process.h"
 #include "memory"
 #include "Shape.h"
@@ -12,18 +13,31 @@
 #include "Edge.h"
 #include "Action.h"
 
-struct Parameter {
+enum class ParameterType {
+    INT = 0x0001,
+    FLOAT = 0x0002,
+    DOUBLE = 0x0004,
+    STRING = 0x0008
+};
+
+struct Para {
     std::string _name;
     std::string _value;
-    std::string _type;
+    ParameterType _type;
     std::string _description;
+
+    friend std::ostream &operator<<(std::ostream &os, const Para &para);
+
+    Para();
+
+RTTR_ENABLE()
 };
 
 struct ProcesInfo {
     std::string _name;
     int _threadCount;
 
-    std::vector<Parameter> _parameters;
+    std::vector<Para> _parameters;
 
     ProcesInfo();
 
@@ -32,7 +46,7 @@ RTTR_ENABLE()
 
 struct RuleShapeItem {
     std::shared_ptr<Shape> _shape;
-    std::shared_ptr<rttr::variant> _rule;
+    rttr::variant _rule;
 };
 
 struct TaskShapeItem {
@@ -55,6 +69,7 @@ class ProcessStudio {
 public:
     typedef std::function<void(ProcessStudio *, std::shared_ptr<TaskShapeItem>)> SelectTaskShapeItemEventHanlder;
     typedef std::function<void(ProcessStudio *, std::shared_ptr<RuleShapeItem>)> SelectRuleShapeItemEventHanlder;
+    typedef std::function<void(std::string)> MessageHandler;
 
     ProcessStudio();
 
@@ -90,13 +105,17 @@ public:
 
     void stopProcess();
 
-    ProcesInfo _processInfo;
+    void addMessageHandler(MessageHandler handler);
+
+    rttr::variant _processInfoVariant;
 protected:
     void notifyTaskShapeItemSlectChange(ProcessStudio *processStudio, std::shared_ptr<Shape> shape);
 
     void notifyRuleShapeItemSlectChange(ProcessStudio *processStudio, std::shared_ptr<Shape> shape);
 
     void updateTaskConnect(std::shared_ptr<Shape> start, std::shared_ptr<Shape> end);
+
+    void updateMessageHandler(std::string msg);
 
 private:
     std::map<std::string, std::function<void(std::shared_ptr<Shape>)>> _propertyMessageHandlers;
@@ -108,6 +127,7 @@ private:
     RuleShapeItems _ruleShapeItems;
     std::vector<SelectTaskShapeItemEventHanlder> _selectTaskShapeItemEventHanlders;
     std::vector<SelectRuleShapeItemEventHanlder> _selectRuleShapeItemEventHanlders;
+    std::vector<MessageHandler> _messageHandlers;
 };
 
 

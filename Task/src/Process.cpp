@@ -22,6 +22,7 @@ Process::Process::Process(std::shared_ptr<ProcessContext> processContext) {
 }
 
 void Process::Process::processTask(std::shared_ptr<Task> task) {
+    notityTaskEvent(task);
     auto state = getState();
     switch (state) {
         case State::STOPED:
@@ -228,4 +229,16 @@ void Process::Process::setName(std::string name) {
     if (_processContext) {
         _processContext->setTaskName(name);
     }
+}
+
+void Process::Process::addTaskEventHandler(TaskEventHandler handler) {
+    _taskEventHandlers.push_back(handler);
+}
+
+void Process::Process::notityTaskEvent(std::shared_ptr<Task> task) {
+    folly::via(_processContext->getExecutor().get(), std::bind([&, task]() {
+        for (auto t:_taskEventHandlers) {
+            t(task);
+        }
+    }));
 }

@@ -23,6 +23,7 @@ namespace Process {
         RESTORE,
         UNKNOW
     };
+    typedef std::function<void(std::shared_ptr<Task>)> TaskEventHandler;
 
     class Process {
     public:
@@ -60,7 +61,12 @@ namespace Process {
 
         void setName(std::string name);
 
+        void addTaskEventHandler(TaskEventHandler handler);
+
+        void notityTaskEvent(std::shared_ptr<Task> task);
+
     private:
+
         void processDefaultTask(std::shared_ptr<Task> task);
 
         void processParallelTask(std::shared_ptr<Task> task);
@@ -72,6 +78,7 @@ namespace Process {
         void initEventHandlers();
 
         std::mutex _mutex;
+        std::vector<TaskEventHandler> _taskEventHandlers;
     };
 }
 

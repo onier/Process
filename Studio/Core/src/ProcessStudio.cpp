@@ -3,6 +3,7 @@
 //
 
 #include "ProcessStudio.h"
+#include "boost/lexical_cast.hpp"
 
 thread_local std::shared_ptr<Shape> currentShape;
 
@@ -51,6 +52,7 @@ ProcessStudio::ProcessStudio() {
             updateTaskConnect(edge->getStartShape(), edge->getEndShape());
         }
     }});
+    _processInfoVariant = rttr::type::get_by_name("ProcesInfo").create();
 }
 
 void ProcessStudio::updateTaskConnect(std::shared_ptr<Shape> start, std::shared_ptr<Shape> end) {
@@ -142,7 +144,7 @@ void ProcessStudio::addTask(std::shared_ptr<Process::Task> task) {
         if (msg == "addExclusiveRule") {
             RuleShapeItem ruleShapeItem;
             ruleShapeItem._shape = currentShape;
-            ruleShapeItem._rule = boost::any_cast<std::shared_ptr<rttr::variant>>(any);
+            ruleShapeItem._rule = boost::any_cast<rttr::variant>(any);
             _ruleShapeItems.push_back(std::make_shared<RuleShapeItem>(ruleShapeItem));
             currentShape = nullptr;
         }
@@ -197,18 +199,51 @@ TaskShapeItem::TaskShapeItem(const std::shared_ptr<Process::Task> &task, const s
 
 ProcesInfo::ProcesInfo() {
     _threadCount = 4;
-    _parameters.push_back({});
-    _parameters.push_back({});
-    _parameters.push_back({});
-    _parameters.push_back({});
 }
 
 void ProcessStudio::startProcess() {
-    _process = std::make_shared<Process::Process>(_processInfo._threadCount);
+    auto _processInfo = _processInfoVariant.get_value<std::shared_ptr<ProcesInfo>>();
+    _process = std::make_shared<Process::Process>(_processInfo->_threadCount);
+    _process->addTaskEventHandler([&](std::shared_ptr<Process::Task> task) {
+        _graphics->clearSelection();
+        auto shapes = getShapeByTask(task);
+        for (auto s:shapes) {
+            s->setSelected(true);
+        }
+        updateMessageHandler("repaint");
+    });
     for (auto &t: _tasks) {
         _process->addTask(t);
     }
-    _process->setName(_processInfo._name);
+//    _process->getProcessContext()->_processValues
+    {
+        auto w = _process->getProcessContext()->_processValues->wlock();
+        for (auto p: _processInfo->_parameters) {
+            switch (p._type) {
+                case ParameterType::INT:
+                    try {
+                        w->insert({p._name, boost::lexical_cast<int>(p._value)});
+                    } catch (...) {}
+                    break;
+                case ParameterType::FLOAT:
+                    try {
+                        w->insert({p._name, boost::lexical_cast<float>(p._value)});
+                    } catch (...) {}
+                    break;
+                case ParameterType::DOUBLE:
+                    try {
+                        w->insert({p._name, boost::lexical_cast<double>(p._value)});
+                    } catch (...) {}
+                    break;
+                case ParameterType::STRING:
+                    try {
+                        w->insert({p._name, boost::lexical_cast<std::string>(p._value)});
+                    } catch (...) {}
+                    break;
+            }
+        }
+    }
+    _process->setName(_processInfo->_name);
     _process->startProcess(nullptr);
 }
 
@@ -220,4 +255,24 @@ void ProcessStudio::stopProcess() {
 
 void ProcessStudio::addProperyMessageHandler(std::string message, std::function<void(std::shared_ptr<Shape>)> h) {
     _propertyMessageHandlers.insert({message, h});
+}
+
+Para::Para() {
+    _type = ParameterType::DOUBLE;
+}
+
+std::ostream &operator<<(std::ostream &os, const Para &para) {
+    os << "_name: " << para._name << " _value: " << para._value << " _type: " << (int) para._type << " _description: "
+       << para._description;
+    return os;
+}
+
+void ProcessStudio::addMessageHandler(ProcessStudio::MessageHandler handler) {
+    _messageHandlers.push_back(handler);
+}
+
+void ProcessStudio::updateMessageHandler(std::string msg) {
+    for (auto h:_messageHandlers) {
+        h(msg);
+    }
 }

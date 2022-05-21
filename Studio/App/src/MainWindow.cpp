@@ -57,79 +57,75 @@ void MainWindow::init() {
     _propertyViewer = new PropertyViewer(_propertiesDockerWidget);
     _propertiesDockerWidget->setWidget(_propertyViewer);
     _propertTableView = _propertyViewer->_propertyTableView;
-//    connect(_propertTableView->selectionModel(), &QItemSelectionModel::selectionChanged,
-//            [&](const QItemSelection &selected, const QItemSelection &deselected) {
-//        LOG(INFO)<<selected.indexes()[0].row();
-//    });
-    connect(
-            _propertTableView,
-            &QTableView::doubleClicked,
-            [&]() {
-                LOG(INFO) << "double click";
-                int row = _propertTableView->selectionModel()->selectedIndexes().at(0).row();
-                auto property = _tableModel->getProperties().at(row);
-                if (property.get_type().is_sequential_container()) {
-
-                    _detailTableModel = new puppy::common::QRTTRVectorTableModel(
-                            std::make_shared<rttr::variant>(_tableModel->getVariantValue(property)),
-                            std::make_shared<rttr::type>(property.get_type()));
-                    _detailTableView->setModel(_detailTableModel);
-                    _detailTableDelegate = new  puppy::common::RTTRVectorItemDelegate(_detailTableModel);
-                    _detailTableView->setItemDelegate(_detailTableDelegate);
-                } else {
-                    _detailTableView->setModel(nullptr);
-                }
-            }
-    );
-
-    _detailTableView = _propertyViewer->_detailTableView;
     _propertTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     addDockWidget(Qt::LeftDockWidgetArea, _taskDockerWidget);
     addDockWidget(Qt::RightDockWidgetArea, _propertiesDockerWidget);
     setCentralWidget(_processEditor);
+    _tableModel = new puppy::common::QRTTRTableModel(_processStudio->_processInfoVariant);
+    _delegate = new puppy::common::RTTRItemDelegate(_tableModel);
+    _propertTableView->setItemDelegate(_delegate);
+    _propertTableView->setModel(_tableModel);
 
-    _processStudio->addTaskShapeItemSelectEventHanlder([&](ProcessStudio *studio, std::shared_ptr<TaskShapeItem> item) {
-        if (item) {
-            if (_processStudio->getCurrentSelectShape()) {
-                if (_delegate) {
-                    delete _delegate;
-                }
-                if (_tableModel) {
-                    delete _tableModel;
-                }
-                _tableModel = new puppy::common::QRTTRTableModel(item->_taskVar);
-                _delegate = new puppy::common::RTTRItemDelegate(_tableModel);
-                _propertTableView->setItemDelegate(_delegate);
-                _tableModel->addValueChangeEvents([&, item](int r, int c) {
-                    item->_shape->setText(item->_task->_name);
-                });
-                _tableModel->setType(item->_taskType);
-                _propertTableView->setModel(_tableModel);
-            }
-        } else {
-            _tableModel = new puppy::common::QRTTRTableModel(_processStudio->_processInfo);
-            _propertTableView->setModel(_tableModel);
-        }
-    });
 
-    _processStudio->addRuleShapeItemSelectEventHanlder([&](ProcessStudio *studio, std::shared_ptr<RuleShapeItem> item) {
-        if (item) {
-            if (_delegate) {
-                delete _delegate;
+    _detailTableView = _propertyViewer->_detailTableView;
+    _detailTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    auto property = _processStudio->_processInfoVariant.get_type().get_wrapped_type().get_property("Parameters");
+    _detailTableModel = new puppy::common::QRTTRVectorTableModel(_processStudio->_processInfoVariant, property);
+    _detailTableDelegate = new  puppy::common::RTTRVectorItemDelegate(_detailTableModel);
+    _detailTableView->setModel(_detailTableModel);
+    _detailTableView->setItemDelegate(_detailTableDelegate);
+    connect(
+            _propertTableView,
+            &QTableView::doubleClicked,
+            [tableModel = _tableModel, propertTableView = _propertTableView, processStudio = _processStudio]() {
+                LOG(INFO) << "double click";
+//                int row = propertTableView->selectionModel()->selectedIndexes().at(0).row();
+//                auto property = tableModel->getProperties().at(row);
+//                if (property.get_type().is_sequential_container()) {
+//                    rttr::variant variant = tableModel->getVariantValue(property);
+//                    LOG(INFO) << property.get_name() << "  " << variant.create_sequential_view().get_size();
+//                    _detailTableModel = new puppy::common::QRTTRVectorTableModel(variant, property);
+//                    _detailTableModel->addValueChangeEvents([&, property](int row, int col) {
+//                        property.set_value(_tableModel->_variant, _detailTableModel->_containerVarinat);
+//                    });
+//                    _detailTableView->setModel(_detailTableModel);
+//                    _detailTableDelegate = new puppy::common::RTTRVectorItemDelegate(_detailTableModel);
+//                    _detailTableView->setItemDelegate(_detailTableDelegate);
+//                } else {
+//                    _detailTableView->setModel(nullptr);
+//                }
             }
-            if (_tableModel) {
-                delete _tableModel;
-            }
-            _tableModel = new puppy::common::QRTTRTableModel(item->_rule);
-            _delegate = new puppy::common::RTTRItemDelegate(_tableModel);
-            _propertTableView->setItemDelegate(_delegate);
-            _tableModel->addValueChangeEvents([&, item](int r, int c) {
-                item->_shape->setText(item->_rule->get_type().get_property("Text").get_value(*item->_rule).to_string());
+    );
+
+    _processStudio->addTaskShapeItemSelectEventHanlder(
+            [tableModel = _tableModel, propertTableView = _propertTableView, processStudio = _processStudio](
+                    ProcessStudio *studio, std::shared_ptr<TaskShapeItem> item)mutable {
+                if (item) {
+                    if (processStudio->getCurrentSelectShape()) {
+                        tableModel->_valueChangeEvents.clear();
+                        tableModel->addValueChangeEvents([&, item](int r, int c) {
+                            item->_shape->setText(item->_task->_name);
+                        });
+                        tableModel->setVariant(item->_taskVar);
+                    }
+                } else {
+                    tableModel->setVariant(processStudio->_processInfoVariant);
+                }
             });
-//            _tableModel->setType(item->_taskType);
-            _propertTableView->setModel(_tableModel);
-        }
-    });
+
+    _processStudio->addRuleShapeItemSelectEventHanlder(
+            [tableModel = _tableModel, propertTableView = _propertTableView, processStudio = _processStudio](
+                    ProcessStudio *studio, std::shared_ptr<RuleShapeItem> item) {
+                if (item) {
+                    tableModel->_valueChangeEvents.clear();
+                    tableModel->addValueChangeEvents([&, item](int r, int c) {
+                        item->_shape->setText(
+                                item->_rule.get_type().get_property("Text").get_value(item->_rule).to_string());
+                    });
+                    tableModel->setVariant(item->_rule);
+                }
+            });
+
 }
 
 MainWindow::~MainWindow() {

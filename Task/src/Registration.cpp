@@ -11,7 +11,7 @@
 
 using namespace Process;
 
-RTTR_REGISTRATION {
+RTTR_PLUGIN_REGISTRATION {
     rttr::registration::class_<AbstractTask>("AbstractTask")
             .
 
@@ -39,6 +39,18 @@ RTTR_REGISTRATION {
                     rttr::value("String", ExclusiveRuleType::STRING)
             );
 
+    rttr::registration::class_<ExclusiveRulePtr>("ExclusiveRulePtr")
+            .
+
+                    constructor<>()(
+                    rttr::policy::ctor::as_std_shared_ptr
+            )
+            .property("ValueName", &ExclusiveRulePtr::_valueName)
+            .property("Text", &ExclusiveRulePtr::_text)
+            .property("Operator", &ExclusiveRulePtr::_operator)
+            .property("Value", &ExclusiveRulePtr::_value)
+            .property("Type", &ExclusiveRulePtr::_type)
+            .property("TaskID", &ExclusiveRulePtr::_taskID);
 
     rttr::registration::class_<ExclusiveRule>("ExclusiveRule")
             .

@@ -38,6 +38,11 @@ ProcessEditor::ProcessEditor(QWidget *parent, Qt::WindowFlags f) : QWidget(paren
 
 void ProcessEditor::setProcessStudio(std::shared_ptr<ProcessStudio> ps) {
     _processStudio = ps;
+    _processStudio->addMessageHandler([&](std::string msg){
+        if(msg=="repaint"){
+            repaint();
+        }
+    });
 }
 
 void ProcessEditor::initTaskAction() {
@@ -134,7 +139,7 @@ void ProcessEditor::mouseMoveEvent(QMouseEvent *event) {
             if (_currentSelectShape) {
                 QPointF p;
                 auto d = Point(_pressPoint).distance(Point(event->posF()));
-//                if ( d> 6) {
+//                if ( d> 2) {
                 auto type = _currentSelectShape->checkActionAnchor(event->posF(), p);
                 if (type == "INVALID") {
                     _isEnableAction = false;
