@@ -108,7 +108,17 @@ public:
     void addMessageHandler(MessageHandler handler);
 
     rttr::variant _processInfoVariant;
+
+    std::string saveToXML();
+
+    void saveDocumentElement(xercesc::DOMElement *domElement, xercesc::DOMDocument *document);
+
+    void loadElement(xercesc::DOMElement *domElement);
+
 protected:
+
+    void saveTaskManager(xercesc::DOMElement *domElement, xercesc::DOMDocument *document);
+
     void notifyTaskShapeItemSlectChange(ProcessStudio *processStudio, std::shared_ptr<Shape> shape);
 
     void notifyRuleShapeItemSlectChange(ProcessStudio *processStudio, std::shared_ptr<Shape> shape);

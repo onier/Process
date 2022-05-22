@@ -32,6 +32,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->toolBar->addAction("Pause", []() {
 
     });
+    ui->toolBar->addAction("Save", [&]() {
+        _processStudio->saveToXML();
+    });
     _delegate = 0;
     _tableModel = 0;
 
@@ -71,7 +74,7 @@ void MainWindow::init() {
     _detailTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     auto property = _processStudio->_processInfoVariant.get_type().get_wrapped_type().get_property("Parameters");
     _detailTableModel = new puppy::common::QRTTRVectorTableModel(_processStudio->_processInfoVariant, property);
-    _detailTableDelegate = new  puppy::common::RTTRVectorItemDelegate(_detailTableModel);
+    _detailTableDelegate = new puppy::common::RTTRVectorItemDelegate(_detailTableModel);
     _detailTableView->setModel(_detailTableModel);
     _detailTableView->setItemDelegate(_detailTableDelegate);
     connect(

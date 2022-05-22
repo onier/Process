@@ -14,8 +14,22 @@
 
 RTTR_REGISTRATION {
     rttr::registration::class_<Point>("Point")
+            .constructor<>()
+                    (
+                            rttr::policy::ctor::as_object
+                    )
             .property("X", &Point::_x)
             .property("Y", &Point::_y);
+
+    rttr::registration::class_<Bound>("Bound")
+            .constructor<>()
+                    (
+                            rttr::policy::ctor::as_object
+                    )
+            .property("X", &Bound::_x)
+            .property("Y", &Bound::_y)
+            .property("W", &Bound::_w)
+            .property("H", &Bound::_h);
 
     rttr::registration::class_<StartTaskShape>("StartTaskShape")
             (

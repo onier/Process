@@ -28,6 +28,8 @@ namespace Process {
 
         std::string saveXML();
 
+        void saveDocumentElemenet(std::shared_ptr<xercesc::DOMDocument> document, xercesc::DOMElement *rootElement);
+
         std::vector<std::shared_ptr<Process::Task>> getTasksByType(std::string type);
 
         std::shared_ptr<Process::Task> getStartTask();

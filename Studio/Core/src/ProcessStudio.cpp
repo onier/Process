@@ -3,7 +3,27 @@
 //
 
 #include "ProcessStudio.h"
+#include "XML.h"
 #include "boost/lexical_cast.hpp"
+#include "xercesc/util/PlatformUtils.hpp"
+#include <xercesc/util/PlatformUtils.hpp>
+#include <xercesc/parsers/XercesDOMParser.hpp>
+#include <xercesc/dom/DOMNodeList.hpp>
+#include <xercesc/dom/DOMNamedNodeMap.hpp>
+#include <xercesc/framework/LocalFileFormatTarget.hpp>
+#include <xercesc/framework/MemBufInputSource.hpp>
+#include <xercesc/framework/MemBufFormatTarget.hpp>
+#include <xercesc/dom/DOMNodeFilter.hpp>
+#include <xercesc/util/XMLUni.hpp>
+#include <xercesc/util/PlatformUtils.hpp>
+#include <xercesc/parsers/XercesDOMParser.hpp>
+#include <xercesc/dom/DOMNodeList.hpp>
+#include <xercesc/dom/DOMNamedNodeMap.hpp>
+#include <xercesc/dom/DOMElement.hpp>
+#include <xercesc/dom/DOMImplementationRegistry.hpp>
+#include <xercesc/dom/DOMImplementation.hpp>
+#include <xercesc/dom/DOMLSSerializer.hpp>
+#include <xercesc/dom/DOMLSOutput.hpp>
 
 thread_local std::shared_ptr<Shape> currentShape;
 
@@ -274,5 +294,81 @@ void ProcessStudio::addMessageHandler(ProcessStudio::MessageHandler handler) {
 void ProcessStudio::updateMessageHandler(std::string msg) {
     for (auto h:_messageHandlers) {
         h(msg);
+    }
+}
+
+std::string ProcessStudio::saveToXML() {
+    xercesc::XMLPlatformUtils::Initialize();
+    xercesc::DOMImplementation *domImplementation =
+            xercesc::DOMImplementationRegistry::getDOMImplementation(XStr("Core"));
+    std::shared_ptr<xercesc::DOMLSSerializer> serializer = std::shared_ptr<xercesc::DOMLSSerializer>(
+            domImplementation->createLSSerializer());
+    auto config = serializer->getDomConfig();
+    config->setParameter(xercesc::XMLUni::fgDOMWRTFormatPrettyPrint, true);
+    auto out = domImplementation->createLSOutput();
+    std::shared_ptr<xercesc::MemBufFormatTarget> formatTarget = std::shared_ptr<xercesc::MemBufFormatTarget>(
+            new xercesc::MemBufFormatTarget());
+    out->setByteStream(formatTarget.get());
+    std::shared_ptr<xercesc::DOMDocument> document = std::shared_ptr<xercesc::DOMDocument>(
+            domImplementation->createDocument(0, XStr("Process"), 0));
+    auto rootElement = document->getDocumentElement();
+    saveTaskManager(rootElement, document.get());
+//    auto taskManager = document->createElement(XStr("TaskManager"));
+//    taskManager->setAttribute(XStr("taskName"), XStr(_taskName.data()));
+//    taskManager->setAttribute(XStr("threadCount"), XStr(boost::lexical_cast<std::string>(_threadCount).data()));
+//    rootElement->appendChild(taskManager);
+    document->normalizeDocument();
+    serializer->write(document.get(), out);
+    LOG(INFO) << std::string(reinterpret_cast<const char *>(formatTarget->getRawBuffer()));
+}
+
+void ProcessStudio::saveDocumentElement(xercesc::DOMElement *domElement, xercesc::DOMDocument *document) {
+
+}
+
+void ProcessStudio::loadElement(xercesc::DOMElement *domElement) {
+
+}
+
+void ProcessStudio::saveTaskManager(xercesc::DOMElement *domElement, xercesc::DOMDocument *document) {
+    auto rootElement = document->getDocumentElement();
+    auto _processInfo = _processInfoVariant.get_value<std::shared_ptr<ProcesInfo>>();
+    auto taskManager = document->createElement(XStr("TaskManager"));
+    taskManager->setAttribute(XStr("taskName"), XStr(_processInfo->_name.data()));
+    taskManager->setAttribute(XStr("threadCount"),
+                              XStr(boost::lexical_cast<std::string>(_processInfo->_threadCount).data()));
+    rootElement->appendChild(taskManager);
+
+    {
+        auto parameters = document->createElement(XStr("Parameters"));
+        taskManager->appendChild(parameters);
+        for (auto p:_processInfo->_parameters) {
+            xercesc::DOMElement *paraEle = document->createElement(XStr("Parameter"));
+            parameters->appendChild(paraEle);
+            paraEle->setAttribute(XStr("name"), XStr(p._name.data()));
+            paraEle->setAttribute(XStr("value"), XStr(p._value.data()));
+            switch (p._type) {
+                case ParameterType::INT:
+                    paraEle->setAttribute(XStr("type"), XStr("Int"));
+                    break;
+                case ParameterType::FLOAT:
+                    paraEle->setAttribute(XStr("type"), XStr("Float"));
+                    break;
+                case ParameterType::DOUBLE:
+                    paraEle->setAttribute(XStr("type"), XStr("Double"));
+                    break;
+                case ParameterType::STRING:
+                    paraEle->setAttribute(XStr("type"), XStr("String"));
+                    break;
+            }
+
+        }
+    }
+    {
+        auto tasks = document->createElement(XStr("tasks"));
+        taskManager->appendChild(tasks);
+        for (auto t:_tasks) {
+            puppy::common::XML::createElement<Process::Task>(t,tasks,document,t);
+        }
     }
 }

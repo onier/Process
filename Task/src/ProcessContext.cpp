@@ -94,7 +94,7 @@ bool ProcessContext::loadDomElement(xercesc::DOMNode *domElement) {
     auto threadCount = domElement->getAttributes()->getNamedItem(XStr("threadCount"));
     if (threadCount) {
         _threadCount = boost::lexical_cast<int>(puppy::common::XML::toStr(threadCount->getNodeValue()));
-    }else{
+    } else {
         _threadCount = 4;
     }
     for (int i = 0; i < taskManagerNode->getLength(); ++i) {
@@ -187,6 +187,15 @@ std::string ProcessContext::saveXML() {
     document->normalizeDocument();
     serializer->write(document.get(), out);
     return std::string(reinterpret_cast<const char *>(formatTarget->getRawBuffer()));
+}
+
+void
+ProcessContext::saveDocumentElemenet(std::shared_ptr<xercesc::DOMDocument> document, xercesc::DOMElement *rootElement) {
+    auto taskManager = document->createElement(XStr("TaskManager"));
+    taskManager->setAttribute(XStr("taskName"), XStr(_taskName.data()));
+    taskManager->setAttribute(XStr("threadCount"), XStr(boost::lexical_cast<std::string>(_threadCount).data()));
+    saveDomElement(taskManager, document);
+    rootElement->appendChild(taskManager);
 }
 
 std::vector<std::shared_ptr<Process::Task>> ProcessContext::getTasksByType(std::string type) {
