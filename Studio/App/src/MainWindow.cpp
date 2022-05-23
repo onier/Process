@@ -2,6 +2,7 @@
 #include "MainWindow.h"
 #include "QListView"
 #include <QLabel>
+#include <QFileDialog>
 #include "ui_MainWindow.h"
 #include "glog/logging.h"
 #include "TaskListView.h"
@@ -33,8 +34,25 @@ MainWindow::MainWindow(QWidget *parent) :
 
     });
     ui->toolBar->addAction("Save", [&]() {
-        LOG(INFO) << _processStudio->saveToXML();
+        QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"),
+                                                        "/home/jana/untitled.xml",
+                                                        tr("Images (*.xml)"));
+        QFile file(fileName);
+        file.open(QIODevice::ReadWrite);
+        file.write(_processStudio->saveToXML().data());
+        file.flush();
+        file.close();
     });
+
+    ui->toolBar->addAction("Open", [&]() {
+        QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"),
+                                                        "/home/jana/untitled.xml",
+                                                        tr("Images (*.xml)"));
+        QFile file(fileName);
+        file.open(QIODevice::ReadWrite);
+        _processStudio->loadFromXML(file.readAll().toStdString());
+    });
+
     _delegate = 0;
     _tableModel = 0;
 }

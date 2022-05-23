@@ -111,9 +111,7 @@ public:
 
     std::string saveToXML();
 
-    void saveDocumentElement(xercesc::DOMElement *domElement, xercesc::DOMDocument *document);
-
-    void loadElement(xercesc::DOMElement *domElement);
+    void loadFromXML(std::string xml);
 
 protected:
 
@@ -126,6 +124,19 @@ protected:
     void updateTaskConnect(std::shared_ptr<Shape> start, std::shared_ptr<Shape> end);
 
     void updateMessageHandler(std::string msg);
+
+private:
+    void parseParameters(xercesc::DOMNode *parameters);
+
+    void parseTasks(xercesc::DOMNode *tasks);
+
+    void parseShapes(xercesc::DOMNode *shapes);
+
+    Para parseParameter(xercesc::DOMNode *parameter);
+
+    std::shared_ptr<Process::Task> parseTask(xercesc::DOMNode *task);
+
+    std::shared_ptr<Shape> parseShape(xercesc::DOMNode *shape);
 
 private:
     std::map<std::string, std::function<void(std::shared_ptr<Shape>)>> _propertyMessageHandlers;

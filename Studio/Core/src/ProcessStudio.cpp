@@ -323,11 +323,81 @@ std::string ProcessStudio::saveToXML() {
     return std::string(reinterpret_cast<const char *>(formatTarget->getRawBuffer()));
 }
 
-void ProcessStudio::saveDocumentElement(xercesc::DOMElement *domElement, xercesc::DOMDocument *document) {
+void ProcessStudio::loadFromXML(std::string xml) {
+    xercesc::XMLPlatformUtils::Initialize();
+    xercesc::XercesDOMParser xercesDOMParser;
+    std::shared_ptr<xercesc::MemBufInputSource> memBufIS = std::shared_ptr<xercesc::MemBufInputSource>(
+            new xercesc::MemBufInputSource((const XMLByte *) xml.data(), xml.size(), ""));
+    xercesDOMParser.parse(*memBufIS);
+    auto document = xercesDOMParser.getDocument();
+    auto process = document->getElementsByTagName(XStr("Process"));
+    LOG(INFO) << process->getLength();
+    for (int i = 0; i < process->getLength(); i++) {
+        auto p = process->item(i);
+        std::vector<xercesc::DOMNode *> managers;
+        puppy::common::XML::getTagsByName("TaskManager", p, managers);
+        for (auto manager:managers) {
+            std::vector<xercesc::DOMNode *> parameters;
+            std::vector<xercesc::DOMNode *> tasks;
+            std::vector<xercesc::DOMNode *> shapes;
+            puppy::common::XML::getTagsByName("Parameters", manager, parameters);
+            puppy::common::XML::getTagsByName("tasks", manager, tasks);
+            puppy::common::XML::getTagsByName("shapes", manager, shapes);
+            if (parameters.size() == 1) {
+                parseParameter(parameters[0]);
+            }
+        }
+    }
+}
+
+void ProcessStudio::parseParameters(xercesc::DOMNode *parameters) {
+    std::vector<xercesc::DOMNode *> ps;
+    puppy::common::XML::getTagsByName("Parameters", parameters, ps);
+    std::vector<Para> paras;
+    for (auto p:ps) {
+        Para para = parseParameter(p);
+        if (para._name.empty()) {
+            paras.push_back(para);
+        }
+    }
+    LOG(INFO) << paras;
+}
+
+void ProcessStudio::parseTasks(xercesc::DOMNode *tasks) {
 
 }
 
-void ProcessStudio::loadElement(xercesc::DOMElement *domElement) {
+void ProcessStudio::parseShapes(xercesc::DOMNode *shapes) {
+
+}
+
+Para ProcessStudio::parseParameter(xercesc::DOMNode *parameter) {
+    std::string name, type, value, des;
+    name = puppy::common::XML::attributeValue(parameter->getAttributes(), "name");
+    type = puppy::common::XML::attributeValue(parameter->getAttributes(), "type");
+    value = puppy::common::XML::attributeValue(parameter->getAttributes(), "value");
+    value = puppy::common::XML::attributeValue(parameter->getAttributes(), "des");
+    Para para;
+    para._name = name;
+    if (type == "Int") {
+        para._type = ParameterType::INT;
+    } else if (type == "Float") {
+        para._type = ParameterType::FLOAT;
+    } else if (type == "Double") {
+        para._type = ParameterType::DOUBLE;
+    } else if (type == "String") {
+        para._type = ParameterType::STRING;
+    }
+    para._value = value;
+    para._description = des;
+    return para;
+}
+
+std::shared_ptr<Process::Task> ProcessStudio::parseTask(xercesc::DOMNode *task) {
+
+}
+
+std::shared_ptr<Shape> ProcessStudio::parseShape(xercesc::DOMNode *shape) {
 
 }
 
@@ -348,6 +418,7 @@ void ProcessStudio::saveTaskManager(xercesc::DOMElement *domElement, xercesc::DO
             parameters->appendChild(paraEle);
             paraEle->setAttribute(XStr("name"), XStr(p._name.data()));
             paraEle->setAttribute(XStr("value"), XStr(p._value.data()));
+            paraEle->setAttribute(XStr("des"), XStr(p._description.data()));
             switch (p._type) {
                 case ParameterType::INT:
                     paraEle->setAttribute(XStr("type"), XStr("Int"));
@@ -383,3 +454,4 @@ void ProcessStudio::saveTaskManager(xercesc::DOMElement *domElement, xercesc::DO
         }
     }
 }
+
