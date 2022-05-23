@@ -11,6 +11,8 @@ class ExclusiveGatewayShape : public TaskShape {
 public:
     ExclusiveGatewayShape();
 
+    xercesc::DOMElement *createElement(xercesc::DOMDocument *document) override;
+
     Bound getBound() override;
 
     void paint(QPainter *painter) override;

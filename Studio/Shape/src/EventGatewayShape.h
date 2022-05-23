@@ -11,6 +11,8 @@ class EventGatewayShape : public TaskShape {
 public:
     EventGatewayShape();
 
+    xercesc::DOMElement *createElement(xercesc::DOMDocument *document) override;
+
     Bound getBound() override;
 
     void paint(QPainter *painter) override;

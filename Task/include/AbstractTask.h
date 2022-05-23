@@ -42,7 +42,7 @@ namespace Process {
 
         void addMessageEvent(MessageEvent event) override;
 
-        void notify(std::string message, boost::any any) override;
+        void notify(std::string message, boost::any any, std::string content) override;
 
         std::string getTaskType() override;
 

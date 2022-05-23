@@ -11,6 +11,8 @@ class Edge : public Shape {
 public:
     Edge();
 
+    xercesc::DOMElement *createElement(xercesc::DOMDocument *document) override;
+
     Bound getBound() override;
 
     void paint(QPainter *painter) override;

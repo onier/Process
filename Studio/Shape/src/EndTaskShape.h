@@ -11,6 +11,8 @@ class EndTaskShape : public TaskShape {
 public:
     EndTaskShape();
 
+    xercesc::DOMElement *createElement(xercesc::DOMDocument *document) override;
+
     Bound getBound();
 
     void paint(QPainter *painter) override;

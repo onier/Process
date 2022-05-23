@@ -52,8 +52,8 @@ void Process::AbstractTask::addMessageEvent(Process::Task::MessageEvent event) {
     _messageEvents.push_back(event);
 }
 
-void Process::AbstractTask::notify(std::string message, boost::any any) {
+void Process::AbstractTask::notify(std::string message, boost::any any,std::string content) {
     for (auto &e: _messageEvents) {
-        e(message, any);
+        e(message, any,content);
     }
 }

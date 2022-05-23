@@ -3,6 +3,7 @@
 //
 
 #include "EventGatewayShape.h"
+#include "XML.h"
 
 EventGatewayShape::EventGatewayShape() {
     _bColor = {255, 255, 255};
@@ -27,16 +28,16 @@ void EventGatewayShape::paint(QPainter *painter) {
     painter->setBrush(brush);
     QPolygonF polygonF;
     auto ps = getAnchorPoints();
-    for(auto & p : ps){
+    for (auto &p: ps) {
         polygonF.push_back(p);
     }
     painter->drawPolygon(polygonF);
     auto center = _bound.center();
-    auto n = _bound._w/8;
+    auto n = _bound._w / 8;
     polygonF.clear();
     pen.setWidth(6);
     painter->setPen(pen);
-    painter->drawEllipse(center.x()-2*n,center.y()-2*n,4*n,4*n);
+    painter->drawEllipse(center.x() - 2 * n, center.y() - 2 * n, 4 * n, 4 * n);
     paintAnchorPoints(painter);
     paintControllPoints(painter);
     int x = _bound._x;
@@ -162,4 +163,17 @@ bool EventGatewayShape::isContained(QPointF pointF) {
         return true;
     }
     return false;
+}
+
+#include "boost/lexical_cast.hpp"
+
+xercesc::DOMElement *EventGatewayShape::createElement(xercesc::DOMDocument *document) {
+    auto eventGatewayShape = document->createElement(XStr("EventGatewayShape"));
+    auto bound = document->createElement(XStr("Bound"));
+    bound->setAttribute(XStr("X"), XStr(boost::lexical_cast<std::string>(_bound._x).data()));
+    bound->setAttribute(XStr("Y"), XStr(boost::lexical_cast<std::string>(_bound._y).data()));
+    bound->setAttribute(XStr("W"), XStr(boost::lexical_cast<std::string>(_bound._w).data()));
+    bound->setAttribute(XStr("H"), XStr(boost::lexical_cast<std::string>(_bound._h).data()));
+    eventGatewayShape->appendChild(bound);
+    return eventGatewayShape;
 }

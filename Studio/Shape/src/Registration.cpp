@@ -38,9 +38,7 @@ RTTR_REGISTRATION {
             .constructor<>()
                     (
                             rttr::policy::ctor::as_std_shared_ptr
-                    )
-            .property("center", &StartTaskShape::_center)
-            .property("R", &StartTaskShape::_r);
+                    );
 
     rttr::registration::class_<EndTaskShape>("EndTaskShape")
             (
@@ -49,9 +47,7 @@ RTTR_REGISTRATION {
             .constructor<>()
                     (
                             rttr::policy::ctor::as_std_shared_ptr
-                    )
-            .property("center", &StartTaskShape::_center)
-            .property("R", &StartTaskShape::_r);
+                    );
 
     rttr::registration::class_<Edge>("Edge")
             .constructor<>()

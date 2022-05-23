@@ -11,6 +11,8 @@ class UserTaskShape : public TaskShape {
 public:
     UserTaskShape();
 
+    xercesc::DOMElement *createElement(xercesc::DOMDocument *document) override;
+
     Bound getBound() override;
 
     void paint(QPainter *painter) override;

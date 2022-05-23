@@ -6,6 +6,7 @@
 #include "QPen"
 #include "QPainter"
 #include "cmath"
+#include "XML.h"
 
 EndTaskShape::EndTaskShape() {
     _bColor = {255, 255, 255};
@@ -156,4 +157,11 @@ bool EndTaskShape::isContained(QPointF pointF) {
         return true;
     }
     return false;
+}
+
+xercesc::DOMElement *EndTaskShape::createElement(xercesc::DOMDocument *document) {
+    xercesc_3_2::DOMElement *endShapeElement = document->createElement(XStr("EndTaskShape"));
+    endShapeElement->setAttribute(XStr("ID"), XStr(_id.data()));
+    puppy::common::XML::createElement(_bound, endShapeElement, document);
+    return endShapeElement;
 }

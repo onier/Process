@@ -3,6 +3,8 @@
 //
 
 #include "UserTaskShape.h"
+#include "XML.h"
+#include "boost/lexical_cast.hpp"
 
 UserTaskShape::UserTaskShape() {
     _bColor = {255, 255, 255};
@@ -151,4 +153,15 @@ bool UserTaskShape::isContained(QPointF pointF) {
         return true;
     }
     return false;
+}
+
+xercesc::DOMElement *UserTaskShape::createElement(xercesc::DOMDocument *document) {
+    auto userTaskShape = document->createElement(XStr("UserTaskShape"));
+    auto bound = document->createElement(XStr("Bound"));
+    bound->setAttribute(XStr("X"), XStr(boost::lexical_cast<std::string>(_bound._x).data()));
+    bound->setAttribute(XStr("Y"), XStr(boost::lexical_cast<std::string>(_bound._y).data()));
+    bound->setAttribute(XStr("W"), XStr(boost::lexical_cast<std::string>(_bound._w).data()));
+    bound->setAttribute(XStr("H"), XStr(boost::lexical_cast<std::string>(_bound._h).data()));
+    userTaskShape->appendChild(bound);
+    return userTaskShape;
 }

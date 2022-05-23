@@ -3,6 +3,8 @@
 //
 
 #include "ParallelGatewayShape.h"
+#include "XML.h"
+#include "boost/lexical_cast.hpp"
 
 ParallelGatewayShape::ParallelGatewayShape() {
     _bColor = {255, 255, 255};
@@ -163,4 +165,15 @@ bool ParallelGatewayShape::isContained(QPointF pointF) {
         return true;
     }
     return false;
+}
+
+xercesc::DOMElement *ParallelGatewayShape::createElement(xercesc::DOMDocument *document) {
+    auto ParallelGatewayShape = document->createElement(XStr("ParallelGatewayShape"));
+    auto bound = document->createElement(XStr("Bound"));
+    bound->setAttribute(XStr("X"), XStr(boost::lexical_cast<std::string>(_bound._x).data()));
+    bound->setAttribute(XStr("Y"), XStr(boost::lexical_cast<std::string>(_bound._y).data()));
+    bound->setAttribute(XStr("W"), XStr(boost::lexical_cast<std::string>(_bound._w).data()));
+    bound->setAttribute(XStr("H"), XStr(boost::lexical_cast<std::string>(_bound._h).data()));
+    ParallelGatewayShape->appendChild(bound);
+    return ParallelGatewayShape;
 }

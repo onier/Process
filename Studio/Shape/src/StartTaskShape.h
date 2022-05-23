@@ -12,6 +12,8 @@ class StartTaskShape : public TaskShape {
 public:
     StartTaskShape();
 
+    xercesc::DOMElement *createElement(xercesc::DOMDocument *document) override;
+
     Bound getBound() override;
 
     void paint(QPainter *painter) override;
@@ -38,8 +40,6 @@ public:
 
     bool isContained(QPointF pointF) override;
 
-    Point _center;
-    float _r;
     Bound _bound;
     QPointF _startActionPos;
     Bound _old_bound;

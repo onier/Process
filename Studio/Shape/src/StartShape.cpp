@@ -6,6 +6,7 @@
 #include "QPen"
 #include "QPainter"
 #include "cmath"
+#include "XML.h"
 
 StartTaskShape::StartTaskShape() {
     _bColor = {255, 255, 255};
@@ -156,3 +157,11 @@ bool StartTaskShape::isContained(QPointF pointF) {
     }
     return false;
 }
+
+xercesc::DOMElement *StartTaskShape::createElement(xercesc::DOMDocument *document) {
+    xercesc_3_2::DOMElement *startShapeElement = document->createElement(XStr("StartTaskShape"));
+    startShapeElement->setAttribute(XStr("ID"), XStr(_id.data()));
+    puppy::common::XML::createElement(_bound, startShapeElement, document);
+    return startShapeElement;
+}
+

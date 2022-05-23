@@ -134,6 +134,9 @@ private:
     std::shared_ptr<Process::Process> _process;
     std::shared_ptr<ProcessGraphics> _graphics;
     TaskShpeItems _taskShapes;
+    /**
+     * gate way rule
+     */
     RuleShapeItems _ruleShapeItems;
     std::vector<SelectTaskShapeItemEventHanlder> _selectTaskShapeItemEventHanlders;
     std::vector<SelectRuleShapeItemEventHanlder> _selectRuleShapeItemEventHanlders;

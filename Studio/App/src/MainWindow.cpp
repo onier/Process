@@ -33,11 +33,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     });
     ui->toolBar->addAction("Save", [&]() {
-        _processStudio->saveToXML();
+        LOG(INFO) << _processStudio->saveToXML();
     });
     _delegate = 0;
     _tableModel = 0;
-
 }
 
 TaskListModel *MainWindow::createTaskItemModel() {

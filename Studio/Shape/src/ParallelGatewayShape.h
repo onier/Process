@@ -11,6 +11,8 @@ class ParallelGatewayShape : public TaskShape {
 public:
     ParallelGatewayShape();
 
+    xercesc::DOMElement *createElement(xercesc::DOMDocument *document) override;
+
     Bound getBound() override;
 
     void paint(QPainter *painter) override;

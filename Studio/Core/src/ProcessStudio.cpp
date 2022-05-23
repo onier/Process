@@ -160,10 +160,11 @@ void ProcessStudio::setCurrentSelectShape(std::shared_ptr<Shape> shape) {
 
 void ProcessStudio::addTask(std::shared_ptr<Process::Task> task) {
     _tasks.push_back(task);
-    task->addMessageEvent([&](std::string msg, boost::any any) {
+    task->addMessageEvent([&](std::string msg, boost::any any, std::string content) {
         if (msg == "addExclusiveRule") {
             RuleShapeItem ruleShapeItem;
             ruleShapeItem._shape = currentShape;
+            currentShape->_id = content;
             ruleShapeItem._rule = boost::any_cast<rttr::variant>(any);
             _ruleShapeItems.push_back(std::make_shared<RuleShapeItem>(ruleShapeItem));
             currentShape = nullptr;
@@ -227,7 +228,7 @@ void ProcessStudio::startProcess() {
     _process->addTaskEventHandler([&](std::shared_ptr<Process::Task> task) {
         _graphics->clearSelection();
         auto shapes = getShapeByTask(task);
-        for (auto s:shapes) {
+        for (auto s: shapes) {
             s->setSelected(true);
         }
         updateMessageHandler("repaint");
@@ -292,7 +293,7 @@ void ProcessStudio::addMessageHandler(ProcessStudio::MessageHandler handler) {
 }
 
 void ProcessStudio::updateMessageHandler(std::string msg) {
-    for (auto h:_messageHandlers) {
+    for (auto h: _messageHandlers) {
         h(msg);
     }
 }
@@ -319,7 +320,7 @@ std::string ProcessStudio::saveToXML() {
 //    rootElement->appendChild(taskManager);
     document->normalizeDocument();
     serializer->write(document.get(), out);
-    LOG(INFO) << std::string(reinterpret_cast<const char *>(formatTarget->getRawBuffer()));
+    return std::string(reinterpret_cast<const char *>(formatTarget->getRawBuffer()));
 }
 
 void ProcessStudio::saveDocumentElement(xercesc::DOMElement *domElement, xercesc::DOMDocument *document) {
@@ -342,7 +343,7 @@ void ProcessStudio::saveTaskManager(xercesc::DOMElement *domElement, xercesc::DO
     {
         auto parameters = document->createElement(XStr("Parameters"));
         taskManager->appendChild(parameters);
-        for (auto p:_processInfo->_parameters) {
+        for (auto p: _processInfo->_parameters) {
             xercesc::DOMElement *paraEle = document->createElement(XStr("Parameter"));
             parameters->appendChild(paraEle);
             paraEle->setAttribute(XStr("name"), XStr(p._name.data()));
@@ -367,8 +368,18 @@ void ProcessStudio::saveTaskManager(xercesc::DOMElement *domElement, xercesc::DO
     {
         auto tasks = document->createElement(XStr("tasks"));
         taskManager->appendChild(tasks);
-        for (auto t:_tasks) {
-            puppy::common::XML::createElement<Process::Task>(t,tasks,document,t);
+        for (auto t: _tasks) {
+            puppy::common::XML::createElement<Process::Task>(t, tasks, document, t);
+        }
+    }
+    {
+        auto shapes = document->createElement(XStr("shapes"));
+        taskManager->appendChild(shapes);
+        for (auto shape: _graphics->getShapes()) {
+            xercesc::DOMElement *element = shape->createElement(document);
+            if (element) {
+                shapes->appendChild(element);
+            }
         }
     }
 }

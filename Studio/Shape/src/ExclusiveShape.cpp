@@ -3,6 +3,8 @@
 //
 
 #include "ExclusiveGatewayShape.h"
+#include "XML.h"
+#include "boost/lexical_cast.hpp"
 
 ExclusiveGatewayShape::ExclusiveGatewayShape() {
     _bColor = {255, 255, 255};
@@ -163,4 +165,15 @@ bool ExclusiveGatewayShape::isContained(QPointF pointF) {
         return true;
     }
     return false;
+}
+
+xercesc::DOMElement *ExclusiveGatewayShape::createElement(xercesc::DOMDocument *document) {
+    auto exclusiveGatewayShape = document->createElement(XStr("ExclusiveGatewayShape"));
+    auto bound = document->createElement(XStr("Bound"));
+    bound->setAttribute(XStr("X"), XStr(boost::lexical_cast<std::string>(_bound._x).data()));
+    bound->setAttribute(XStr("Y"), XStr(boost::lexical_cast<std::string>(_bound._y).data()));
+    bound->setAttribute(XStr("W"), XStr(boost::lexical_cast<std::string>(_bound._w).data()));
+    bound->setAttribute(XStr("H"), XStr(boost::lexical_cast<std::string>(_bound._h).data()));
+    exclusiveGatewayShape->appendChild(bound);
+    return exclusiveGatewayShape;
 }

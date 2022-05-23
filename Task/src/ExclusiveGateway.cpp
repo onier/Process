@@ -6,6 +6,10 @@
 #include "folly/Conv.h"
 #include "XML.h"
 #include "ProcessContext.h"
+#include "boost/uuid/uuid.hpp"
+#include "boost/uuid/uuid_io.hpp"
+#include "boost/uuid/random_generator.hpp"
+#include "boost/lexical_cast.hpp"
 
 std::string ExclusiveGateway::getNextTaskID() {
     return _nextTaskID;
@@ -71,6 +75,8 @@ void ExclusiveGateway::run(std::shared_ptr<Process::ProcessContext> context) {
 
 ExclusiveRule::ExclusiveRule() {
     _type = ExclusiveRuleType::DOUBLE;
+    boost::uuids::uuid uuid = boost::uuids::random_generator()();
+    _id = boost::lexical_cast<std::string>(uuid);
 }
 
 ExclusiveGateway::ExclusiveGateway() {
@@ -123,16 +129,19 @@ void ExclusiveGateway::setNextTaskID(std::string id, bool f) {
             auto exclusiveRulePtrType = rttr::type::get_by_name("ExclusiveRulePtr");
             rttr::variant variant = exclusiveRulePtrType.create();
             auto pro = exclusiveRulePtrType.get_property("TaskID");
+            auto idProp = exclusiveRulePtrType.get_property("ID");
             pro.set_value(variant, id);
             LOG(INFO) << pro.get_value(variant).to_string();
             _subTaskVariant.push_back({id, variant});
-            Process::AbstractTask::notify("addExclusiveRule", variant);
+            Process::AbstractTask::notify("addExclusiveRule", variant, idProp.get_value(variant).to_string());
         }
     }
 }
 
 ExclusiveRulePtr::ExclusiveRulePtr() {
     _type = ExclusiveRuleType::DOUBLE;
+    boost::uuids::uuid uuid = boost::uuids::random_generator()();
+    _id = boost::lexical_cast<std::string>(uuid);
 }
 
 void ExclusiveGateway::setPreTaskID(std::string id, bool f) {

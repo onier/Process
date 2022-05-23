@@ -5,6 +5,8 @@
 #include "Edge.h"
 #include <math.h>
 #include "glog/logging.h"
+#include "XML.h"
+#include "boost/lexical_cast.hpp"
 
 static const double Pi = 3.14159265358979323846264338327950288419717;
 static double TwoPi = 2.0 * Pi;
@@ -182,21 +184,21 @@ bool Edge::isContained(QPointF pointF) {
 }
 
 void Edge::setStartShape(std::shared_ptr<Shape> shape) {
-    if(!shape){
+    if (!shape) {
         notifyPropertyEvents("EdgeStartShapeRemove");
     }
     _startShape = shape;
-    if(shape){
+    if (shape) {
         notifyPropertyEvents("EdgeStartShapeChange");
     }
 }
 
 void Edge::setEndShape(std::shared_ptr<Shape> shape) {
-    if(!shape){
+    if (!shape) {
         notifyPropertyEvents("EdgeEndShapeRemove");
     }
     _endShape = shape;
-    if(shape){
+    if (shape) {
         notifyPropertyEvents("EdgeEndShapeChange");
     }
 }
@@ -207,4 +209,30 @@ std::shared_ptr<Shape> Edge::getStartShape() {
 
 std::shared_ptr<Shape> Edge::getEndShape() {
     return _endShape;
+}
+
+xercesc::DOMElement *Edge::createElement(xercesc::DOMDocument *document) {
+    xercesc_3_2::DOMElement *edgeElement = document->createElement(XStr("Edge"));
+    edgeElement->setAttribute(XStr("ID"), XStr(_id.data()));
+    auto startPoint = document->createElement(XStr("StartPoint"));
+    edgeElement->appendChild(startPoint);
+    startPoint->setAttribute(XStr("X"), XStr(boost::lexical_cast<std::string>(_start._x).data()));
+    startPoint->setAttribute(XStr("Y"), XStr(boost::lexical_cast<std::string>(_start._y).data()));
+
+    auto endPoint = document->createElement(XStr("EndPoint"));
+    edgeElement->appendChild(endPoint);
+    endPoint->setAttribute(XStr("X"), XStr(boost::lexical_cast<std::string>(_end._x).data()));
+    endPoint->setAttribute(XStr("Y"), XStr(boost::lexical_cast<std::string>(_end._y).data()));
+
+    if (_startShape) {
+        auto startShape = document->createElement(XStr("StartShape"));
+        edgeElement->appendChild(startShape);
+        startShape->setAttribute(XStr("ID"), XStr(boost::lexical_cast<std::string>(_startShape->_id).data()));
+    }
+    if(_endShape){
+        auto endShape = document->createElement(XStr("EndShape"));
+        edgeElement->appendChild(endShape);
+        endShape->setAttribute(XStr("ID"), XStr(boost::lexical_cast<std::string>(_endShape->_id).data()));
+    }
+    return edgeElement;
 }

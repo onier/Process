@@ -46,6 +46,7 @@ RTTR_PLUGIN_REGISTRATION {
                     rttr::policy::ctor::as_std_shared_ptr
             )
             .property("ValueName", &ExclusiveRulePtr::_valueName)
+            .property("ID", &ExclusiveRulePtr::_id)
             .property("Text", &ExclusiveRulePtr::_text)
             .property("Operator", &ExclusiveRulePtr::_operator)
             .property("Value", &ExclusiveRulePtr::_value)
@@ -60,6 +61,7 @@ RTTR_PLUGIN_REGISTRATION {
             )
             .property("ValueName", &ExclusiveRule::_valueName)
             .property("Text", &ExclusiveRule::_text)
+            .property("ID", &ExclusiveRule::_id)
             .property("Operator", &ExclusiveRule::_operator)
             .property("Value", &ExclusiveRule::_value)
             .property("Type", &ExclusiveRule::_type)

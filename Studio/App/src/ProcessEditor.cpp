@@ -198,6 +198,7 @@ void ProcessEditor::dropEvent(QDropEvent *event) {
         if (shapeType.is_valid()) {
             auto shapeVar = shapeType.create();
             std::shared_ptr<Shape> shape = shapeVar.get_value<std::shared_ptr<Shape>>();
+            shape->_id = task->_id;
             shape->setBound({(float) event->posF().x(), (float) event->posF().y(), 60, 50});
             _graphics->addShape(shape);
             _processStudio->addTask(task);
@@ -208,6 +209,7 @@ void ProcessEditor::dropEvent(QDropEvent *event) {
             auto shapeVar = shapeType.create();
             std::shared_ptr<Shape> shape = shapeVar.get_value<std::shared_ptr<Shape>>();
             shape->setBound({(float) event->posF().x(), (float) event->posF().y(), 60, 50});
+            shape->_id = task->_id;
             _graphics->addShape(shape);
             _processStudio->addTask(task);
             _processStudio->addTaskShapeItem(

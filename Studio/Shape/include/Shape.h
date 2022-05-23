@@ -11,6 +11,9 @@
 #include "rttr/registration.h"
 #include "cmath"
 #include "Datas.h"
+#include <xercesc/dom/DOMDocument.hpp>
+#include <xercesc/dom/DOMElement.hpp>
+#include <xercesc/util/XMLString.hpp>
 
 struct Point {
     float _x;
@@ -124,6 +127,8 @@ struct Shape {
         _text = text;
         notifyPropertyEvents("Text");
     };
+
+    virtual xercesc::DOMElement *createElement(xercesc::DOMDocument *document) = 0;
 
     bool _isShowAncher;
     std::string _id;

@@ -23,6 +23,7 @@ enum class ExclusiveRuleType {
 };
 
 struct ExclusiveRulePtr {
+    std::string _id;
     std::string _text;
     std::string _valueName;
     ExclusiveRuleOperator _operator;
@@ -38,6 +39,7 @@ RTTR_ENABLE()
 };
 
 struct ExclusiveRule {
+    std::string _id;
     std::string _text;
     std::string _valueName;
     ExclusiveRuleOperator _operator;
