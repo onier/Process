@@ -177,3 +177,16 @@ xercesc::DOMElement *ExclusiveGatewayShape::createElement(xercesc::DOMDocument *
     exclusiveGatewayShape->appendChild(bound);
     return exclusiveGatewayShape;
 }
+
+void ExclusiveGatewayShape::loadDomElement(xercesc::DOMNode *element) {
+    std::vector<xercesc::DOMNode *> bound;
+    puppy::common::XML::getTagsByName("Bound", element, bound);
+    if (bound.size() == 1) {
+        _bound._x = boost::lexical_cast<float>(puppy::common::XML::attributeValue(bound[0]->getAttributes(), "X"));
+        _bound._y = boost::lexical_cast<float>(puppy::common::XML::attributeValue(bound[0]->getAttributes(), "Y"));
+        _bound._w = boost::lexical_cast<float>(puppy::common::XML::attributeValue(bound[0]->getAttributes(), "W"));
+        _bound._h = boost::lexical_cast<float>(puppy::common::XML::attributeValue(bound[0]->getAttributes(), "H"));
+    } else {
+        LOG(ERROR) << "EventGatewayShape not find bound";
+    }
+}

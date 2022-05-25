@@ -336,7 +336,7 @@ void ProcessStudio::loadFromXML(std::string xml) {
         auto p = process->item(i);
         std::vector<xercesc::DOMNode *> managers;
         puppy::common::XML::getTagsByName("TaskManager", p, managers);
-        for (auto manager:managers) {
+        for (auto manager: managers) {
             std::vector<xercesc::DOMNode *> parameters;
             std::vector<xercesc::DOMNode *> tasks;
             std::vector<xercesc::DOMNode *> shapes;
@@ -344,30 +344,57 @@ void ProcessStudio::loadFromXML(std::string xml) {
             puppy::common::XML::getTagsByName("tasks", manager, tasks);
             puppy::common::XML::getTagsByName("shapes", manager, shapes);
             if (parameters.size() == 1) {
-                parseParameter(parameters[0]);
+                auto paras = parseParameters(parameters[0]);
+            }
+            if (tasks.size() == 1) {
+                auto task = parseTasks(tasks[0]);
             }
         }
     }
 }
 
-void ProcessStudio::parseParameters(xercesc::DOMNode *parameters) {
+std::vector<Para> ProcessStudio::parseParameters(xercesc::DOMNode *parameters) {
     std::vector<xercesc::DOMNode *> ps;
     puppy::common::XML::getTagsByName("Parameters", parameters, ps);
     std::vector<Para> paras;
-    for (auto p:ps) {
+    for (auto p: ps) {
         Para para = parseParameter(p);
         if (para._name.empty()) {
             paras.push_back(para);
         }
     }
-    LOG(INFO) << paras;
+    return paras;
 }
 
-void ProcessStudio::parseTasks(xercesc::DOMNode *tasks) {
-
+std::vector<std::shared_ptr<Process::Task>> ProcessStudio::parseTasks(xercesc::DOMNode *tasks) {
+    auto nodes = tasks->getChildNodes();
+    std::vector<std::shared_ptr<Process::Task>> results;
+    for (int i = 0; i < nodes->getLength(); i++) {
+        auto task = nodes->item(i);
+        auto taskTypeName = puppy::common::XML::toStr(task->getNodeName());
+        auto taskType = rttr::type::get_by_name(taskTypeName);
+        if (taskType.is_valid()) {
+            auto taskVariant = taskType.create();
+            puppy::common::XML::parseInstance(task, taskVariant);
+            auto absPtr = taskVariant.get_value<std::shared_ptr<Process::Task>>();
+//            if (taskTypeName == "SubProcessTask") {
+//                auto subTasks = getSubProcessTasks(task);
+//                if (subTasks.empty()) {
+//                    absPtr->loadDomElement(task);
+//                } else {
+//                    sleep(1);
+//                    absPtr->loadDomElement(subTasks.at(0));
+//                }
+//            } else {
+            absPtr->loadDomElement(task);
+//            }
+            results.push_back(absPtr);
+        }
+    }
+    return results;
 }
 
-void ProcessStudio::parseShapes(xercesc::DOMNode *shapes) {
+std::vector<std::shared_ptr<Shape>> ProcessStudio::parseShapes(xercesc::DOMNode *shapes) {
 
 }
 
@@ -394,11 +421,29 @@ Para ProcessStudio::parseParameter(xercesc::DOMNode *parameter) {
 }
 
 std::shared_ptr<Process::Task> ProcessStudio::parseTask(xercesc::DOMNode *task) {
-
+    std::string taskName = puppy::common::XML::toStr(task->getNodeName());
+    auto type = rttr::type::get_by_name(taskName.data());
+    if (type.is_valid()) {
+        auto taskVariant = type.create();
+        auto taskPtr = taskVariant.get_value<std::shared_ptr<Process::Task>>();
+        puppy::common::XML::parseInstance(task, taskVariant);
+        taskPtr->loadDomElement(task);
+        return taskPtr;
+    }
+    return nullptr;
 }
 
 std::shared_ptr<Shape> ProcessStudio::parseShape(xercesc::DOMNode *shape) {
-
+    std::string taskName = puppy::common::XML::toStr(shape->getNodeName());
+    auto type = rttr::type::get_by_name(taskName.data());
+    if (type.is_valid()) {
+        auto taskVariant = type.create();
+        auto taskPtr = taskVariant.get_value<std::shared_ptr<Shape>>();
+        puppy::common::XML::parseInstance(shape, taskVariant);
+        taskPtr->loadDomElement(shape);
+        return taskPtr;
+    }
+    return nullptr;
 }
 
 void ProcessStudio::saveTaskManager(xercesc::DOMElement *domElement, xercesc::DOMDocument *document) {
@@ -455,3 +500,6 @@ void ProcessStudio::saveTaskManager(xercesc::DOMElement *domElement, xercesc::DO
     }
 }
 
+void ProcessStudio::clear() {
+
+}

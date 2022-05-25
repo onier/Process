@@ -126,17 +126,19 @@ protected:
     void updateMessageHandler(std::string msg);
 
 private:
-    void parseParameters(xercesc::DOMNode *parameters);
+    std::vector<Para> parseParameters(xercesc::DOMNode *parameters);
 
-    void parseTasks(xercesc::DOMNode *tasks);
+    std::vector<std::shared_ptr<Process::Task>> parseTasks(xercesc::DOMNode *tasks);
 
-    void parseShapes(xercesc::DOMNode *shapes);
+    std::vector<std::shared_ptr<Shape>> parseShapes(xercesc::DOMNode *shapes);
 
     Para parseParameter(xercesc::DOMNode *parameter);
 
     std::shared_ptr<Process::Task> parseTask(xercesc::DOMNode *task);
 
     std::shared_ptr<Shape> parseShape(xercesc::DOMNode *shape);
+
+    void clear();
 
 private:
     std::map<std::string, std::function<void(std::shared_ptr<Shape>)>> _propertyMessageHandlers;

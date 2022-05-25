@@ -156,3 +156,7 @@ bool SubProcessTaskShape::isContained(QPointF pointF) {
 xercesc::DOMElement *SubProcessTaskShape::createElement(xercesc::DOMDocument *document) {
     return nullptr;
 }
+
+void SubProcessTaskShape::loadDomElement(xercesc::DOMNode *element) {
+
+}

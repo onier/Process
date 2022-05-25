@@ -161,7 +161,18 @@ bool StartTaskShape::isContained(QPointF pointF) {
 xercesc::DOMElement *StartTaskShape::createElement(xercesc::DOMDocument *document) {
     xercesc_3_2::DOMElement *startShapeElement = document->createElement(XStr("StartTaskShape"));
     startShapeElement->setAttribute(XStr("ID"), XStr(_id.data()));
-    puppy::common::XML::createElement(_bound, startShapeElement, document);
+    auto bound = document->createElement(XStr("Bound"));
+    startShapeElement->appendChild(bound);
+    puppy::common::XML::createElement(_bound, bound, document);
     return startShapeElement;
+}
+
+void StartTaskShape::loadDomElement(xercesc::DOMNode *element) {
+    std::vector<xercesc::DOMNode *> bound;
+    puppy::common::XML::getTagsByName("Bound", element, bound);
+    if (bound.size() == 0) {
+        puppy::common::XML::parseInstance(bound[0], _bound);
+    }
+    _id = puppy::common::XML::attributeValue(element->getAttributes(), "ID");
 }
 

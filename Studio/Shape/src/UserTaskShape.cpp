@@ -165,3 +165,12 @@ xercesc::DOMElement *UserTaskShape::createElement(xercesc::DOMDocument *document
     userTaskShape->appendChild(bound);
     return userTaskShape;
 }
+
+void UserTaskShape::loadDomElement(xercesc::DOMNode *element) {
+    std::vector<xercesc::DOMNode *> bound;
+    puppy::common::XML::getTagsByName("Bound", element, bound);
+    if (bound.size() == 0) {
+        puppy::common::XML::parseInstance(bound[0], _bound);
+    }
+    _id = puppy::common::XML::attributeValue(element->getAttributes(), "ID");
+}

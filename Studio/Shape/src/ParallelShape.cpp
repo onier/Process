@@ -29,17 +29,17 @@ void ParallelGatewayShape::paint(QPainter *painter) {
     painter->setBrush(brush);
     QPolygonF polygonF;
     auto ps = getAnchorPoints();
-    for(auto & p : ps){
+    for (auto &p: ps) {
         polygonF.push_back(p);
     }
     painter->drawPolygon(polygonF);
     auto center = _bound.center();
-    auto n = _bound._w/8;
+    auto n = _bound._w / 8;
     polygonF.clear();
     pen.setWidth(6);
     painter->setPen(pen);
-    painter->drawLine(QPointF{center.x()-n,center.y()},QPointF{center.x()+n,center.y()});
-    painter->drawLine(QPointF{center.x(),center.y()+n},QPointF{center.x(),center.y()-n});
+    painter->drawLine(QPointF{center.x() - n, center.y()}, QPointF{center.x() + n, center.y()});
+    painter->drawLine(QPointF{center.x(), center.y() + n}, QPointF{center.x(), center.y() - n});
     paintAnchorPoints(painter);
     paintControllPoints(painter);
     int x = _bound._x;
@@ -176,4 +176,17 @@ xercesc::DOMElement *ParallelGatewayShape::createElement(xercesc::DOMDocument *d
     bound->setAttribute(XStr("H"), XStr(boost::lexical_cast<std::string>(_bound._h).data()));
     ParallelGatewayShape->appendChild(bound);
     return ParallelGatewayShape;
+}
+
+void ParallelGatewayShape::loadDomElement(xercesc::DOMNode *element) {
+    std::vector<xercesc::DOMNode *> bound;
+    puppy::common::XML::getTagsByName("Bound", element, bound);
+    if (bound.size() == 1) {
+        _bound._x = boost::lexical_cast<float>(puppy::common::XML::attributeValue(bound[0]->getAttributes(), "X"));
+        _bound._y = boost::lexical_cast<float>(puppy::common::XML::attributeValue(bound[0]->getAttributes(), "Y"));
+        _bound._w = boost::lexical_cast<float>(puppy::common::XML::attributeValue(bound[0]->getAttributes(), "W"));
+        _bound._h = boost::lexical_cast<float>(puppy::common::XML::attributeValue(bound[0]->getAttributes(), "H"));
+    } else {
+        LOG(ERROR) << "EventGatewayShape not find bound";
+    }
 }

@@ -229,10 +229,47 @@ xercesc::DOMElement *Edge::createElement(xercesc::DOMDocument *document) {
         edgeElement->appendChild(startShape);
         startShape->setAttribute(XStr("ID"), XStr(boost::lexical_cast<std::string>(_startShape->_id).data()));
     }
-    if(_endShape){
+    if (_endShape) {
         auto endShape = document->createElement(XStr("EndShape"));
         edgeElement->appendChild(endShape);
         endShape->setAttribute(XStr("ID"), XStr(boost::lexical_cast<std::string>(_endShape->_id).data()));
     }
     return edgeElement;
+}
+
+void Edge::loadDomElement(xercesc::DOMNode *element) {
+    {
+        std::vector<xercesc::DOMNode *> startPoint;
+        puppy::common::XML::getTagsByName("StartPoint", element, startPoint);
+        if (startPoint.size() == 1) {
+            _start._x = boost::lexical_cast<float>(
+                    puppy::common::XML::attributeValue(startPoint[0]->getAttributes(), "X"));
+            _start._y = boost::lexical_cast<float>(
+                    puppy::common::XML::attributeValue(startPoint[0]->getAttributes(), "Y"));
+        }
+    }
+    {
+        std::vector<xercesc::DOMNode *> endPoint;
+        puppy::common::XML::getTagsByName("EndPoint", element, endPoint);
+        if (endPoint.size() == 1) {
+            _end._x = boost::lexical_cast<float>(
+                    puppy::common::XML::attributeValue(endPoint[0]->getAttributes(), "X"));
+            _end._y = boost::lexical_cast<float>(
+                    puppy::common::XML::attributeValue(endPoint[0]->getAttributes(), "Y"));
+        }
+    }
+    {
+        std::vector<xercesc::DOMNode *> startShape;
+        puppy::common::XML::getTagsByName("StartShape", element, startShape);
+        if (startShape.size() == 1) {
+            _startShapeID = puppy::common::XML::attributeValue(startShape[0]->getAttributes(), "ID");
+        }
+    }
+    {
+        std::vector<xercesc::DOMNode *> endShape;
+        puppy::common::XML::getTagsByName("EndShape", element, endShape);
+        if (endShape.size() == 1) {
+            _endShapeID = puppy::common::XML::attributeValue(endShape[0]->getAttributes(), "ID");
+        }
+    }
 }

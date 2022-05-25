@@ -13,6 +13,8 @@ public:
 
     xercesc::DOMElement *createElement(xercesc::DOMDocument *document) override;
 
+    void loadDomElement(xercesc::DOMNode *element) override;
+
     Bound getBound() override;
 
     void paint(QPainter *painter) override;
@@ -49,6 +51,7 @@ public:
 
     std::shared_ptr<Shape> getEndShape();
 
+    std::string _startShapeID, _endShapeID;
 private:
     void recompute();
 

@@ -13,6 +13,8 @@ public:
 
     xercesc::DOMElement *createElement(xercesc::DOMDocument *document) override;
 
+    void loadDomElement(xercesc::DOMNode *element) override;
+
     Bound getBound();
 
     void paint(QPainter *painter) override;

@@ -130,6 +130,8 @@ struct Shape {
 
     virtual xercesc::DOMElement *createElement(xercesc::DOMDocument *document) = 0;
 
+    virtual void loadDomElement(xercesc::DOMNode *element) = 0;
+
     bool _isShowAncher;
     std::string _id;
     std::string _preID;
