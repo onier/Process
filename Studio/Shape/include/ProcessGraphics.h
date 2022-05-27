@@ -17,6 +17,8 @@ class ProcessGraphics {
 public:
     ProcessGraphics();
 
+    virtual ~ProcessGraphics();
+
     std::vector<std::shared_ptr<Shape>> getShapes();
 
     void addShape(std::shared_ptr<Shape> shape);

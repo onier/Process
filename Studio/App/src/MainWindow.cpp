@@ -51,6 +51,7 @@ MainWindow::MainWindow(QWidget *parent) :
         QFile file(fileName);
         file.open(QIODevice::ReadWrite);
         _processStudio->loadFromXML(file.readAll().toStdString());
+        _processEditor->update();
     });
 
     _delegate = 0;

@@ -8,6 +8,10 @@
 ProcessGraphics::ProcessGraphics() {
 }
 
+ProcessGraphics::~ProcessGraphics() {
+
+}
+
 std::vector<std::shared_ptr<Shape>> ProcessGraphics::getShapes() {
     return _shapes;
 }

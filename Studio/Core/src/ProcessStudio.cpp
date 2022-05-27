@@ -117,6 +117,8 @@ std::vector<std::shared_ptr<Shape>> ProcessStudio::getShapeByTask(std::shared_pt
 }
 
 void ProcessStudio::addTaskShapeItem(std::shared_ptr<TaskShapeItem> item) {
+    _graphics->addShape(item->_shape);
+    addTask(item->_task);
     _taskShapes.push_back(item);
 }
 
@@ -210,6 +212,12 @@ void ProcessStudio::notifyRuleShapeItemSlectChange(ProcessStudio *processStudio,
     for (auto &h: _selectRuleShapeItemEventHanlders) {
         h(processStudio, item);
     }
+}
+
+TaskShapeItem::TaskShapeItem(std::shared_ptr<DumyTaskItem> taskItem, std::shared_ptr<DumyShapeItem> shapeItem) : _task(
+        taskItem->_task), _shape(shapeItem->_shape), _taskType(taskItem->_taskType), _shapeType(
+        shapeItem->_shapeType), _taskVar(taskItem->_taskVar), _shapeVar(shapeItem->_shapeVar) {
+
 }
 
 TaskShapeItem::TaskShapeItem(const std::shared_ptr<Process::Task> &task, const std::shared_ptr<Shape> &shape,
@@ -324,6 +332,7 @@ std::string ProcessStudio::saveToXML() {
 }
 
 void ProcessStudio::loadFromXML(std::string xml) {
+    clear();
     xercesc::XMLPlatformUtils::Initialize();
     xercesc::XercesDOMParser xercesDOMParser;
     std::shared_ptr<xercesc::MemBufInputSource> memBufIS = std::shared_ptr<xercesc::MemBufInputSource>(
@@ -337,17 +346,34 @@ void ProcessStudio::loadFromXML(std::string xml) {
         std::vector<xercesc::DOMNode *> managers;
         puppy::common::XML::getTagsByName("TaskManager", p, managers);
         for (auto manager: managers) {
-            std::vector<xercesc::DOMNode *> parameters;
-            std::vector<xercesc::DOMNode *> tasks;
-            std::vector<xercesc::DOMNode *> shapes;
-            puppy::common::XML::getTagsByName("Parameters", manager, parameters);
-            puppy::common::XML::getTagsByName("tasks", manager, tasks);
-            puppy::common::XML::getTagsByName("shapes", manager, shapes);
-            if (parameters.size() == 1) {
-                auto paras = parseParameters(parameters[0]);
+            std::vector<xercesc::DOMNode *> parametersNodes;
+            std::vector<xercesc::DOMNode *> tasksNodes;
+            std::vector<xercesc::DOMNode *> shapesNodes;
+            puppy::common::XML::getTagsByName("Parameters", manager, parametersNodes);
+            puppy::common::XML::getTagsByName("tasks", manager, tasksNodes);
+            puppy::common::XML::getTagsByName("shapes", manager, shapesNodes);
+            if (parametersNodes.size() == 1) {
+                auto paras = parseParameters(parametersNodes[0]);
+                rttr::type::get_by_name("ProcesInfo").get_property("Parameters").set_value(_processInfoVariant, paras);
             }
-            if (tasks.size() == 1) {
-                auto task = parseTasks(tasks[0]);
+            std::map<std::string, std::shared_ptr<DumyTaskItem>> tasks;
+            std::map<std::string, std::shared_ptr<DumyShapeItem>> shapes;
+            if (tasksNodes.size() == 1) {
+                tasks = parseTasks(tasksNodes[0]);
+                for (auto t: tasks) {
+                    addTask(t.second->_task);
+                }
+            }
+            if (shapesNodes.size() == 1) {
+                shapes = parseShapes(shapesNodes[0]);
+                for (auto s: shapes) {
+                    _graphics->addShape(s.second->_shape);
+                }
+            }
+            for (auto shape: shapes) {
+                if (tasks.count(shape.first) > 0) {
+                    _taskShapes.push_back(std::make_shared<TaskShapeItem>(tasks[shape.first], shape.second));
+                }
             }
         }
     }
@@ -366,9 +392,9 @@ std::vector<Para> ProcessStudio::parseParameters(xercesc::DOMNode *parameters) {
     return paras;
 }
 
-std::vector<std::shared_ptr<Process::Task>> ProcessStudio::parseTasks(xercesc::DOMNode *tasks) {
+std::map<std::string, std::shared_ptr<DumyTaskItem>> ProcessStudio::parseTasks(xercesc::DOMNode *tasks) {
     auto nodes = tasks->getChildNodes();
-    std::vector<std::shared_ptr<Process::Task>> results;
+    std::map<std::string, std::shared_ptr<DumyTaskItem>> results;
     for (int i = 0; i < nodes->getLength(); i++) {
         auto task = nodes->item(i);
         auto taskTypeName = puppy::common::XML::toStr(task->getNodeName());
@@ -377,25 +403,29 @@ std::vector<std::shared_ptr<Process::Task>> ProcessStudio::parseTasks(xercesc::D
             auto taskVariant = taskType.create();
             puppy::common::XML::parseInstance(task, taskVariant);
             auto absPtr = taskVariant.get_value<std::shared_ptr<Process::Task>>();
-//            if (taskTypeName == "SubProcessTask") {
-//                auto subTasks = getSubProcessTasks(task);
-//                if (subTasks.empty()) {
-//                    absPtr->loadDomElement(task);
-//                } else {
-//                    sleep(1);
-//                    absPtr->loadDomElement(subTasks.at(0));
-//                }
-//            } else {
             absPtr->loadDomElement(task);
-//            }
-            results.push_back(absPtr);
+            results.insert({absPtr->_id, std::make_shared<DumyTaskItem>(absPtr, taskType, taskVariant)});
         }
     }
     return results;
 }
 
-std::vector<std::shared_ptr<Shape>> ProcessStudio::parseShapes(xercesc::DOMNode *shapes) {
-
+std::map<std::string, std::shared_ptr<DumyShapeItem>> ProcessStudio::parseShapes(xercesc::DOMNode *shapes) {
+    auto nodes = shapes->getChildNodes();
+    std::map<std::string, std::shared_ptr<DumyShapeItem>> results;
+    for (int i = 0; i < nodes->getLength(); i++) {
+        auto shape = nodes->item(i);
+        std::string taskName = puppy::common::XML::toStr(shape->getNodeName());
+        auto type = rttr::type::get_by_name(taskName.data());
+        if (type.is_valid()) {
+            auto taskVariant = type.create();
+            auto taskPtr = taskVariant.get_value<std::shared_ptr<Shape>>();
+            puppy::common::XML::parseInstance(shape, taskVariant);
+            taskPtr->loadDomElement(shape);
+            results.insert({taskPtr->_id, std::make_shared<DumyShapeItem>(taskPtr, type, taskVariant)});
+        }
+    }
+    return results;
 }
 
 Para ProcessStudio::parseParameter(xercesc::DOMNode *parameter) {
@@ -418,32 +448,6 @@ Para ProcessStudio::parseParameter(xercesc::DOMNode *parameter) {
     para._value = value;
     para._description = des;
     return para;
-}
-
-std::shared_ptr<Process::Task> ProcessStudio::parseTask(xercesc::DOMNode *task) {
-    std::string taskName = puppy::common::XML::toStr(task->getNodeName());
-    auto type = rttr::type::get_by_name(taskName.data());
-    if (type.is_valid()) {
-        auto taskVariant = type.create();
-        auto taskPtr = taskVariant.get_value<std::shared_ptr<Process::Task>>();
-        puppy::common::XML::parseInstance(task, taskVariant);
-        taskPtr->loadDomElement(task);
-        return taskPtr;
-    }
-    return nullptr;
-}
-
-std::shared_ptr<Shape> ProcessStudio::parseShape(xercesc::DOMNode *shape) {
-    std::string taskName = puppy::common::XML::toStr(shape->getNodeName());
-    auto type = rttr::type::get_by_name(taskName.data());
-    if (type.is_valid()) {
-        auto taskVariant = type.create();
-        auto taskPtr = taskVariant.get_value<std::shared_ptr<Shape>>();
-        puppy::common::XML::parseInstance(shape, taskVariant);
-        taskPtr->loadDomElement(shape);
-        return taskPtr;
-    }
-    return nullptr;
 }
 
 void ProcessStudio::saveTaskManager(xercesc::DOMElement *domElement, xercesc::DOMDocument *document) {
@@ -501,5 +505,17 @@ void ProcessStudio::saveTaskManager(xercesc::DOMElement *domElement, xercesc::DO
 }
 
 void ProcessStudio::clear() {
-
+    _currentSelectShape = nullptr;
+    _tasks.clear();
+    _process = nullptr;
+    _taskShapes.clear();
+    _ruleShapeItems.clear();
+    _processInfoVariant = rttr::type::get_by_name("ProcesInfo").create();
 }
+
+DumyTaskItem::DumyTaskItem(const std::shared_ptr<Process::Task> &task, const rttr::type &taskType,
+                           const rttr::variant &taskVar) : _task(task), _taskType(taskType), _taskVar(taskVar) {}
+
+DumyShapeItem::DumyShapeItem(const std::shared_ptr<Shape> &shape, const rttr::type &shapeType,
+                             const rttr::variant &shapeVar) : _shape(shape), _shapeType(shapeType),
+                                                              _shapeVar(shapeVar) {}

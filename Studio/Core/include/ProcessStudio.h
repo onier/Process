@@ -49,6 +49,26 @@ struct RuleShapeItem {
     rttr::variant _rule;
 };
 
+struct DumyTaskItem {
+    std::shared_ptr<Process::Task> _task;
+    rttr::type _taskType;
+    rttr::variant _taskVar;
+
+    DumyTaskItem();
+
+    DumyTaskItem(const std::shared_ptr<Process::Task> &task, const rttr::type &taskType, const rttr::variant &taskVar);
+};
+
+struct DumyShapeItem {
+    std::shared_ptr<Shape> _shape;
+    rttr::type _shapeType;
+    rttr::variant _shapeVar;
+
+    DumyShapeItem();
+
+    DumyShapeItem(const std::shared_ptr<Shape> &shape, const rttr::type &shapeType, const rttr::variant &shapeVar);
+};
+
 struct TaskShapeItem {
     std::shared_ptr<Process::Task> _task;
     std::shared_ptr<Shape> _shape;
@@ -57,10 +77,13 @@ struct TaskShapeItem {
     rttr::variant _taskVar;
     rttr::variant _shapeVar;
 
+    TaskShapeItem(std::shared_ptr<DumyTaskItem> taskItem, std::shared_ptr<DumyShapeItem> shapeItem);
+
     TaskShapeItem(const std::shared_ptr<Process::Task> &task, const std::shared_ptr<Shape> &shape,
                   const rttr::type &taskType, const rttr::type &shapeType, const rttr::variant &taskVar,
                   const rttr::variant &shapeVar);
 };
+
 
 typedef std::vector<std::shared_ptr<TaskShapeItem>> TaskShpeItems;
 typedef std::vector<std::shared_ptr<RuleShapeItem>> RuleShapeItems;
@@ -128,15 +151,11 @@ protected:
 private:
     std::vector<Para> parseParameters(xercesc::DOMNode *parameters);
 
-    std::vector<std::shared_ptr<Process::Task>> parseTasks(xercesc::DOMNode *tasks);
+    std::map<std::string, std::shared_ptr<DumyTaskItem>> parseTasks(xercesc::DOMNode *tasks);
 
-    std::vector<std::shared_ptr<Shape>> parseShapes(xercesc::DOMNode *shapes);
+    std::map<std::string, std::shared_ptr<DumyShapeItem>> parseShapes(xercesc::DOMNode *shapes);
 
     Para parseParameter(xercesc::DOMNode *parameter);
-
-    std::shared_ptr<Process::Task> parseTask(xercesc::DOMNode *task);
-
-    std::shared_ptr<Shape> parseShape(xercesc::DOMNode *shape);
 
     void clear();
 
