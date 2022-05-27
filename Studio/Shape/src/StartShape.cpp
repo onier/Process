@@ -170,7 +170,7 @@ xercesc::DOMElement *StartTaskShape::createElement(xercesc::DOMDocument *documen
 void StartTaskShape::loadDomElement(xercesc::DOMNode *element) {
     std::vector<xercesc::DOMNode *> bound;
     puppy::common::XML::getTagsByName("Bound", element, bound);
-    if (bound.size() == 0) {
+    if (bound.size() == 1) {
         puppy::common::XML::parseInstance(bound[0], _bound);
     }
     _id = puppy::common::XML::attributeValue(element->getAttributes(), "ID");

@@ -49,7 +49,7 @@ bool TaskShape::getNearestAnchor(QPointF point, QPointF &value) {
 }
 
 std::string TaskShape::checkActionAnchor(QPointF point, QPointF &target, double value) {
-    return std::__cxx11::string();
+   return "";
 }
 
 bool TaskShape::isContained(QPointF pointF) {
