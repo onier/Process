@@ -24,6 +24,7 @@
 #include <xercesc/dom/DOMImplementation.hpp>
 #include <xercesc/dom/DOMLSSerializer.hpp>
 #include <xercesc/dom/DOMLSOutput.hpp>
+#include "Edge.h"
 
 thread_local std::shared_ptr<Shape> currentShape;
 
@@ -377,6 +378,7 @@ void ProcessStudio::loadFromXML(std::string xml) {
             }
         }
     }
+    initEdge();
 }
 
 std::vector<Para> ProcessStudio::parseParameters(xercesc::DOMNode *parameters) {
@@ -504,9 +506,22 @@ void ProcessStudio::saveTaskManager(xercesc::DOMElement *domElement, xercesc::DO
     }
 }
 
+void ProcessStudio::initEdge() {
+    std::vector<std::shared_ptr<Edge>> shapes = _graphics->getShapes<Edge>();
+    for (auto shape: shapes) {
+        if (!shape->_startShapeID.empty()) {
+            shape->setStartShape(_graphics->getShapeByID(shape->_startShapeID));
+        }
+        if (!shape->_endShapeID.empty()) {
+            shape->setEndShape(_graphics->getShapeByID(shape->_endShapeID));
+        }
+    }
+}
+
 void ProcessStudio::clear() {
     _currentSelectShape = nullptr;
     _tasks.clear();
+    _graphics->clear();
     _process = nullptr;
     _taskShapes.clear();
     _ruleShapeItems.clear();

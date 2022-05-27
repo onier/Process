@@ -51,10 +51,23 @@ std::vector<std::shared_ptr<Shape>> ProcessGraphics::getSelectShapes() {
     return temp;
 }
 
+void ProcessGraphics::clear() {
+    _shapes.clear();
+}
+
 void ProcessGraphics::clearSelection() {
     for (auto &s: _shapes) {
         s->setSelected(false);
     }
+}
+
+std::shared_ptr<Shape> ProcessGraphics::getShapeByID(std::string id) {
+    for (auto s: _shapes) {
+        if (s->_id == id) {
+            return s;
+        }
+    }
+    return nullptr;
 }
 
 void ProcessGraphics::selectAll() {

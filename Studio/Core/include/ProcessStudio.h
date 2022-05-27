@@ -148,6 +148,8 @@ protected:
 
     void updateMessageHandler(std::string msg);
 
+    void clear();
+
 private:
     std::vector<Para> parseParameters(xercesc::DOMNode *parameters);
 
@@ -157,7 +159,7 @@ private:
 
     Para parseParameter(xercesc::DOMNode *parameter);
 
-    void clear();
+    void initEdge();
 
 private:
     std::map<std::string, std::function<void(std::shared_ptr<Shape>)>> _propertyMessageHandlers;

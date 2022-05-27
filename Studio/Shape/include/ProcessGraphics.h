@@ -31,6 +31,8 @@ public:
 
     void clearSelection();
 
+    std::shared_ptr<Shape> getShapeByID(std::string id);
+
     void selectAll();
 
     template<class T>
@@ -46,7 +48,21 @@ public:
         return nullptr;
     };
 
+    template<class T>
+    std::vector<std::shared_ptr<T>> getShapes() {
+        std::vector<std::shared_ptr<T>> result;
+        for (auto &s: _shapes) {
+            std::shared_ptr<T> tshared = std::dynamic_pointer_cast<T>(s);
+            if (tshared) {
+                result.push_back(tshared);
+            }
+        }
+        return result;
+    };
+
     std::vector<std::shared_ptr<Shape>> getSelectShapes();
+
+    void clear();
 
 private:
     std::vector<std::shared_ptr<Shape>> _shapes;
