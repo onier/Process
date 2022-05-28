@@ -443,7 +443,7 @@ Para ProcessStudio::parseParameter(xercesc::DOMNode *parameter) {
     name = puppy::common::XML::attributeValue(parameter->getAttributes(), "name");
     type = puppy::common::XML::attributeValue(parameter->getAttributes(), "type");
     value = puppy::common::XML::attributeValue(parameter->getAttributes(), "value");
-    value = puppy::common::XML::attributeValue(parameter->getAttributes(), "des");
+    des = puppy::common::XML::attributeValue(parameter->getAttributes(), "des");
     Para para;
     para._name = name;
     if (type == "Int") {
@@ -520,10 +520,12 @@ void ProcessStudio::initEdge() {
     std::vector<std::shared_ptr<Edge>> shapes = _graphics->getShapes<Edge>();
     for (auto shape: shapes) {
         if (!shape->_startShapeID.empty()) {
-            shape->setStartShape(_graphics->getShapeByID(shape->_startShapeID));
+            auto s = _graphics->getShapeByID(shape->_startShapeID);
+            shape->setStartShape(s);
         }
         if (!shape->_endShapeID.empty()) {
-            shape->setEndShape(_graphics->getShapeByID(shape->_endShapeID));
+            auto s = _graphics->getShapeByID(shape->_endShapeID);
+            shape->setEndShape(s);
         }
     }
 }

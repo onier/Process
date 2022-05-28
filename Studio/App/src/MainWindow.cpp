@@ -52,7 +52,7 @@ MainWindow::MainWindow(QWidget *parent) :
         file.open(QIODevice::ReadWrite);
         _processStudio->loadFromXML(file.readAll().toStdString());
         _processEditor->update();
-        tableModel->reset();
+        tableModel->setVariant(_processStudio->_processInfoVariant);
         auto property = _processStudio->_processInfoVariant.get_type().get_wrapped_type().get_property("Parameters");
         detailTableModel->setValue(_processStudio->_processInfoVariant,property);
     });

@@ -169,6 +169,7 @@ bool ParallelGatewayShape::isContained(QPointF pointF) {
 
 xercesc::DOMElement *ParallelGatewayShape::createElement(xercesc::DOMDocument *document) {
     auto ParallelGatewayShape = document->createElement(XStr("ParallelGatewayShape"));
+    ParallelGatewayShape->setAttribute(XStr("ID"),XStr(_id.data()));
     auto bound = document->createElement(XStr("Bound"));
     bound->setAttribute(XStr("X"), XStr(boost::lexical_cast<std::string>(_bound._x).data()));
     bound->setAttribute(XStr("Y"), XStr(boost::lexical_cast<std::string>(_bound._y).data()));
@@ -180,6 +181,7 @@ xercesc::DOMElement *ParallelGatewayShape::createElement(xercesc::DOMDocument *d
 
 void ParallelGatewayShape::loadDomElement(xercesc::DOMNode *element) {
     std::vector<xercesc::DOMNode *> bound;
+    _id = puppy::common::XML::attributeValue(element->getAttributes(),"ID");
     puppy::common::XML::getTagsByName("Bound", element, bound);
     if (bound.size() == 1) {
         _bound._x = boost::lexical_cast<float>(puppy::common::XML::attributeValue(bound[0]->getAttributes(), "X"));
