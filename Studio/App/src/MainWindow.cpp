@@ -38,13 +38,13 @@ MainWindow::MainWindow(QWidget *parent) :
                                                         "/home/jana/untitled.xml",
                                                         tr("Images (*.xml)"));
         QFile file(fileName);
-        file.open(QIODevice::ReadWrite);
+        file.open(QIODevice::ReadWrite|QIODevice::Truncate);
         file.write(_processStudio->saveToXML().data());
         file.flush();
         file.close();
     });
 
-    ui->toolBar->addAction("Open", [&]() {
+    ui->toolBar->addAction("Open", [&,tableModel = _tableModel,detailTableModel=_detailTableModel]() {
         QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"),
                                                         "/home/jana/untitled.xml",
                                                         tr("Images (*.xml)"));
@@ -52,6 +52,9 @@ MainWindow::MainWindow(QWidget *parent) :
         file.open(QIODevice::ReadWrite);
         _processStudio->loadFromXML(file.readAll().toStdString());
         _processEditor->update();
+        tableModel->reset();
+        auto property = _processStudio->_processInfoVariant.get_type().get_wrapped_type().get_property("Parameters");
+        detailTableModel->setValue(_processStudio->_processInfoVariant,property);
     });
 
     _delegate = 0;

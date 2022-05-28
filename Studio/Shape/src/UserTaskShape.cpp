@@ -157,6 +157,7 @@ bool UserTaskShape::isContained(QPointF pointF) {
 
 xercesc::DOMElement *UserTaskShape::createElement(xercesc::DOMDocument *document) {
     auto userTaskShape = document->createElement(XStr("UserTaskShape"));
+    userTaskShape->setAttribute(XStr("ID"), XStr(_id.data()));
     auto bound = document->createElement(XStr("Bound"));
     bound->setAttribute(XStr("X"), XStr(boost::lexical_cast<std::string>(_bound._x).data()));
     bound->setAttribute(XStr("Y"), XStr(boost::lexical_cast<std::string>(_bound._y).data()));
@@ -168,6 +169,7 @@ xercesc::DOMElement *UserTaskShape::createElement(xercesc::DOMDocument *document
 
 void UserTaskShape::loadDomElement(xercesc::DOMNode *element) {
     std::vector<xercesc::DOMNode *> bound;
+    _id = puppy::common::XML::attributeValue(element->getAttributes(), "ID");
     puppy::common::XML::getTagsByName("Bound", element, bound);
     if (bound.size() == 1) {
         puppy::common::XML::parseInstance(bound[0], _bound);

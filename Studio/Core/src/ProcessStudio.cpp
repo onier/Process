@@ -350,12 +350,19 @@ void ProcessStudio::loadFromXML(std::string xml) {
             std::vector<xercesc::DOMNode *> parametersNodes;
             std::vector<xercesc::DOMNode *> tasksNodes;
             std::vector<xercesc::DOMNode *> shapesNodes;
+            auto taskName = puppy::common::XML::attributeValue(manager->getAttributes(), "taskName");
+            auto threadCount = puppy::common::XML::attributeValue(manager->getAttributes(), "threadCount");
+            rttr::type::get_by_name("ProcesInfo").get_property("ThreadCount").set_value(_processInfoVariant, boost::lexical_cast<int>(threadCount));
+            rttr::type::get_by_name("ProcesInfo").get_property("Name").set_value(_processInfoVariant, taskName);
             puppy::common::XML::getTagsByName("Parameters", manager, parametersNodes);
             puppy::common::XML::getTagsByName("tasks", manager, tasksNodes);
             puppy::common::XML::getTagsByName("shapes", manager, shapesNodes);
             if (parametersNodes.size() == 1) {
                 auto paras = parseParameters(parametersNodes[0]);
                 rttr::type::get_by_name("ProcesInfo").get_property("Parameters").set_value(_processInfoVariant, paras);
+                auto _processInfo = _processInfoVariant.get_value<std::shared_ptr<ProcesInfo>>();
+                LOG(INFO)<<rttr::type::get_by_name("ProcesInfo").get_property("Parameters").get_value(_processInfoVariant).create_sequential_view().get_size();
+                LOG(INFO) << "";
             }
             std::map<std::string, std::shared_ptr<DumyTaskItem>> tasks;
             std::map<std::string, std::shared_ptr<DumyShapeItem>> shapes;
@@ -373,6 +380,7 @@ void ProcessStudio::loadFromXML(std::string xml) {
             }
             for (auto shape: shapes) {
                 if (tasks.count(shape.first) > 0) {
+                    shape.second->_shape->_text = tasks[shape.first]->_task->_name;
                     _taskShapes.push_back(std::make_shared<TaskShapeItem>(tasks[shape.first], shape.second));
                 }
             }
@@ -383,11 +391,11 @@ void ProcessStudio::loadFromXML(std::string xml) {
 
 std::vector<Para> ProcessStudio::parseParameters(xercesc::DOMNode *parameters) {
     std::vector<xercesc::DOMNode *> ps;
-    puppy::common::XML::getTagsByName("Parameters", parameters, ps);
+    puppy::common::XML::getTagsByName("Parameter", parameters, ps);
     std::vector<Para> paras;
     for (auto p: ps) {
         Para para = parseParameter(p);
-        if (para._name.empty()) {
+        if (!para._name.empty()) {
             paras.push_back(para);
         }
     }
@@ -491,7 +499,9 @@ void ProcessStudio::saveTaskManager(xercesc::DOMElement *domElement, xercesc::DO
         auto tasks = document->createElement(XStr("tasks"));
         taskManager->appendChild(tasks);
         for (auto t: _tasks) {
-            puppy::common::XML::createElement<Process::Task>(t, tasks, document, t);
+            xercesc_3_2::DOMElement *taskElement = puppy::common::XML::createElement<Process::Task>(t, tasks, document,
+                                                                                                    t);
+            t->saveDomElement(taskElement, document);
         }
     }
     {

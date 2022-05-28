@@ -29,7 +29,7 @@ void SubProcessTask::setTaskFinishFunction(std::function<void(void)> taskFinishF
     _subProcess->getProcessContext()->_taskFinishFunction = _taskFinishFunction;
 }
 
-bool SubProcessTask::saveDomElement(xercesc::DOMElement *domElement, std::shared_ptr<xercesc::DOMDocument> document) {
+bool SubProcessTask::saveDomElement(xercesc::DOMElement *domElement, xercesc::DOMDocument *document) {
     auto taskManager = document->createElement(XStr("SubTaskManager"));
     taskManager->setAttribute(XStr("taskName"), XStr(_subProcess->getProcessContext()->getTaskName().data()));
     domElement->appendChild(taskManager);

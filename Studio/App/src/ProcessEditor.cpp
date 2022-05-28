@@ -210,6 +210,7 @@ void ProcessEditor::dropEvent(QDropEvent *event) {
             std::shared_ptr<Shape> shape = shapeVar.get_value<std::shared_ptr<Shape>>();
             shape->setBound({(float) event->posF().x(), (float) event->posF().y(), 60, 50});
             shape->_id = task->_id;
+            LOG(INFO)<<task->get_type().get_name() <<"  "<<task->_id;
 //            _graphics->addShape(shape);
 //            _processStudio->addTask(task);
             _processStudio->addTaskShapeItem(

@@ -7,6 +7,9 @@
 #include "glog/logging.h"
 #include "XML.h"
 #include "boost/lexical_cast.hpp"
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_generators.hpp>
+#include <boost/uuid/uuid_io.hpp>
 
 static const double Pi = 3.14159265358979323846264338327950288419717;
 static double TwoPi = 2.0 * Pi;
@@ -14,6 +17,8 @@ static double TwoPi = 2.0 * Pi;
 Edge::Edge() {
     _bColor = {255, 255, 255};
     _fColor = {0, 0, 0};
+    boost::uuids::uuid uuid = boost::uuids::random_generator()();
+    _id = boost::lexical_cast<std::string>(uuid);
 }
 
 Bound Edge::getBound() {

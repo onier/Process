@@ -8,6 +8,8 @@
 
 class StartTask : public Process::AbstractTask {
 public:
+    StartTask();
+
     bool initTask(Process::ProcessContext* context) override;
 
     void run(std::shared_ptr<Process::ProcessContext> context) override;

@@ -28,7 +28,7 @@ namespace Process {
         //must
         void run(std::shared_ptr<ProcessContext> context) override;
 
-        virtual bool saveDomElement(xercesc::DOMElement *domElement, std::shared_ptr<xercesc::DOMDocument> document) {
+        virtual bool saveDomElement(xercesc::DOMElement *domElement, xercesc::DOMDocument *document) {
             return false;
         };
 

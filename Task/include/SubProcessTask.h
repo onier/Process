@@ -23,7 +23,7 @@ public:
     std::shared_ptr<Process::Process> _subProcess;
     std::function<void(void)> _taskFinishFunction;
 
-    bool saveDomElement(xercesc::DOMElement *domElement, std::shared_ptr<xercesc::DOMDocument> document);
+    bool saveDomElement(xercesc::DOMElement *domElement, xercesc::DOMDocument *document);
 
     bool loadDomElement(xercesc::DOMNode *domElement);
 

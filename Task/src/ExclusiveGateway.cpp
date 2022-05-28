@@ -148,6 +148,35 @@ void ExclusiveGateway::setPreTaskID(std::string id, bool f) {
     AbstractTask::setPreTaskID(id, f);
 }
 
+bool ExclusiveGateway::saveDomElement(xercesc::DOMElement *domElement, xercesc::DOMDocument *document) {
+    xercesc_3_2::DOMElement *subTaskVariants = document->createElement(XStr("SubTaskVariants"));
+    domElement->appendChild(subTaskVariants);
+    for (auto ruleVar: _subTaskVariant) {
+        xercesc_3_2::DOMElement *subTaskVariant = document->createElement(XStr("SubTaskVariant"));
+        subTaskVariants->appendChild(subTaskVariant);
+        subTaskVariant->setAttribute(XStr("TaskID"), XStr(ruleVar._id.data()));
+        puppy::common::XML::createElement(ruleVar._variant, subTaskVariant, document);
+    }
+}
+
+bool ExclusiveGateway::loadDomElement(xercesc::DOMNode *domElement) {
+    std::vector<xercesc::DOMNode *> SubTaskVariants;
+    puppy::common::XML::getTagsByName("SubTaskVariants", domElement, SubTaskVariants);
+    if (SubTaskVariants.size() == 1) {
+        std::vector<xercesc::DOMNode *> subTaskVariants;
+        puppy::common::XML::getTagsByName("SubTaskVariant", SubTaskVariants[0], subTaskVariants);
+        for(auto node:subTaskVariants){
+            auto variant = rttr::type::get_by_name("ExclusiveRulePtr").create();
+            puppy::common::XML::parseInstance(node,variant);
+            VariantRule rule;
+            rule._variant = variant;
+            rule._id = puppy::common::XML::attributeValue(node->getAttributes(),"TaskID");
+            _subTaskVariant.push_back(rule);
+        }
+    }
+    return true;
+}
+
 ExclusiveRule::ExclusiveRule(const std::string &valueName, ExclusiveRuleOperator op, double value,
                              const std::string &taskId)
         : _valueName(valueName), _operator(op), _taskID(taskId) {}

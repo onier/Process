@@ -36,13 +36,13 @@ ProcessContext::ProcessContext(int threadCount) {
     _suspendTasks = std::make_shared<SuspendTask>();
 }
 
-bool ProcessContext::saveDomElement(xercesc::DOMElement *domElement, std::shared_ptr<xercesc::DOMDocument> document) {
+bool ProcessContext::saveDomElement(xercesc::DOMElement *domElement, xercesc::DOMDocument *document) {
     auto tasks = document->createElement(XStr("tasks"));
     domElement->appendChild(tasks);
     for (auto &t: _tasks) {
         auto taskElement = document->createElement(XStr(t->get_type().get_name().data()));
         tasks->appendChild(taskElement);
-        createElement(t, taskElement, document.get(), t);
+        createElement(t, taskElement, document, t);
         t->saveDomElement(taskElement, document);
     }
     return true;
@@ -183,7 +183,7 @@ std::string ProcessContext::saveXML() {
     taskManager->setAttribute(XStr("taskName"), XStr(_taskName.data()));
     taskManager->setAttribute(XStr("threadCount"), XStr(boost::lexical_cast<std::string>(_threadCount).data()));
     rootElement->appendChild(taskManager);
-    saveDomElement(taskManager, document);
+    saveDomElement(taskManager, document.get());
     document->normalizeDocument();
     serializer->write(document.get(), out);
     return std::string(reinterpret_cast<const char *>(formatTarget->getRawBuffer()));
@@ -194,7 +194,7 @@ ProcessContext::saveDocumentElemenet(std::shared_ptr<xercesc::DOMDocument> docum
     auto taskManager = document->createElement(XStr("TaskManager"));
     taskManager->setAttribute(XStr("taskName"), XStr(_taskName.data()));
     taskManager->setAttribute(XStr("threadCount"), XStr(boost::lexical_cast<std::string>(_threadCount).data()));
-    saveDomElement(taskManager, document);
+    saveDomElement(taskManager, document.get());
     rootElement->appendChild(taskManager);
 }
 

@@ -67,6 +67,10 @@ class ExclusiveGateway : public Process::AbstractTask {
 public:
     ExclusiveGateway();
 
+    bool saveDomElement(xercesc::DOMElement *domElement, xercesc::DOMDocument *document) override;
+
+    bool loadDomElement(xercesc::DOMNode *domElement) override;
+
     std::string getNextTaskID() override;
 
     void run(std::shared_ptr<Process::ProcessContext> context) override;

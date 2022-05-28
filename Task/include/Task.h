@@ -111,7 +111,7 @@ namespace Process {
         virtual void setPreTaskID(std::string id, bool f = false) = 0;
 
         virtual bool
-        saveDomElement(xercesc::DOMElement *domElement, std::shared_ptr<xercesc::DOMDocument> document) = 0;
+        saveDomElement(xercesc::DOMElement *domElement, xercesc::DOMDocument *document) = 0;
 
         virtual bool loadDomElement(xercesc::DOMNode *domElement) = 0;
 

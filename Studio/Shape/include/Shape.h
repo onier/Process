@@ -138,8 +138,8 @@ struct Shape {
     std::string _nextID;
     Color _bColor;
     Color _fColor;
-protected:
     std::string _text;
+protected:
     bool _isSelected;
     std::vector<PropertyEventHanlder> _propertyEventHanlders;
 };

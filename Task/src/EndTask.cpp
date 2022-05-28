@@ -4,7 +4,7 @@
 
 #include "EndTask.h"
 
-bool EndTask::initTask(Process::ProcessContext* manager) {
+bool EndTask::initTask(Process::ProcessContext *manager) {
     return true;
 }
 
@@ -14,4 +14,8 @@ void EndTask::run(std::shared_ptr<Process::ProcessContext> context) {
 
 std::string EndTask::getTaskType() {
     return "EndTask";
+}
+
+EndTask::EndTask() {
+    _name = "EndTask";
 }

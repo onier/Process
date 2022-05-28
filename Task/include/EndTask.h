@@ -9,6 +9,8 @@
 
 class EndTask : public Process::AbstractTask {
 public:
+    EndTask();
+
     bool initTask(Process::ProcessContext* manager) override;
 
     void run(std::shared_ptr<Process::ProcessContext> context) override;

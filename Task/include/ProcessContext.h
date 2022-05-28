@@ -40,7 +40,7 @@ namespace Process {
 
         std::vector<std::shared_ptr<Process::Task>> getPreTaskByID(std::string id);
 
-        bool saveDomElement(xercesc::DOMElement *domElement, std::shared_ptr<xercesc::DOMDocument> document);
+        bool saveDomElement(xercesc::DOMElement *domElement, xercesc::DOMDocument *document);
 
         bool loadDomElement(xercesc::DOMNode *domElement);
 

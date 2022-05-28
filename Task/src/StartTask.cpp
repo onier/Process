@@ -17,3 +17,7 @@ void StartTask::run(std::shared_ptr<Process::ProcessContext> context) {
 std::string StartTask::getTaskType() {
     return "StartTask";
 }
+
+StartTask::StartTask() {
+    _name = "StartTask";
+}
