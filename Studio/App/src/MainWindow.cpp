@@ -3,6 +3,7 @@
 #include "QListView"
 #include <QLabel>
 #include <QFileDialog>
+#include <QHBoxLayout>
 #include "ui_MainWindow.h"
 #include "glog/logging.h"
 #include "TaskListView.h"
@@ -10,6 +11,7 @@
 #include "Task.h"
 #include "QRTTRTableModel.h"
 #include "QHeaderView"
+#include "TasksWidget.h"
 
 MainWindow::MainWindow(QWidget *parent) :
         QMainWindow(parent),
@@ -38,13 +40,13 @@ MainWindow::MainWindow(QWidget *parent) :
                                                         "/home/jana/untitled.xml",
                                                         tr("Images (*.xml)"));
         QFile file(fileName);
-        file.open(QIODevice::ReadWrite|QIODevice::Truncate);
+        file.open(QIODevice::ReadWrite | QIODevice::Truncate);
         file.write(_processStudio->saveToXML().data());
         file.flush();
         file.close();
     });
 
-    ui->toolBar->addAction("Open", [&,tableModel = _tableModel,detailTableModel=_detailTableModel]() {
+    ui->toolBar->addAction("Open", [&, tableModel = _tableModel, detailTableModel = _detailTableModel]() {
         QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"),
                                                         "/home/jana/untitled.xml",
                                                         tr("Images (*.xml)"));
@@ -54,7 +56,7 @@ MainWindow::MainWindow(QWidget *parent) :
         _processEditor->update();
         tableModel->setVariant(_processStudio->_processInfoVariant);
         auto property = _processStudio->_processInfoVariant.get_type().get_wrapped_type().get_property("Parameters");
-        detailTableModel->setValue(_processStudio->_processInfoVariant,property);
+        detailTableModel->setValue(_processStudio->_processInfoVariant, property);
     });
 
     _delegate = 0;
@@ -65,17 +67,52 @@ TaskListModel *MainWindow::createTaskItemModel() {
     TaskListModel *taskListModel = new TaskListModel();
     auto tasks = puppy::common::library::get<Process::Task>("Task");
     for (auto task: tasks) {
-        taskListModel->_taskItems.push_back({task->get_type().get_name().data()});
+        TaskItemIcon itemIcon{task->get_type().get_name().data()};
+        auto type = itemIcon._text + "Shape";
+        rttr::type shapeType = rttr::type::get_by_name(type.toStdString());
+        if (shapeType.is_valid()) {
+            auto shapeVar = shapeType.create();
+            std::shared_ptr<Shape> shape = shapeVar.get_value<std::shared_ptr<Shape>>();
+            shape->_text = itemIcon._text.toStdString();
+            shape->_id = task->_id;
+            shape->setBound({0, 0, 60, 60});
+            std::shared_ptr<QPixmap> pixmap = std::shared_ptr<QPixmap>(new QPixmap{60, 60});
+            QPainter painter(pixmap.get());
+            painter.setRenderHint(QPainter::Antialiasing);
+            painter.setRenderHint(QPainter::HighQualityAntialiasing);
+            painter.fillRect(0,0,60,60,Qt::GlobalColor::white);
+            shape->paint(&painter);
+            itemIcon._image = pixmap;
+        } else {
+            shapeType = rttr::type::get_by_name("UserTaskShape");
+            auto shapeVar = shapeType.create();
+            std::shared_ptr<Shape> shape = shapeVar.get_value<std::shared_ptr<Shape>>();
+            shape->_text = itemIcon._text.toStdString();
+            shape->setBound({0, 0, 60, 60});
+            std::shared_ptr<QPixmap> pixmap = std::shared_ptr<QPixmap>(new QPixmap{60, 60});
+            QPainter painter(pixmap.get());
+            painter.setRenderHint(QPainter::Antialiasing);
+            painter.setRenderHint(QPainter::HighQualityAntialiasing);
+            painter.fillRect(0,0,60,60,Qt::GlobalColor::white);
+            shape->paint(&painter);
+            itemIcon._image = pixmap;
+        }
+        taskListModel->_taskItems.push_back(itemIcon);
     }
+
     return taskListModel;
 }
 
 void MainWindow::init() {
     _taskDockerWidget = new QDockWidget(this);
     _taskDockerWidget->setWindowTitle("Tasks");
-    TaskListView *listView = new TaskListView(_taskDockerWidget);
-    listView->setTaskModel(createTaskItemModel());
-    _taskDockerWidget->setWidget(listView);
+//    QWidget *tasksWidget = new QWidget;
+//    QHBoxLayout *horizontalLayout = new QHBoxLayout(tasksWidget);
+//    TaskListView *listView = new TaskListView(tasksWidget);
+//    listView->setTaskModel(createTaskItemModel());
+    TasksWidget *widget = new TasksWidget(_taskDockerWidget);
+    widget->setModel(createTaskItemModel());
+    _taskDockerWidget->setWidget(widget);
 
     _propertiesDockerWidget = new QDockWidget();
     _propertyViewer = new PropertyViewer(_propertiesDockerWidget);

@@ -9,7 +9,9 @@
 #include "glog/logging.h"
 
 TaskListView::TaskListView(QWidget *parent) : QListView(parent) {
-
+    setViewMode(QListView::IconMode);
+    setFlow(QListView::LeftToRight);
+    setResizeMode(QListView::Adjust);
 }
 
 void TaskListView::setTaskModel(TaskListModel *taskListModel) {
@@ -34,9 +36,9 @@ void TaskListView::mouseMoveEvent(QMouseEvent *e) {
         int row = QListView::selectedIndexes().at(0).row();
         auto item = _taskListModel->_taskItems.at(row);
 //        mimeData->setText(item._text);
-        mimeData->setData("application/shape_icon",item._text.toUtf8());
+        mimeData->setData("application/shape_icon", item._text.toUtf8());
         drag->setMimeData(mimeData);
-        drag->setPixmap(QPixmap::fromImage(item._image));
+        drag->setPixmap(*(item._image));
         Qt::DropAction dropAction = drag->exec();
     }
     QListView::mouseMoveEvent(e);
@@ -57,10 +59,10 @@ QVariant TaskListModel::data(const QModelIndex &index, int role) const {
 
     if (role == Qt::DisplayRole)
         return _taskItems.at(index.row())._text;
-    else
+    else if (role == Qt::DecorationRole) {
+        return QIcon(*_taskItems.at(index.row())._image);
+    } else
         return QVariant();
 }
-
-TaskItemIcon::TaskItemIcon(const QImage &image) : _image(image) {}
 
 TaskItemIcon::TaskItemIcon(const QString &text) : _text(text) {}

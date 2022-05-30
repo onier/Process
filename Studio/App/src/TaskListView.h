@@ -13,11 +13,10 @@
 #include "Task.h"
 struct TaskItemIcon {
     QString _text;
-    QImage _image;
+    std::shared_ptr<QPixmap> _image;
 
     TaskItemIcon(const QString &text);
 
-    TaskItemIcon(const QImage &image);
 };
 
 class TaskListModel : public QAbstractListModel {
@@ -30,6 +29,7 @@ public:
 
 
     std::vector<TaskItemIcon> _taskItems;
+    std::vector<QIcon> _taskIcons;
 };
 
 class TaskListView : public QListView {
